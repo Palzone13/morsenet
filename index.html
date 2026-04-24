@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MorseNet — Live Morse Code Rooms</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap');
+
+  :root {
+    --bg: #050a05;
+    --surface: #0b140b;
+    --surface2: #111e11;
+    --border: #1a3a1a;
+    --green: #00ff41;
+    --green-dim: #00cc33;
+    --green-dark: #003a10;
+    --green-glow: rgba(0,255,65,0.15);
+    --amber: #ffb800;
+    --red: #ff3333;
+    --text: #b8ffb8;
+    --text-dim: #5a8a5a;
+    --font-mono: 'Share Tech Mono', monospace;
+    --font-head: 'Orbitron', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-mono);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* CRT scanline overlay */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.08) 2px,
+      rgba(0,0,0,0.08) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* Grid noise background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,255,65,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,255,65,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .app {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: rgba(5,10,5,0.9);
+    backdrop-filter: blur(4px);
+  }
+
+  .logo {
+    font-family: var(--font-head);
+    font-size: 1.4rem;
+    font-weight: 900;
+    color: var(--green);
+    text-shadow: 0 0 20px var(--green), 0 0 40px rgba(0,255,65,0.3);
+    letter-spacing: 3px;
+  }
+
+  .logo span { color: var(--amber); }
+
+  .status-bar {
+    display: flex;
+    gap: 16px;
+    margin-left: auto;
+    align-items: center;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+  }
+
+  .dot-live {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 8px var(--green);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%,100% { opacity: 1; box-shadow: 0 0 8px var(--green); }
+    50% { opacity: 0.4; box-shadow: none; }
+  }
+
+  /* ── MAIN LAYOUT ── */
+  .main {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: 220px;
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    background: rgba(5,10,5,0.6);
+    flex-shrink: 0;
+  }
+
+  .sidebar-title {
+    font-family: var(--font-head);
+    font-size: 0.6rem;
+    letter-spacing: 4px;
+    color: var(--text-dim);
+    padding: 14px 16px 10px;
+    border-bottom: 1px solid var(--border);
+    text-transform: uppercase;
+  }
+
+  .room-list { flex: 1; overflow-y: auto; padding: 8px 0; }
+
+  .room-item {
+    padding: 10px 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    transition: all 0.15s;
+    border-left: 3px solid transparent;
+    position: relative;
+  }
+
+  .room-item:hover { background: var(--green-glow); color: var(--text); }
+
+  .room-item.active {
+    background: var(--green-glow);
+    border-left-color: var(--green);
+    color: var(--green);
+  }
+
+  .room-hash { color: var(--green-dim); font-size: 1rem; }
+
+  .room-badge {
+    margin-left: auto;
+    background: var(--green);
+    color: var(--bg);
+    font-size: 0.6rem;
+    padding: 1px 5px;
+    border-radius: 2px;
+    font-weight: bold;
+  }
+
+  .create-room {
+    padding: 12px 16px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 6px;
+  }
+
+  .create-room input {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--green);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    padding: 6px 8px;
+    outline: none;
+    border-radius: 2px;
+  }
+
+  .create-room input:focus { border-color: var(--green); box-shadow: 0 0 8px var(--green-glow); }
+
+  .btn-small {
+    background: var(--green-dark);
+    border: 1px solid var(--green);
+    color: var(--green);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    padding: 6px 10px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.15s;
+  }
+  .btn-small:hover { background: var(--green); color: var(--bg); }
+
+  /* ── CHAT AREA ── */
+  .chat-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .chat-header {
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(5,10,5,0.7);
+  }
+
+  .chat-room-name {
+    font-family: var(--font-head);
+    font-size: 0.9rem;
+    color: var(--green);
+    text-shadow: 0 0 10px var(--green-glow);
+  }
+
+  .chat-meta { font-size: 0.65rem; color: var(--text-dim); margin-left: auto; }
+
+  /* ── MESSAGES ── */
+  .messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    scroll-behavior: smooth;
+  }
+
+  .messages::-webkit-scrollbar { width: 4px; }
+  .messages::-webkit-scrollbar-thumb { background: var(--border); }
+  .messages::-webkit-scrollbar-thumb:hover { background: var(--green-dark); }
+
+  .msg {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-width: 800px;
+    animation: msgIn 0.25s ease;
+  }
+
+  @keyframes msgIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .msg-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.65rem;
+    color: var(--text-dim);
+  }
+
+  .msg-user {
+    color: var(--amber);
+    font-family: var(--font-head);
+    font-size: 0.65rem;
+    letter-spacing: 1px;
+  }
+
+  .msg-morse {
+    font-size: 1rem;
+    color: var(--green);
+    letter-spacing: 3px;
+    line-height: 1.4;
+    text-shadow: 0 0 8px rgba(0,255,65,0.4);
+    word-break: break-all;
+    cursor: pointer;
+    transition: text-shadow 0.2s;
+  }
+
+  .msg-morse:hover {
+    text-shadow: 0 0 16px var(--green), 0 0 30px rgba(0,255,65,0.3);
+  }
+
+  .msg-translation {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    font-style: italic;
+    letter-spacing: 1px;
+    padding: 4px 10px;
+    border-left: 2px solid var(--border);
+    background: rgba(0,255,65,0.03);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .msg-translation::before {
+    content: '▶';
+    color: var(--green-dim);
+    font-size: 0.55rem;
+  }
+
+  .play-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    padding: 2px 6px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.15s;
+    margin-left: auto;
+  }
+  .play-btn:hover { border-color: var(--green); color: var(--green); }
+
+  /* ── INPUT AREA ── */
+  .input-area {
+    border-top: 1px solid var(--border);
+    padding: 16px;
+    background: rgba(5,10,5,0.9);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .input-row {
+    display: flex;
+    gap: 10px;
+    align-items: stretch;
+  }
+
+  .morse-input-wrapper {
+    flex: 1;
+    position: relative;
+  }
+
+  .morse-input {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    color: var(--green);
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    letter-spacing: 3px;
+    padding: 10px 14px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .morse-input:focus {
+    border-color: var(--green);
+    box-shadow: 0 0 16px var(--green-glow);
+  }
+
+  .morse-input::placeholder { color: var(--text-dim); letter-spacing: 1px; font-size: 0.75rem; }
+
+  .live-translation {
+    padding: 6px 14px;
+    font-size: 0.75rem;
+    color: var(--amber);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-top: none;
+    min-height: 28px;
+    letter-spacing: 1px;
+  }
+
+  .send-btn {
+    background: var(--green-dark);
+    border: 1px solid var(--green);
+    color: var(--green);
+    font-family: var(--font-head);
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    padding: 0 20px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.15s;
+    text-shadow: 0 0 8px var(--green);
+    align-self: stretch;
+  }
+
+  .send-btn:hover {
+    background: var(--green);
+    color: var(--bg);
+    box-shadow: 0 0 20px var(--green-glow);
+    text-shadow: none;
+  }
+
+  /* ── KEYBOARD HELPER ── */
+  .keyboard-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .kb-label {
+    font-size: 0.6rem;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .kb-hints { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+
+  .kb-key {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    padding: 3px 8px;
+    border-radius: 3px;
+    cursor: default;
+  }
+
+  .kb-key span { color: var(--green); }
+
+  /* ── MORSE REFERENCE ── */
+  .morse-ref {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    padding-bottom: 4px;
+  }
+
+  .ref-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 3px 7px;
+    font-size: 0.6rem;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.1s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .ref-item:hover { border-color: var(--green); background: var(--green-glow); }
+
+  .ref-letter { color: var(--amber); font-size: 0.7rem; font-weight: bold; }
+  .ref-code { color: var(--green); letter-spacing: 1px; font-size: 0.6rem; }
+
+  /* ── USERNAME INPUT ── */
+  .username-bar {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    padding-bottom: 2px;
+  }
+
+  .username-bar label { font-size: 0.65rem; color: var(--text-dim); letter-spacing: 2px; }
+
+  .username-bar input {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--amber);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    padding: 4px 8px;
+    outline: none;
+    border-radius: 2px;
+    width: 130px;
+  }
+
+  .username-bar input:focus { border-color: var(--amber); }
+
+  /* ── EMPTY STATE ── */
+  .empty-state {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    color: var(--text-dim);
+  }
+
+  .empty-morse {
+    font-size: 2rem;
+    color: var(--border);
+    letter-spacing: 8px;
+    text-shadow: none;
+  }
+
+  /* ── LOADING ── */
+  .loading {
+    color: var(--text-dim);
+    font-size: 0.75rem;
+    text-align: center;
+    padding: 20px;
+    animation: blink 1s infinite;
+  }
+
+  @keyframes blink {
+    0%,100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  /* ── REFS toggle ── */
+  .ref-toggle {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    padding: 3px 8px;
+    cursor: pointer;
+    border-radius: 2px;
+    margin-left: auto;
+    transition: all 0.15s;
+  }
+  .ref-toggle:hover { border-color: var(--green); color: var(--green); }
+
+  .ref-panel { overflow: hidden; transition: max-height 0.3s ease; max-height: 0; }
+  .ref-panel.open { max-height: 200px; }
+
+  /* ── VOLUME ── */
+  .volume-ctrl {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.6rem;
+    color: var(--text-dim);
+  }
+
+  .volume-ctrl input[type=range] {
+    -webkit-appearance: none;
+    width: 70px;
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    outline: none;
+  }
+  .volume-ctrl input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 10px; height: 10px;
+    background: var(--green);
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
+  .no-room {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 20px;
+    color: var(--text-dim);
+  }
+  .no-room .big { font-size: 3rem; letter-spacing: 12px; color: var(--border); }
+  .no-room p { font-size: 0.75rem; letter-spacing: 2px; }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="logo">MORSE<span>NET</span></div>
+    <div style="font-size:0.7rem;color:var(--text-dim);letter-spacing:2px;">LIVE TRANSMISSION ROOMS</div>
+    <div class="status-bar">
+      <div class="dot-live"></div>
+      <span id="conn-status">CONNECTING...</span>
+      <span>|</span>
+      <div class="volume-ctrl">
+        <span>VOL</span>
+        <input type="range" id="volume" min="0" max="1" step="0.05" value="0.5">
+      </div>
+    </div>
+  </header>
+
+  <div class="main">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-title">⬡ Channels</div>
+      <div class="room-list" id="room-list">
+        <div class="loading">SCANNING...</div>
+      </div>
+      <div class="create-room">
+        <input type="text" id="new-room-input" placeholder="new channel..." maxlength="20">
+        <button class="btn-small" onclick="createRoom()">+</button>
+      </div>
+    </div>
+
+    <!-- Main chat -->
+    <div class="chat-area" id="chat-area">
+      <div class="no-room">
+        <div class="big">—···—</div>
+        <p>SELECT A CHANNEL TO BEGIN</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+// SUPABASE CONFIG
+// ═══════════════════════════════════════════
+const SUPA_URL = 'https://dsgmmknejsgvyzoiimnh.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRzZ21ta25lanNndnl6b2lpbW5oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwNjUzNDMsImV4cCI6MjA5MjY0MTM0M30.ApQdbSuiCcE0HSi2J14W4Ol2mgDMwipE1scs_PHgwrY';
+
+// ═══════════════════════════════════════════
+// MORSE CODE TABLE
+// ═══════════════════════════════════════════
+const MORSE = {
+  'A':'.-','B':'-...','C':'-.-.','D':'-..','E':'.','F':'..-.','G':'--.','H':'....','I':'..','J':'.---',
+  'K':'-.-','L':'.-..','M':'--','N':'-.','O':'---','P':'.--.','Q':'--.-','R':'.-.','S':'...','T':'-',
+  'U':'..-','V':'...-','W':'.--','X':'-..-','Y':'-.--','Z':'--..',
+  '0':'-----','1':'.----','2':'..---','3':'...--','4':'....-','5':'.....','6':'-....','7':'--...','8':'---..','9':'----.',
+  '.':'.-.-.-',',':'--..--','?':'..--..','!':'-.-.--','/':'-..-.','@':'.--.-.','=':'-...-',' ': '/'
+};
+
+// Build reverse
+const MORSE_REV = {};
+for (const [k,v] of Object.entries(MORSE)) MORSE_REV[v] = k;
+MORSE_REV['/'] = ' ';
+
+function textToMorse(text) {
+  return text.toUpperCase().split('').map(c => MORSE[c] || '').filter(Boolean).join(' ');
+}
+
+function morseToText(morse) {
+  return morse.trim().split('   ').map(word =>
+    word.split(' ').map(code => code === '/' ? ' ' : (MORSE_REV[code] || '?')).join('')
+  ).join(' ');
+}
+
+// ═══════════════════════════════════════════
+// AUDIO ENGINE
+// ═══════════════════════════════════════════
+let audioCtx = null;
+let volume = 0.5;
+
+document.getElementById('volume').addEventListener('input', e => {
+  volume = parseFloat(e.target.value);
+});
+
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+
+async function playMorseAudio(morseStr) {
+  const ctx = getAudioCtx();
+  const dotDuration = 0.06;
+  const freq = 650;
+  let t = ctx.currentTime + 0.05;
+
+  for (const symbol of morseStr) {
+    if (symbol === '.') {
+      beep(ctx, t, dotDuration, freq);
+      t += dotDuration + dotDuration * 0.3;
+    } else if (symbol === '-') {
+      beep(ctx, t, dotDuration * 3, freq);
+      t += dotDuration * 3 + dotDuration * 0.3;
+    } else if (symbol === ' ') {
+      t += dotDuration * 2;
+    } else if (symbol === '/') {
+      t += dotDuration * 4;
+    }
+  }
+}
+
+function beep(ctx, start, duration, freq) {
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.frequency.value = freq;
+  osc.type = 'sine';
+  gain.gain.setValueAtTime(0, start);
+  gain.gain.linearRampToValueAtTime(volume * 0.4, start + 0.005);
+  gain.gain.setValueAtTime(volume * 0.4, start + duration - 0.005);
+  gain.gain.linearRampToValueAtTime(0, start + duration);
+  osc.start(start);
+  osc.stop(start + duration + 0.01);
+}
+
+// ═══════════════════════════════════════════
+// API HELPERS
+// ═══════════════════════════════════════════
+async function supaFetch(path, options = {}) {
+  const url = `${SUPA_URL}/rest/v1/${path}`;
+  const res = await fetch(url, {
+    ...options,
+    headers: {
+      'apikey': SUPA_KEY,
+      'Authorization': `Bearer ${SUPA_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': options.prefer || '',
+      ...options.headers
+    }
+  });
+  if (options.noBody) return res;
+  const text = await res.text();
+  return text ? JSON.parse(text) : [];
+}
+
+// ═══════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════
+let currentRoom = null;
+let pollInterval = null;
+let lastMsgId = 0;
+let rooms = [];
+let username = 'OP_' + Math.random().toString(36).substr(2,4).toUpperCase();
+let refOpen = false;
+
+// ═══════════════════════════════════════════
+// DB INIT — ensure tables exist via REST
+// ═══════════════════════════════════════════
+async function ensureTables() {
+  // Try to fetch rooms — if table doesn't exist we'll catch it
+  try {
+    const r = await supaFetch('morse_rooms?select=id&limit=1');
+    if (Array.isArray(r)) {
+      document.getElementById('conn-status').textContent = 'CONNECTED';
+      return true;
+    }
+  } catch(e) {}
+
+  // Try creating via RPC/SQL if available
+  document.getElementById('conn-status').textContent = 'SETUP NEEDED';
+  showSetupMessage();
+  return false;
+}
+
+function showSetupMessage() {
+  document.getElementById('room-list').innerHTML = `
+    <div style="padding:12px;font-size:0.65rem;color:var(--amber);line-height:1.8;">
+      ⚠ TABLES NEEDED<br><br>
+      Run in Supabase SQL editor:<br><br>
+      <code style="color:var(--green);font-size:0.6rem;word-break:break-all;">
+        CREATE TABLE morse_rooms (id serial PRIMARY KEY, name text UNIQUE, created_at timestamptz DEFAULT now());<br><br>
+        CREATE TABLE morse_messages (id serial PRIMARY KEY, room_id int REFERENCES morse_rooms(id), username text, morse text, created_at timestamptz DEFAULT now());<br><br>
+        ALTER TABLE morse_rooms ENABLE ROW LEVEL SECURITY;<br>
+        ALTER TABLE morse_messages ENABLE ROW LEVEL SECURITY;<br><br>
+        CREATE POLICY "public_all" ON morse_rooms FOR ALL USING (true) WITH CHECK (true);<br>
+        CREATE POLICY "public_all" ON morse_messages FOR ALL USING (true) WITH CHECK (true);
+      </code>
+      <button onclick="retryInit()" style="margin-top:10px;width:100%;background:var(--green-dark);border:1px solid var(--green);color:var(--green);font-family:var(--font-mono);padding:6px;cursor:pointer;font-size:0.65rem;">RETRY</button>
+    </div>`;
+}
+
+async function retryInit() {
+  document.getElementById('room-list').innerHTML = '<div class="loading">SCANNING...</div>';
+  await init();
+}
+
+// ═══════════════════════════════════════════
+// ROOMS
+// ═══════════════════════════════════════════
+async function loadRooms() {
+  try {
+    rooms = await supaFetch('morse_rooms?select=*&order=created_at.asc');
+    renderRoomList();
+  } catch(e) {
+    console.error(e);
+  }
+}
+
+function renderRoomList() {
+  const list = document.getElementById('room-list');
+  if (!rooms.length) {
+    list.innerHTML = `<div style="padding:12px;font-size:0.65rem;color:var(--text-dim);">No channels yet.<br>Create one below.</div>`;
+    return;
+  }
+  list.innerHTML = rooms.map(r => `
+    <div class="room-item ${currentRoom?.id === r.id ? 'active' : ''}" onclick="joinRoom(${r.id})">
+      <span class="room-hash">#</span>
+      <span>${r.name}</span>
+    </div>
+  `).join('');
+}
+
+async function createRoom() {
+  const input = document.getElementById('new-room-input');
+  const name = input.value.trim().replace(/\s+/g,'_').toLowerCase();
+  if (!name) return;
+  input.value = '';
+  try {
+    await supaFetch('morse_rooms', {
+      method: 'POST',
+      prefer: 'return=representation',
+      body: JSON.stringify({ name })
+    });
+    await loadRooms();
+    // auto-join
+    const room = rooms.find(r => r.name === name);
+    if (room) joinRoom(room.id);
+  } catch(e) {
+    console.error('Create room error', e);
+  }
+}
+
+document.getElementById('new-room-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') createRoom();
+});
+
+// ═══════════════════════════════════════════
+// JOIN ROOM
+// ═══════════════════════════════════════════
+function joinRoom(id) {
+  currentRoom = rooms.find(r => r.id === id);
+  if (!currentRoom) return;
+  lastMsgId = 0;
+  renderRoomList();
+  renderChatArea();
+  loadMessages(true);
+  clearInterval(pollInterval);
+  pollInterval = setInterval(() => pollMessages(), 2000);
+}
+
+// ═══════════════════════════════════════════
+// MESSAGES
+// ═══════════════════════════════════════════
+async function loadMessages(reset = false) {
+  if (!currentRoom) return;
+  const msgs = await supaFetch(`morse_messages?room_id=eq.${currentRoom.id}&order=created_at.asc&limit=80`);
+  if (reset) {
+    document.getElementById('msg-container').innerHTML = '';
+    lastMsgId = 0;
+  }
+  for (const m of msgs) {
+    if (m.id > lastMsgId) {
+      appendMessage(m);
+      lastMsgId = m.id;
+    }
+  }
+  scrollBottom();
+}
+
+async function pollMessages() {
+  if (!currentRoom) return;
+  const msgs = await supaFetch(`morse_messages?room_id=eq.${currentRoom.id}&id=gt.${lastMsgId}&order=created_at.asc`);
+  for (const m of msgs) {
+    appendMessage(m, true);
+    if (lastMsgId < m.id) lastMsgId = m.id;
+  }
+}
+
+function appendMessage(msg, withSound = false) {
+  const container = document.getElementById('msg-container');
+  if (!container) return;
+  const translation = morseToText(msg.morse);
+  const time = new Date(msg.created_at).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+
+  const div = document.createElement('div');
+  div.className = 'msg';
+  div.innerHTML = `
+    <div class="msg-meta">
+      <span class="msg-user">${escHtml(msg.username)}</span>
+      <span>${time}</span>
+    </div>
+    <div class="msg-morse" title="Click to play" onclick="playMorseAudio('${escHtml(msg.morse)}')">${escHtml(msg.morse)}</div>
+    <div class="msg-translation">
+      <span>${escHtml(translation)}</span>
+      <button class="play-btn" onclick="playMorseAudio('${escHtml(msg.morse)}')">▶ PLAY</button>
+    </div>
+  `;
+  container.appendChild(div);
+  scrollBottom();
+
+  if (withSound) {
+    setTimeout(() => playMorseAudio(msg.morse), 50);
+  }
+}
+
+function scrollBottom() {
+  const msgs = document.getElementById('messages-scroll');
+  if (msgs) msgs.scrollTop = msgs.scrollHeight;
+}
+
+async function sendMessage() {
+  if (!currentRoom) return;
+  const input = document.getElementById('morse-input');
+  const morse = input.value.trim();
+  if (!morse) return;
+
+  // validate morse chars
+  const valid = /^[.\- /]+$/.test(morse);
+  if (!valid) {
+    // try to convert text to morse
+    const converted = textToMorse(morse);
+    if (converted) {
+      input.value = converted;
+      updateLiveTranslation();
+      return;
+    }
+    return;
+  }
+
+  input.value = '';
+  updateLiveTranslation();
+
+  await supaFetch('morse_messages', {
+    method: 'POST',
+    prefer: 'return=minimal',
+    body: JSON.stringify({ room_id: currentRoom.id, username, morse })
+  });
+
+  await pollMessages();
+}
+
+// ═══════════════════════════════════════════
+// RENDER CHAT AREA
+// ═══════════════════════════════════════════
+function renderChatArea() {
+  const area = document.getElementById('chat-area');
+  area.innerHTML = `
+    <div class="chat-header">
+      <span style="color:var(--green-dim)">#</span>
+      <span class="chat-room-name">${escHtml(currentRoom.name)}</span>
+      <span class="chat-meta">morse · live · ${new Date().toLocaleDateString()}</span>
+    </div>
+
+    <div class="messages" id="messages-scroll">
+      <div id="msg-container"></div>
+    </div>
+
+    <div class="input-area">
+      <div class="username-bar">
+        <label>CALLSIGN</label>
+        <input type="text" id="username-input" value="${username}" maxlength="12" placeholder="your name"
+          oninput="username=this.value.trim()||username">
+        <button class="ref-toggle" onclick="toggleRef()">MORSE REF ▾</button>
+      </div>
+
+      <div class="ref-panel" id="ref-panel">
+        <div class="morse-ref" id="morse-ref"></div>
+      </div>
+
+      <div class="morse-input-wrapper">
+        <input class="morse-input" id="morse-input" type="text"
+          placeholder="Type morse (. - space) or plain text → auto-converts"
+          oninput="updateLiveTranslation()"
+          onkeydown="handleMorseKey(event)">
+        <div class="live-translation" id="live-translation">— translation appears here —</div>
+      </div>
+
+      <div class="input-row">
+        <div class="keyboard-section">
+          <span class="kb-label">KEYS:</span>
+          <div class="kb-hints">
+            <div class="kb-key"><span>.</span> dot</div>
+            <div class="kb-key"><span>-</span> dash</div>
+            <div class="kb-key"><span>Space</span> letter gap</div>
+            <div class="kb-key"><span>/ or 3×Space</span> word gap</div>
+            <div class="kb-key"><span>Enter</span> send</div>
+          </div>
+        </div>
+        <button class="send-btn" onclick="sendMessage()">TRANSMIT ▶</button>
+      </div>
+    </div>
+  `;
+
+  buildMorseRef();
+}
+
+// ═══════════════════════════════════════════
+// MORSE REFERENCE PANEL
+// ═══════════════════════════════════════════
+function buildMorseRef() {
+  const ref = document.getElementById('morse-ref');
+  if (!ref) return;
+  const letters = Object.entries(MORSE).filter(([k]) => k !== ' ');
+  ref.innerHTML = letters.map(([k,v]) => `
+    <div class="ref-item" onclick="insertMorse('${v}')" title="${k}">
+      <span class="ref-letter">${k}</span>
+      <span class="ref-code">${v}</span>
+    </div>
+  `).join('');
+}
+
+function toggleRef() {
+  refOpen = !refOpen;
+  const panel = document.getElementById('ref-panel');
+  if (panel) panel.classList.toggle('open', refOpen);
+}
+
+function insertMorse(code) {
+  const input = document.getElementById('morse-input');
+  if (!input) return;
+  const cur = input.value;
+  input.value = cur ? (cur.endsWith(' ') ? cur + code : cur + ' ' + code) : code;
+  input.focus();
+  updateLiveTranslation();
+}
+
+// ═══════════════════════════════════════════
+// INPUT HANDLING
+// ═══════════════════════════════════════════
+function handleMorseKey(e) {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    sendMessage();
+  }
+}
+
+function updateLiveTranslation() {
+  const input = document.getElementById('morse-input');
+  const display = document.getElementById('live-translation');
+  if (!input || !display) return;
+  const val = input.value.trim();
+  if (!val) {
+    display.textContent = '— translation appears here —';
+    return;
+  }
+
+  // check if it's morse
+  if (/^[.\- /]+$/.test(val)) {
+    const translation = morseToText(val);
+    display.textContent = '▶ ' + (translation || '...');
+  } else {
+    // plain text
+    const converted = textToMorse(val);
+    display.textContent = '⟳ AUTO-CONVERT: ' + (converted || '...');
+  }
+}
+
+// ═══════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════
+function escHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#39;');
+}
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+async function init() {
+  const ok = await ensureTables();
+  if (ok) {
+    await loadRooms();
+    // auto-join first room if exists
+    if (rooms.length) joinRoom(rooms[0].id);
+    document.getElementById('conn-status').textContent = 'ONLINE';
+  }
+}
+
+init();
+</script>
+</body>
+</html>
