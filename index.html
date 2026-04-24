@@ -772,10 +772,12 @@ function morseToText(morse) {
 }
 
 // ═══════════════════════════════════════════
-// AUDIO ENGINE
+// AUDIO ENGINE — queued playback (no overlap)
 // ═══════════════════════════════════════════
 let audioCtx = null;
 let volume = 0.5;
+let audioQueue = [];
+let audioPlaying = false;
 
 document.getElementById('volume').addEventListener('input', e => {
   volume = parseFloat(e.target.value);
@@ -786,7 +788,23 @@ function getAudioCtx() {
   return audioCtx;
 }
 
-async function playMorseAudio(morseStr) {
+// Public entry point — adds to queue and starts draining if idle
+function playMorseAudio(morseStr) {
+  if (!morseStr || !morseStr.trim()) return;
+  audioQueue.push(morseStr);
+  if (!audioPlaying) drainQueue();
+}
+
+function drainQueue() {
+  if (!audioQueue.length) { audioPlaying = false; return; }
+  audioPlaying = true;
+  const morseStr = audioQueue.shift();
+  const duration = scheduleMorse(morseStr);
+  setTimeout(drainQueue, Math.max(duration * 1000 + 100, 100));
+}
+
+// Schedules all beeps for morseStr, returns total duration in seconds
+function scheduleMorse(morseStr) {
   const ctx = getAudioCtx();
   const dotDuration = 0.06;
   const freq = 650;
@@ -805,6 +823,7 @@ async function playMorseAudio(morseStr) {
       t += dotDuration * 4;
     }
   }
+  return t - (ctx.currentTime + 0.05);
 }
 
 function beep(ctx, start, duration, freq) {
