@@ -288,24 +288,69 @@ document.addEventListener('keydown',e=>{
 });
 
 // ── STATE ──
-let currentRoom=null,pollInterval=null,lastMsgId=0,rooms=[];
+let currentRoom=null,pollInterval=null,presenceInterval=null,heartbeatInterval=null,lastMsgId=0,rooms=[];
 let username=localStorage.getItem('morsenet-callsign')||('OP_'+Math.random().toString(36).substr(2,4).toUpperCase());
 let refOpen=false,clickerOpen=false;
 
 // ── PRESENCE ──
-const roomUsers={};
 const mutedUsers=new Set(JSON.parse(localStorage.getItem('morsenet-muted')||'[]'));
+let onlineUsers={}; // username -> last_seen ms
 function saveMuted(){localStorage.setItem('morsenet-muted',JSON.stringify([...mutedUsers]));}
 function toggleMute(u,e){e.stopPropagation();mutedUsers.has(u)?mutedUsers.delete(u):mutedUsers.add(u);saveMuted();renderUsers();}
-function trackUser(u){if(!u)return;roomUsers[u]={lastSeen:Date.now()};renderUsers();}
 function initials(n){return(n||'?').slice(0,2).toUpperCase();}
+
+// Upsert our own presence row into DB
+async function upsertPresence(){
+  if(!currentRoom)return;
+  try{
+    await supaFetch('morse_presence',{method:'POST',prefer:'resolution=merge-duplicates',
+      headers:{'Prefer':'resolution=merge-duplicates,return=minimal'},
+      body:JSON.stringify({room_id:currentRoom.id,username,last_seen:new Date().toISOString()})});
+  }catch(e){}
+}
+
+// Delete our presence row — fires synchronously on tab close
+function deletePresence(){
+  if(!currentRoom)return;
+  const url=`${SUPA_URL}/rest/v1/morse_presence?room_id=eq.${currentRoom.id}&username=eq.${encodeURIComponent(username)}`;
+  // sendBeacon survives page unload; we send an empty body — the DELETE is via the URL filter
+  // Supabase REST requires DELETE method, so we use a keepalive fetch + sync XHR fallback
+  try{
+    fetch(url,{method:'DELETE',keepalive:true,headers:{'apikey':SUPA_KEY,'Authorization':`Bearer ${SUPA_KEY}`}});
+  }catch(e){}
+  try{
+    const x=new XMLHttpRequest();
+    x.open('DELETE',url,false); // synchronous
+    x.setRequestHeader('apikey',SUPA_KEY);
+    x.setRequestHeader('Authorization',`Bearer ${SUPA_KEY}`);
+    x.send();
+  }catch(e){}
+}
+
+// Poll presence from DB and re-render user list
+async function pollPresence(){
+  if(!currentRoom)return;
+  try{
+    const rows=await supaFetch(`morse_presence?room_id=eq.${currentRoom.id}&select=username,last_seen`);
+    if(!Array.isArray(rows))return;
+    // Accept rows seen within 35s (heartbeat=20s, so one missed beat is still ok)
+    const cutoff=Date.now()-35000;
+    onlineUsers={};
+    for(const r of rows){
+      const ts=new Date(r.last_seen).getTime();
+      if(ts>cutoff)onlineUsers[r.username]=ts;
+    }
+    renderUsers();
+  }catch(e){}
+}
+
 function renderUsers(){
   const list=document.getElementById('user-list');if(!list)return;
+  const entries=Object.entries(onlineUsers).sort((a,b)=>b[1]-a[1]);
+  if(!entries.length){list.innerHTML='<div style="padding:6px 10px;font-size:12px;color:var(--text3);">No signals yet</div>';return;}
   const now=Date.now();
-  const active=Object.entries(roomUsers).filter(([,v])=>now-v.lastSeen<120000).sort((a,b)=>b[1].lastSeen-a[1].lastSeen);
-  if(!active.length){list.innerHTML='<div style="padding:6px 10px;font-size:12px;color:var(--text3);">No signals yet</div>';return;}
-  list.innerHTML=active.map(([u,v])=>{
-    const me=u===username,muted=mutedUsers.has(u),idle=now-v.lastSeen>30000;
+  list.innerHTML=entries.map(([u,ts])=>{
+    const me=u===username,muted=mutedUsers.has(u),idle=now-ts>25000;
     return`<div class="user-item${muted?' muted-user':''}" onclick="insertAt('${escH(u)}')" title="@mention">
       <div class="u-avatar">${initials(u)}</div>
       <span class="uname">${escH(u)}${me?'<span class="u-you"> (you)</span>':''}</span>
@@ -315,7 +360,22 @@ function renderUsers(){
   }).join('');
 }
 function insertAt(u){const i=document.getElementById('morse-input');if(!i)return;i.value=(i.value?i.value+' ':'')+`@${u}`;i.focus();updateLiveT();}
-setInterval(renderUsers,30000);
+
+// Start heartbeat + presence polling when entering a room
+function startPresence(){
+  clearInterval(heartbeatInterval);clearInterval(presenceInterval);
+  upsertPresence();
+  heartbeatInterval=setInterval(upsertPresence,20000);
+  pollPresence();
+  presenceInterval=setInterval(pollPresence,5000);
+}
+
+// Tab close / hide → delete presence immediately
+window.addEventListener('beforeunload',deletePresence);
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='hidden')deletePresence();
+  else{upsertPresence();pollPresence();}
+});
 
 // ── DB INIT ──
 async function ensureTables(){
@@ -325,10 +385,13 @@ async function ensureTables(){
 function showSetup(){
   document.getElementById('room-list').innerHTML=`<div class="setup-msg">Tables needed. Run in Supabase SQL Editor:<code class="setup-code">CREATE TABLE morse_rooms (id serial PRIMARY KEY, name text UNIQUE, created_at timestamptz DEFAULT now());
 CREATE TABLE morse_messages (id serial PRIMARY KEY, room_id int REFERENCES morse_rooms(id), username text, morse text, created_at timestamptz DEFAULT now());
+CREATE TABLE morse_presence (room_id int REFERENCES morse_rooms(id), username text, last_seen timestamptz DEFAULT now(), PRIMARY KEY (room_id, username));
 ALTER TABLE morse_rooms ENABLE ROW LEVEL SECURITY;
 ALTER TABLE morse_messages ENABLE ROW LEVEL SECURITY;
+ALTER TABLE morse_presence ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "pub" ON morse_rooms FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "pub" ON morse_messages FOR ALL USING (true) WITH CHECK (true);</code><button class="retry-btn" onclick="retryInit()">Retry</button></div>`;
+CREATE POLICY "pub" ON morse_messages FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "pub" ON morse_presence FOR ALL USING (true) WITH CHECK (true);</code><button class="retry-btn" onclick="retryInit()">Retry</button></div>`;
 }
 async function retryInit(){document.getElementById('room-list').innerHTML='<div style="padding:10px;font-size:12px;color:var(--text3);">Scanning…</div>';await init();}
 
@@ -351,9 +414,10 @@ document.getElementById('new-room-input').addEventListener('keydown',e=>{if(e.ke
 // ── JOIN ──
 function joinRoom(id){
   currentRoom=rooms.find(r=>r.id===id);if(!currentRoom)return;
-  lastMsgId=0;for(const k in roomUsers)delete roomUsers[k];trackUser(username);
+  lastMsgId=0;onlineUsers={};
   renderRooms();renderChat();loadMessages(true);
   clearInterval(pollInterval);pollInterval=setInterval(pollMessages,2000);
+  startPresence();
 }
 
 // ── MESSAGES ──
@@ -391,7 +455,7 @@ function appendMsg(msg,sound=false){
         </div>
       </div>
     </div>`;
-  cont.appendChild(div);scrollBot();trackUser(msg.username);
+  cont.appendChild(div);scrollBot();
   if(sound&&!mutedUsers.has(msg.username)){
     if(isMention){mentionBeep();setTimeout(()=>playMorse(msg.morse),600);}
     else playMorse(msg.morse);
