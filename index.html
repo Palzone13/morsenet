@@ -159,6 +159,35 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14
 .no-room{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--text2);}
 .no-room-morse{font-family:var(--mono);font-size:24px;letter-spacing:5px;color:var(--border2);}
 
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:999;}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);padding:24px;width:320px;display:flex;flex-direction:column;gap:14px;box-shadow:0 24px 60px rgba(0,0,0,.3);}
+.modal-title{font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px;}
+.modal-sub{font-size:12px;color:var(--text2);}
+.modal-input{padding:9px 12px;border-radius:var(--radius-sm);border:1px solid var(--border2);background:var(--surface2);color:var(--text);font-size:13px;outline:none;font-family:var(--font);width:100%;transition:border-color .15s;}
+.modal-input:focus{border-color:var(--accent);}
+.modal-input.err{border-color:var(--danger);}
+.modal-err{font-size:11px;color:var(--danger);min-height:14px;}
+.modal-row{display:flex;gap:8px;}
+.modal-btn{flex:1;padding:9px;border-radius:var(--radius-sm);border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;font-family:var(--font);font-size:13px;font-weight:500;transition:all .12s;}
+.modal-btn:hover{background:var(--surface2);}
+.modal-btn.primary{background:var(--accent);color:#fff;border-color:var(--accent);}
+.modal-btn.primary:hover{opacity:.85;}
+.modal-check{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text2);cursor:pointer;}
+.modal-check input{accent-color:var(--accent);}
+
+/* ROOM ITEM LOCK */
+.room-lock{font-size:10px;margin-left:auto;opacity:.5;}
+.room-item.locked .room-lock{color:var(--accent);opacity:.8;}
+
+/* NEW ROOM EXPANDED */
+.new-room-wrap{padding:8px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:5px;}
+.new-room-row{display:flex;gap:5px;}
+.new-room-pw{padding:5px 8px;border-radius:var(--radius-sm);border:1px solid var(--border2);background:var(--surface2);color:var(--text);font-size:12px;outline:none;font-family:var(--font);width:100%;}
+.new-room-pw:focus{border-color:var(--accent);}
+.priv-toggle{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text2);cursor:pointer;padding:2px 0;}
+.priv-toggle input{accent-color:var(--accent);}
+
 /* SETUP */
 .setup-msg{padding:12px;font-size:12px;color:var(--text2);line-height:1.8;}
 .setup-code{color:var(--accent);font-family:var(--mono);font-size:10px;word-break:break-all;background:var(--surface2);padding:8px;border-radius:var(--radius-sm);display:block;margin:6px 0;white-space:pre-wrap;}
@@ -210,9 +239,16 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14
       <div class="room-list" id="room-list">
         <div style="padding:10px;font-size:12px;color:var(--text3);">Scanning…</div>
       </div>
-      <div class="new-room">
-        <input id="new-room-input" placeholder="new channel…" maxlength="20">
-        <button onclick="createRoom()">+</button>
+      <div class="new-room-wrap">
+        <div class="new-room-row">
+          <input id="new-room-input" placeholder="new channel…" maxlength="20" style="flex:1;padding:5px 8px;border-radius:var(--radius-sm);border:1px solid var(--border2);background:var(--surface2);color:var(--text);font-size:12px;outline:none;font-family:var(--font);">
+          <button onclick="createRoom()" style="padding:5px 11px;border-radius:var(--radius-sm);border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;font-size:16px;transition:background .1s;">+</button>
+        </div>
+        <label class="priv-toggle">
+          <input type="checkbox" id="priv-check" onchange="document.getElementById('new-room-pw').style.display=this.checked?'block':'none'">
+          🔒 Private (password)
+        </label>
+        <input class="new-room-pw" id="new-room-pw" type="password" placeholder="room password…" maxlength="64" style="display:none;">
       </div>
       <div class="users-panel">
         <div class="s-section">Online</div>
@@ -230,8 +266,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14
     </div>
   </div>
 </div>
-
-<script>
+<div id="modal-overlay" class="modal-overlay" style="display:none;"></div>
 // ── SUPABASE ──
 const SUPA_URL='https://dsgmmknejsgvyzoiimnh.supabase.co';
 const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRzZ21ta25lanNndnl6b2lpbW5oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwNjUzNDMsImV4cCI6MjA5MjY0MTM0M30.ApQdbSuiCcE0HSi2J14W4Ol2mgDMwipE1scs_PHgwrY';
@@ -239,6 +274,12 @@ async function supaFetch(path,opts={}){
   const res=await fetch(`${SUPA_URL}/rest/v1/${path}`,{...opts,headers:{'apikey':SUPA_KEY,'Authorization':`Bearer ${SUPA_KEY}`,'Content-Type':'application/json','Prefer':opts.prefer||'',...opts.headers}});
   if(opts.noBody)return res;
   const t=await res.text();return t?JSON.parse(t):[];
+}
+
+// ── CRYPTO ──
+async function sha256(str){
+  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
 }
 
 // ── MORSE ──
@@ -383,7 +424,7 @@ async function ensureTables(){
   document.getElementById('conn-status').textContent='Setup needed';showSetup();return false;
 }
 function showSetup(){
-  document.getElementById('room-list').innerHTML=`<div class="setup-msg">Tables needed. Run in Supabase SQL Editor:<code class="setup-code">CREATE TABLE morse_rooms (id serial PRIMARY KEY, name text UNIQUE, created_at timestamptz DEFAULT now());
+  document.getElementById('room-list').innerHTML=`<div class="setup-msg">Tables needed. Run in Supabase SQL Editor:<code class="setup-code">CREATE TABLE morse_rooms (id serial PRIMARY KEY, name text UNIQUE, password_hash text, created_at timestamptz DEFAULT now());
 CREATE TABLE morse_messages (id serial PRIMARY KEY, room_id int REFERENCES morse_rooms(id), username text, morse text, created_at timestamptz DEFAULT now());
 CREATE TABLE morse_presence (room_id int REFERENCES morse_rooms(id), username text, last_seen timestamptz DEFAULT now(), PRIMARY KEY (room_id, username));
 ALTER TABLE morse_rooms ENABLE ROW LEVEL SECURITY;
@@ -396,29 +437,103 @@ CREATE POLICY "pub" ON morse_presence FOR ALL USING (true) WITH CHECK (true);</c
 async function retryInit(){document.getElementById('room-list').innerHTML='<div style="padding:10px;font-size:12px;color:var(--text3);">Scanning…</div>';await init();}
 
 // ── ROOMS ──
+const unlockedRooms=new Set(JSON.parse(sessionStorage.getItem('morsenet-unlocked')||'[]'));
+function saveUnlocked(){sessionStorage.setItem('morsenet-unlocked',JSON.stringify([...unlockedRooms]));}
+
 async function loadRooms(){rooms=await supaFetch('morse_rooms?select=*&order=created_at.asc');renderRooms();}
 function renderRooms(){
   const l=document.getElementById('room-list');
   if(!rooms.length){l.innerHTML='<div style="padding:10px;font-size:12px;color:var(--text3);">No channels yet</div>';return;}
-  l.innerHTML=rooms.map(r=>`<div class="room-item${currentRoom?.id===r.id?' active':''}" onclick="joinRoom(${r.id})"><span class="room-hash">#</span>${escH(r.name)}</div>`).join('');
+  l.innerHTML=rooms.map(r=>{
+    const locked=!!r.password_hash;
+    const unlocked=unlockedRooms.has(r.id);
+    const active=currentRoom?.id===r.id;
+    return`<div class="room-item${active?' active':''}${locked?' locked':''}" onclick="joinRoom(${r.id})">
+      <span class="room-hash">#</span>
+      <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escH(r.name)}</span>
+      ${locked?`<span class="room-lock">${unlocked?'🔓':'🔒'}</span>`:''}
+    </div>`;
+  }).join('');
 }
+
 async function createRoom(){
   const inp=document.getElementById('new-room-input');
   const name=inp.value.trim().replace(/\s+/g,'_').toLowerCase();
-  if(!name)return;inp.value='';
-  await supaFetch('morse_rooms',{method:'POST',prefer:'return=representation',body:JSON.stringify({name})});
-  await loadRooms();const room=rooms.find(r=>r.name===name);if(room)joinRoom(room.id);
+  if(!name)return;
+  const privCheck=document.getElementById('priv-check');
+  const pw=document.getElementById('new-room-pw').value;
+  const isPriv=privCheck.checked&&pw.trim();
+  let payload={name};
+  if(isPriv)payload.password_hash=await sha256(pw.trim());
+  inp.value='';privCheck.checked=false;
+  document.getElementById('new-room-pw').value='';
+  document.getElementById('new-room-pw').style.display='none';
+  await supaFetch('morse_rooms',{method:'POST',prefer:'return=representation',body:JSON.stringify(payload)});
+  await loadRooms();
+  const room=rooms.find(r=>r.name===name);
+  if(room){
+    if(isPriv)unlockedRooms.add(room.id),saveUnlocked(); // creator is auto-unlocked
+    joinRoom(room.id);
+  }
 }
 document.getElementById('new-room-input').addEventListener('keydown',e=>{if(e.key==='Enter')createRoom();});
 
 // ── JOIN ──
-function joinRoom(id){
-  currentRoom=rooms.find(r=>r.id===id);if(!currentRoom)return;
+async function joinRoom(id){
+  const room=rooms.find(r=>r.id===id);if(!room)return;
+  // If locked and not yet unlocked, show password modal
+  if(room.password_hash&&!unlockedRooms.has(id)){
+    showPasswordModal(room);return;
+  }
+  currentRoom=room;
   lastMsgId=0;onlineUsers={};
   renderRooms();renderChat();loadMessages(true);
   clearInterval(pollInterval);pollInterval=setInterval(pollMessages,2000);
   startPresence();
 }
+
+// ── PASSWORD MODAL ──
+function showPasswordModal(room){
+  const overlay=document.getElementById('modal-overlay');
+  overlay.style.display='flex';
+  overlay.innerHTML=`<div class="modal">
+    <div class="modal-title">🔒 Private Channel</div>
+    <div class="modal-sub">Enter the password for <strong>#${escH(room.name)}</strong></div>
+    <input class="modal-input" id="modal-pw-input" type="password" placeholder="Password…" maxlength="64" autofocus
+      onkeydown="if(event.key==='Enter')submitPassword(${room.id})">
+    <div class="modal-err" id="modal-err"></div>
+    <div class="modal-row">
+      <button class="modal-btn" onclick="closeModal()">Cancel</button>
+      <button class="modal-btn primary" onclick="submitPassword(${room.id})">Unlock</button>
+    </div>
+  </div>`;
+  setTimeout(()=>document.getElementById('modal-pw-input')?.focus(),50);
+}
+
+async function submitPassword(id){
+  const inp=document.getElementById('modal-pw-input');
+  const errEl=document.getElementById('modal-err');
+  const pw=inp?.value||'';
+  if(!pw){inp.classList.add('err');errEl.textContent='Enter a password.';return;}
+  const hash=await sha256(pw.trim());
+  const room=rooms.find(r=>r.id===id);
+  if(hash===room.password_hash){
+    unlockedRooms.add(id);saveUnlocked();
+    closeModal();
+    joinRoom(id);
+  }else{
+    inp.classList.add('err');
+    errEl.textContent='Wrong password. Try again.';
+    inp.value='';inp.focus();
+  }
+}
+
+function closeModal(){
+  const o=document.getElementById('modal-overlay');
+  o.style.display='none';o.innerHTML='';
+}
+// Close modal on overlay click
+document.getElementById('modal-overlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});
 
 // ── MESSAGES ──
 async function loadMessages(reset=false){
@@ -480,8 +595,8 @@ function renderChat(){
   document.getElementById('chat-area').innerHTML=`
     <div class="chat-header">
       <div>
-        <div class="chat-title"># ${escH(currentRoom.name)}</div>
-        <div class="chat-sub">morse · live</div>
+        <div class="chat-title"># ${escH(currentRoom.name)}${currentRoom.password_hash?' <span style="font-size:12px;opacity:.5;" title="Private">🔒</span>':''}</div>
+        <div class="chat-sub">morse · live${currentRoom.password_hash?' · private':''}</div>
       </div>
     </div>
     <div class="messages" id="msg-scroll"><div id="msg-container"></div></div>
