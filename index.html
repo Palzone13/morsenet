@@ -46,6 +46,10 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14
 .topbar-right{display:flex;align-items:center;gap:10px;margin-left:10px;}
 .vol-row{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);}
 .vol-row input[type=range]{width:55px;accent-color:var(--accent);}
+.stop-btn{padding:4px 11px;border-radius:var(--radius-sm);border:1px solid var(--danger);background:transparent;color:var(--danger);cursor:pointer;font-size:12px;font-weight:500;font-family:var(--font);transition:all .12s;display:flex;align-items:center;gap:5px;white-space:nowrap;flex-shrink:0;}
+.stop-btn:hover{background:var(--danger);color:#fff;}
+.stop-btn:active{transform:scale(.95);}
+.stop-btn.flash{background:var(--danger);color:#fff;}
 .status-pill{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--success);font-weight:500;}
 .status-dot{width:6px;height:6px;border-radius:50%;background:var(--success);animation:pulse 2s infinite;}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
@@ -192,6 +196,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14
         <span>Vol</span>
         <input type="range" id="volume" min="0" max="1" step="0.05" value="0.5">
       </div>
+      <button class="stop-btn" id="stop-btn" onclick="stopAllSounds()" title="Stop all audio (Esc)">■ Stop</button>
       <div class="status-pill">
         <div class="status-dot"></div>
         <span id="conn-status">Connecting…</span>
@@ -251,6 +256,36 @@ function drain(){if(!audioQ.length){audioPlay=false;return;}audioPlay=true;const
 function sched(morse){const ctx=getCtx(),dot=0.06,freq=650;let t=ctx.currentTime+0.05;for(const s of morse){if(s==='.'){beep(ctx,t,dot,freq);t+=dot*1.3;}else if(s==='-'){beep(ctx,t,dot*3,freq);t+=dot*3.3;}else if(s===' '){t+=dot*2;}else if(s==='/'){t+=dot*4;}}return t-(ctx.currentTime+0.05);}
 function beep(ctx,start,dur,freq){const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.frequency.value=freq;o.type='sine';g.gain.setValueAtTime(0,start);g.gain.linearRampToValueAtTime(volume*.4,start+.005);g.gain.setValueAtTime(volume*.4,start+dur-.005);g.gain.linearRampToValueAtTime(0,start+dur);o.start(start);o.stop(start+dur+.01);}
 function mentionBeep(){const ctx=getCtx(),t=ctx.currentTime;[[880,0,.12],[1100,.15,.12],[880,.3,.08],[1100,.4,.18]].forEach(([fr,off,d])=>{const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.frequency.value=fr;o.type='triangle';g.gain.setValueAtTime(0,t+off);g.gain.linearRampToValueAtTime(volume*.5,t+off+.01);g.gain.setValueAtTime(volume*.5,t+off+d-.01);g.gain.linearRampToValueAtTime(0,t+off+d);o.start(t+off);o.stop(t+off+d+.02);});}
+
+// ── STOP ALL SOUNDS ──
+function stopAllSounds(){
+  // Clear the playback queue
+  audioQ=[];
+  audioPlay=false;
+  // Stop the clicker oscillator if active
+  if(ckOsc){
+    try{
+      const ctx=getCtx();
+      ckGain.gain.cancelScheduledValues(ctx.currentTime);
+      ckGain.gain.setValueAtTime(0,ctx.currentTime);
+      ckOsc.stop();
+    }catch(e){}
+    ckOsc=null;ckGain=null;
+  }
+  // Close and recreate the AudioContext to kill any scheduled beeps
+  if(audioCtx){
+    try{audioCtx.close();}catch(e){}
+    audioCtx=null;
+  }
+  // Flash the button for feedback
+  const btn=document.getElementById('stop-btn');
+  if(btn){btn.classList.add('flash');setTimeout(()=>btn.classList.remove('flash'),300);}
+}
+
+// Esc key shortcut
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){stopAllSounds();}
+});
 
 // ── STATE ──
 let currentRoom=null,pollInterval=null,lastMsgId=0,rooms=[];
@@ -533,7 +568,10 @@ function ckClear(){
 }
 
 // space bar = clicker when panel open and not typing
-document.addEventListener('keydown',e=>{if(e.key===' '&&clickerOpen&&document.activeElement?.tagName!=='INPUT'){e.preventDefault();ckPress();}});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){stopAllSounds();return;}
+  if(e.key===' '&&clickerOpen&&document.activeElement?.tagName!=='INPUT'){e.preventDefault();ckPress();}
+});
 document.addEventListener('keyup',e=>{if(e.key===' '&&clickerOpen&&document.activeElement?.tagName!=='INPUT'){e.preventDefault();ckRelease();}});
 
 // ── THEMES ──
