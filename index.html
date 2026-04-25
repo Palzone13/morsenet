@@ -3,1698 +3,584 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MorseNet — Live Morse Code Rooms</title>
+<title>MorseNet</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap');
-
-  /* ── DEFAULT: GREEN PHOSPHOR ── */
-  :root {
-    --bg: #050a05;
-    --surface: #0b140b;
-    --surface2: #111e11;
-    --border: #1a3a1a;
-    --primary: #00ff41;
-    --primary-dim: #00cc33;
-    --primary-dark: #003a10;
-    --primary-glow: rgba(0,255,65,0.15);
-    --accent: #ffb800;
-    --red: #ff3333;
-    --text: #b8ffb8;
-    --text-dim: #5a8a5a;
-    --font-mono: 'Share Tech Mono', monospace;
-    --font-head: 'Orbitron', sans-serif;
-    /* legacy aliases */
-    --green: var(--primary);
-    --green-dim: var(--primary-dim);
-    --green-dark: var(--primary-dark);
-    --green-glow: var(--primary-glow);
-    --amber: var(--accent);
-  }
-
-  /* ── AMBER / ORANGE ── */
-  [data-theme="amber"] {
-    --bg: #0a0700;
-    --surface: #150e00;
-    --surface2: #1e1500;
-    --border: #3a2800;
-    --primary: #ffb800;
-    --primary-dim: #cc9200;
-    --primary-dark: #3a2800;
-    --primary-glow: rgba(255,184,0,0.15);
-    --accent: #ff6b00;
-    --red: #ff3333;
-    --text: #ffe8a0;
-    --text-dim: #8a6a20;
-    --green: var(--primary);
-    --green-dim: var(--primary-dim);
-    --green-dark: var(--primary-dark);
-    --green-glow: var(--primary-glow);
-    --amber: var(--accent);
-  }
-
-  /* ── CYAN / ICE ── */
-  [data-theme="cyan"] {
-    --bg: #00080a;
-    --surface: #001418;
-    --surface2: #001e24;
-    --border: #003a44;
-    --primary: #00e5ff;
-    --primary-dim: #00b8cc;
-    --primary-dark: #00303a;
-    --primary-glow: rgba(0,229,255,0.15);
-    --accent: #ff00aa;
-    --red: #ff3333;
-    --text: #b0f0ff;
-    --text-dim: #30788a;
-    --green: var(--primary);
-    --green-dim: var(--primary-dim);
-    --green-dark: var(--primary-dark);
-    --green-glow: var(--primary-glow);
-    --amber: var(--accent);
-  }
-
-  /* ── RED / BLOOD ── */
-  [data-theme="red"] {
-    --bg: #0a0000;
-    --surface: #150000;
-    --surface2: #200000;
-    --border: #3a0000;
-    --primary: #ff2222;
-    --primary-dim: #cc1111;
-    --primary-dark: #3a0000;
-    --primary-glow: rgba(255,34,34,0.15);
-    --accent: #ff8800;
-    --red: #ff5555;
-    --text: #ffb0b0;
-    --red: #ff6666;
-    --text-dim: #8a3030;
-    --green: var(--primary);
-    --green-dim: var(--primary-dim);
-    --green-dark: var(--primary-dark);
-    --green-glow: var(--primary-glow);
-    --amber: var(--accent);
-  }
-
-  /* ── PURPLE / VIOLET ── */
-  [data-theme="purple"] {
-    --bg: #05000a;
-    --surface: #0e0018;
-    --surface2: #150022;
-    --border: #2e0055;
-    --primary: #cc44ff;
-    --primary-dim: #aa22ee;
-    --primary-dark: #2e0055;
-    --primary-glow: rgba(204,68,255,0.15);
-    --accent: #ff44aa;
-    --red: #ff3366;
-    --text: #e8b0ff;
-    --text-dim: #6a30a0;
-    --green: var(--primary);
-    --green-dim: var(--primary-dim);
-    --green-dark: var(--primary-dark);
-    --green-glow: var(--primary-glow);
-    --amber: var(--accent);
-  }
-
-  /* ── WHITE / PAPER ── */
-  [data-theme="white"] {
-    --bg: #f5f5f0;
-    --surface: #ebebea;
-    --surface2: #e0e0da;
-    --border: #ccccbc;
-    --primary: #1a1a2e;
-    --primary-dim: #333355;
-    --primary-dark: #c8c8c0;
-    --primary-glow: rgba(26,26,46,0.12);
-    --accent: #cc3300;
-    --red: #cc0000;
-    --text: #1a1a2e;
-    --text-dim: #666655;
-    --green: var(--primary);
-    --green-dim: var(--primary-dim);
-    --green-dark: var(--primary-dark);
-    --green-glow: var(--primary-glow);
-    --amber: var(--accent);
-  }
-
-  /* ── ORANGE / LAVA ── */
-  [data-theme="orange"] {
-    --bg: #080300;
-    --surface: #120700;
-    --surface2: #1c0e00;
-    --border: #3d1a00;
-    --primary: #ff6600;
-    --primary-dim: #cc5200;
-    --primary-dark: #3d1a00;
-    --primary-glow: rgba(255,102,0,0.15);
-    --accent: #ffcc00;
-    --red: #ff2200;
-    --text: #ffd0a0;
-    --text-dim: #8a4a10;
-    --green: var(--primary);
-    --green-dim: var(--primary-dim);
-    --green-dark: var(--primary-dark);
-    --green-glow: var(--primary-glow);
-    --amber: var(--accent);
-  }
-
-  /* ── BLUE / MATRIX ── */
-  [data-theme="blue"] {
-    --bg: #00000f;
-    --surface: #00001e;
-    --surface2: #00002e;
-    --border: #000055;
-    --primary: #4488ff;
-    --primary-dim: #2266dd;
-    --primary-dark: #000055;
-    --primary-glow: rgba(68,136,255,0.15);
-    --accent: #00ccff;
-    --red: #ff4444;
-    --text: #aabbff;
-    --text-dim: #334488;
-    --green: var(--primary);
-    --green-dim: var(--primary-dim);
-    --green-dark: var(--primary-dark);
-    --green-glow: var(--primary-glow);
-    --amber: var(--accent);
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--font-mono);
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  /* CRT scanline overlay */
-  body::after {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background: repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 2px,
-      rgba(0,0,0,0.08) 2px,
-      rgba(0,0,0,0.08) 4px
-    );
-    pointer-events: none;
-    z-index: 9999;
-  }
-
-  /* Grid noise background */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(0,255,65,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0,255,65,0.03) 1px, transparent 1px);
-    background-size: 40px 40px;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .app {
-    position: relative;
-    z-index: 1;
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-  }
-
-  /* ── HEADER ── */
-  header {
-    border-bottom: 1px solid var(--border);
-    padding: 12px 24px;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    background: rgba(0,0,0,0.85);
-    backdrop-filter: blur(4px);
-  }
-
-  .logo {
-    font-family: var(--font-head);
-    font-size: 1.4rem;
-    font-weight: 900;
-    color: var(--green);
-    text-shadow: 0 0 20px var(--green), 0 0 40px rgba(0,255,65,0.3);
-    letter-spacing: 3px;
-  }
-
-  .logo span { color: var(--amber); }
-
-  .status-bar {
-    display: flex;
-    gap: 16px;
-    margin-left: auto;
-    align-items: center;
-    font-size: 0.7rem;
-    color: var(--text-dim);
-  }
-
-  .dot-live {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: var(--green);
-    box-shadow: 0 0 8px var(--green);
-    animation: pulse 2s infinite;
-  }
-
-  @keyframes pulse {
-    0%,100% { opacity: 1; box-shadow: 0 0 8px var(--green); }
-    50% { opacity: 0.4; box-shadow: none; }
-  }
-
-  /* ── MAIN LAYOUT ── */
-  .main {
-    display: flex;
-    flex: 1;
-    overflow: hidden;
-  }
-
-  /* ── SIDEBAR ── */
-  .sidebar {
-    width: 220px;
-    border-right: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    background: rgba(5,10,5,0.6);
-    flex-shrink: 0;
-  }
-
-  .sidebar-title {
-    font-family: var(--font-head);
-    font-size: 0.6rem;
-    letter-spacing: 4px;
-    color: var(--text-dim);
-    padding: 14px 16px 10px;
-    border-bottom: 1px solid var(--border);
-    text-transform: uppercase;
-  }
-
-  .room-list { flex: 1; overflow-y: auto; padding: 8px 0; }
-
-  .room-item {
-    padding: 10px 16px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 0.85rem;
-    color: var(--text-dim);
-    transition: all 0.15s;
-    border-left: 3px solid transparent;
-    position: relative;
-  }
-
-  .room-item:hover { background: var(--green-glow); color: var(--text); }
-
-  .room-item.active {
-    background: var(--green-glow);
-    border-left-color: var(--green);
-    color: var(--green);
-  }
-
-  .room-hash { color: var(--green-dim); font-size: 1rem; }
-
-  .room-badge {
-    margin-left: auto;
-    background: var(--green);
-    color: var(--bg);
-    font-size: 0.6rem;
-    padding: 1px 5px;
-    border-radius: 2px;
-    font-weight: bold;
-  }
-
-  .create-room {
-    padding: 12px 16px;
-    border-top: 1px solid var(--border);
-    display: flex;
-    gap: 6px;
-  }
-
-  .create-room input {
-    flex: 1;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    color: var(--green);
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    padding: 6px 8px;
-    outline: none;
-    border-radius: 2px;
-  }
-
-  .create-room input:focus { border-color: var(--green); box-shadow: 0 0 8px var(--green-glow); }
-
-  .btn-small {
-    background: var(--green-dark);
-    border: 1px solid var(--green);
-    color: var(--green);
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-    padding: 6px 10px;
-    cursor: pointer;
-    border-radius: 2px;
-    transition: all 0.15s;
-  }
-  .btn-small:hover { background: var(--green); color: var(--bg); }
-
-  /* ── CHAT AREA ── */
-  .chat-area {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-
-  .chat-header {
-    padding: 12px 20px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: rgba(5,10,5,0.7);
-  }
-
-  .chat-room-name {
-    font-family: var(--font-head);
-    font-size: 0.9rem;
-    color: var(--green);
-    text-shadow: 0 0 10px var(--green-glow);
-  }
-
-  .chat-meta { font-size: 0.65rem; color: var(--text-dim); margin-left: auto; }
-
-  /* ── MESSAGES ── */
-  .messages {
-    flex: 1;
-    overflow-y: auto;
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    scroll-behavior: smooth;
-  }
-
-  .messages::-webkit-scrollbar { width: 4px; }
-  .messages::-webkit-scrollbar-thumb { background: var(--border); }
-  .messages::-webkit-scrollbar-thumb:hover { background: var(--green-dark); }
-
-  .msg {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    max-width: 800px;
-    animation: msgIn 0.25s ease;
-  }
-
-  @keyframes msgIn {
-    from { opacity: 0; transform: translateY(6px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .msg-meta {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 0.65rem;
-    color: var(--text-dim);
-  }
-
-  .msg-user {
-    color: var(--amber);
-    font-family: var(--font-head);
-    font-size: 0.65rem;
-    letter-spacing: 1px;
-  }
-
-  .msg-morse {
-    font-size: 1rem;
-    color: var(--green);
-    letter-spacing: 3px;
-    line-height: 1.4;
-    text-shadow: 0 0 8px rgba(0,255,65,0.4);
-    word-break: break-all;
-    cursor: pointer;
-    transition: text-shadow 0.2s;
-  }
-
-  .msg-morse:hover {
-    text-shadow: 0 0 16px var(--green), 0 0 30px rgba(0,255,65,0.3);
-  }
-
-  .msg-translation {
-    font-size: 0.75rem;
-    color: var(--text-dim);
-    font-style: italic;
-    letter-spacing: 1px;
-    padding: 4px 10px;
-    border-left: 2px solid var(--border);
-    background: rgba(0,255,65,0.03);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .msg-translation::before {
-    content: '▶';
-    color: var(--green-dim);
-    font-size: 0.55rem;
-  }
-
-  .play-btn {
-    background: none;
-    border: 1px solid var(--border);
-    color: var(--text-dim);
-    font-family: var(--font-mono);
-    font-size: 0.6rem;
-    padding: 2px 6px;
-    cursor: pointer;
-    border-radius: 2px;
-    transition: all 0.15s;
-    margin-left: auto;
-  }
-  .play-btn:hover { border-color: var(--green); color: var(--green); }
-
-  /* ── INPUT AREA ── */
-  .input-area {
-    border-top: 1px solid var(--border);
-    padding: 16px;
-    background: rgba(5,10,5,0.9);
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .input-row {
-    display: flex;
-    gap: 10px;
-    align-items: stretch;
-  }
-
-  .morse-input-wrapper {
-    flex: 1;
-    position: relative;
-  }
-
-  .morse-input {
-    width: 100%;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 2px;
-    color: var(--green);
-    font-family: var(--font-mono);
-    font-size: 1rem;
-    letter-spacing: 3px;
-    padding: 10px 14px;
-    outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
-  }
-
-  .morse-input:focus {
-    border-color: var(--green);
-    box-shadow: 0 0 16px var(--green-glow);
-  }
-
-  .morse-input::placeholder { color: var(--text-dim); letter-spacing: 1px; font-size: 0.75rem; }
-
-  .live-translation {
-    padding: 6px 14px;
-    font-size: 0.75rem;
-    color: var(--amber);
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-top: none;
-    min-height: 28px;
-    letter-spacing: 1px;
-  }
-
-  .send-btn {
-    background: var(--green-dark);
-    border: 1px solid var(--green);
-    color: var(--green);
-    font-family: var(--font-head);
-    font-size: 0.7rem;
-    letter-spacing: 2px;
-    padding: 0 20px;
-    cursor: pointer;
-    border-radius: 2px;
-    transition: all 0.15s;
-    text-shadow: 0 0 8px var(--green);
-    align-self: stretch;
-  }
-
-  .send-btn:hover {
-    background: var(--green);
-    color: var(--bg);
-    box-shadow: 0 0 20px var(--green-glow);
-    text-shadow: none;
-  }
-
-  /* ── KEYBOARD HELPER ── */
-  .keyboard-section {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
-
-  .kb-label {
-    font-size: 0.6rem;
-    color: var(--text-dim);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    white-space: nowrap;
-  }
-
-  .kb-hints { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
-
-  .kb-key {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    color: var(--text-dim);
-    font-family: var(--font-mono);
-    font-size: 0.65rem;
-    padding: 3px 8px;
-    border-radius: 3px;
-    cursor: default;
-  }
-
-  .kb-key span { color: var(--green); }
-
-  /* ── MORSE REFERENCE ── */
-  .morse-ref {
-    display: flex;
-    gap: 4px;
-    flex-wrap: wrap;
-    padding-bottom: 4px;
-  }
-
-  .ref-item {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    padding: 3px 7px;
-    font-size: 0.6rem;
-    cursor: pointer;
-    border-radius: 2px;
-    transition: all 0.1s;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2px;
-  }
-
-  .ref-item:hover { border-color: var(--green); background: var(--green-glow); }
-
-  .ref-letter { color: var(--amber); font-size: 0.7rem; font-weight: bold; }
-  .ref-code { color: var(--green); letter-spacing: 1px; font-size: 0.6rem; }
-
-  /* ── USERNAME INPUT ── */
-  .username-bar {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    padding-bottom: 2px;
-  }
-
-  .username-bar label { font-size: 0.65rem; color: var(--text-dim); letter-spacing: 2px; }
-
-  .username-bar input {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    color: var(--amber);
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    padding: 4px 8px;
-    outline: none;
-    border-radius: 2px;
-    width: 130px;
-  }
-
-  .username-bar input:focus { border-color: var(--amber); }
-
-  /* ── EMPTY STATE ── */
-  .empty-state {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 16px;
-    color: var(--text-dim);
-  }
-
-  .empty-morse {
-    font-size: 2rem;
-    color: var(--border);
-    letter-spacing: 8px;
-    text-shadow: none;
-  }
-
-  /* ── LOADING ── */
-  .loading {
-    color: var(--text-dim);
-    font-size: 0.75rem;
-    text-align: center;
-    padding: 20px;
-    animation: blink 1s infinite;
-  }
-
-  @keyframes blink {
-    0%,100% { opacity: 1; }
-    50% { opacity: 0.3; }
-  }
-
-  /* ── REFS toggle ── */
-  .ref-toggle {
-    background: none;
-    border: 1px solid var(--border);
-    color: var(--text-dim);
-    font-family: var(--font-mono);
-    font-size: 0.65rem;
-    padding: 3px 8px;
-    cursor: pointer;
-    border-radius: 2px;
-    margin-left: auto;
-    transition: all 0.15s;
-  }
-  .ref-toggle:hover { border-color: var(--green); color: var(--green); }
-
-  .ref-panel { overflow: hidden; transition: max-height 0.3s ease; max-height: 0; }
-  .ref-panel.open { max-height: 200px; }
-
-  /* ── VOLUME ── */
-  .volume-ctrl {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 0.6rem;
-    color: var(--text-dim);
-  }
-
-  .volume-ctrl input[type=range] {
-    -webkit-appearance: none;
-    width: 70px;
-    height: 3px;
-    background: var(--border);
-    border-radius: 2px;
-    outline: none;
-  }
-  .volume-ctrl input[type=range]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 10px; height: 10px;
-    background: var(--green);
-    border-radius: 50%;
-    cursor: pointer;
-  }
-
-  .no-room {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    gap: 20px;
-    color: var(--text-dim);
-  }
-  .no-room .big { font-size: 3rem; letter-spacing: 12px; color: var(--border); }
-  .no-room p { font-size: 0.75rem; letter-spacing: 2px; }
-
-  /* ── CLICKER ── */
-  .clicker-row {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-  }
-
-  .clicker-btn {
-    position: relative;
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    border: 3px solid var(--green);
-    background: var(--green-dark);
-    color: var(--green);
-    font-family: var(--font-head);
-    font-size: 0.55rem;
-    letter-spacing: 1px;
-    cursor: pointer;
-    transition: all 0.05s;
-    box-shadow: 0 0 20px var(--green-glow), inset 0 0 20px rgba(0,255,65,0.05);
-    user-select: none;
-    -webkit-user-select: none;
-    outline: none;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-  }
-
-  .clicker-btn:active, .clicker-btn.pressed {
-    background: var(--green);
-    color: var(--bg);
-    box-shadow: 0 0 40px var(--green), 0 0 80px rgba(0,255,65,0.3), inset 0 2px 8px rgba(0,0,0,0.3);
-    transform: scale(0.94);
-  }
-
-  .clicker-symbol {
-    font-size: 1.6rem;
-    line-height: 1;
-    font-family: var(--font-mono);
-    font-weight: bold;
-  }
-
-  .clicker-label {
-    font-size: 0.5rem;
-    letter-spacing: 2px;
-    opacity: 0.7;
-  }
-
-  .clicker-controls {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .clicker-speed {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 0.6rem;
-    color: var(--text-dim);
-  }
-
-  .clicker-speed input[type=range] {
-    -webkit-appearance: none;
-    width: 80px;
-    height: 3px;
-    background: var(--border);
-    border-radius: 2px;
-    outline: none;
-  }
-  .clicker-speed input[type=range]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 10px; height: 10px;
-    background: var(--amber);
-    border-radius: 50%;
-    cursor: pointer;
-  }
-
-  .clicker-preview {
-    font-size: 0.65rem;
-    color: var(--green);
-    letter-spacing: 3px;
-    min-width: 120px;
-    padding: 4px 8px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 2px;
-    min-height: 26px;
-    display: flex;
-    align-items: center;
-  }
-
-  .clicker-actions {
-    display: flex;
-    gap: 6px;
-  }
-
-  .clicker-undo {
-    background: none;
-    border: 1px solid var(--border);
-    color: var(--text-dim);
-    font-family: var(--font-mono);
-    font-size: 0.6rem;
-    padding: 4px 8px;
-    cursor: pointer;
-    border-radius: 2px;
-    transition: all 0.15s;
-  }
-  .clicker-undo:hover { border-color: var(--amber); color: var(--amber); }
-
-  .clicker-space {
-    background: none;
-    border: 1px solid var(--border);
-    color: var(--text-dim);
-    font-family: var(--font-mono);
-    font-size: 0.6rem;
-    padding: 4px 10px;
-    cursor: pointer;
-    border-radius: 2px;
-    transition: all 0.15s;
-  }
-  .clicker-space:hover { border-color: var(--green); color: var(--green); }
-
-  /* ── COLOR MODE SWITCHER ── */
-  .color-switcher {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .color-switcher-label {
-    font-size: 0.6rem;
-    color: var(--text-dim);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    white-space: nowrap;
-  }
-
-  .swatches {
-    display: flex;
-    gap: 5px;
-    align-items: center;
-  }
-
-  .swatch {
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    cursor: pointer;
-    border: 2px solid transparent;
-    transition: all 0.15s;
-    position: relative;
-    flex-shrink: 0;
-  }
-
-  .swatch:hover { transform: scale(1.2); }
-  .swatch.active { border-color: #fff; box-shadow: 0 0 8px rgba(255,255,255,0.5); transform: scale(1.15); }
-
-  .swatch-green  { background: #00ff41; }
-  .swatch-amber  { background: #ffb800; }
-  .swatch-cyan   { background: #00e5ff; }
-  .swatch-red    { background: #ff2222; }
-  .swatch-purple { background: #cc44ff; }
-  .swatch-white  { background: #f5f5f0; border-color: #aaa; }
-  .swatch-blue   { background: #4488ff; }
-  .swatch-orange { background: #ff6600; }
-  .swatch-custom {
-    background: conic-gradient(red, yellow, lime, cyan, blue, magenta, red);
-    position: relative;
-    overflow: hidden;
-  }
-  .swatch-custom input[type=color] {
-    position: absolute;
-    inset: 0;
-    opacity: 0;
-    cursor: pointer;
-    width: 100%;
-    height: 100%;
-    border: none;
-    padding: 0;
-  }
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --bg:#f5f5f7; --surface:#ffffff; --surface2:#f0f0f2;
+  --border:rgba(0,0,0,0.08); --border2:rgba(0,0,0,0.14);
+  --text:#1a1a1e; --text2:#6b6b78; --text3:#a0a0aa;
+  --accent:#3b82f6; --accent-bg:#eff6ff; --accent2:#1d4ed8;
+  --danger:#ef4444; --success:#22c55e;
+  --mention-bg:#fef3c7; --mention-border:#f59e0b;
+  --radius:10px; --radius-sm:6px;
+  --font:'Inter',system-ui,sans-serif; --mono:'JetBrains Mono','Courier New',monospace;
+}
+[data-theme="dark"]{--bg:#0f0f11;--surface:#1a1a1f;--surface2:#25252c;--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);--text:#e8e8ee;--text2:#8888a0;--text3:#55556a;--accent:#60a5fa;--accent-bg:#1e2a40;--accent2:#93c5fd;--danger:#f87171;--success:#4ade80;--mention-bg:#2a2210;--mention-border:#d97706;}
+[data-theme="green"]{--bg:#04100a;--surface:#081a0f;--surface2:#0d2417;--border:rgba(0,255,80,0.1);--border2:rgba(0,255,80,0.2);--text:#b8ffd0;--text2:#4a9966;--text3:#2a5540;--accent:#00e054;--accent-bg:rgba(0,224,84,0.1);--accent2:#00ff80;--danger:#ff4444;--success:#00e054;--mention-bg:rgba(255,184,0,0.1);--mention-border:#ffb800;}
+[data-theme="amber"]{--bg:#100b00;--surface:#1a1200;--surface2:#261b00;--border:rgba(255,180,0,0.1);--border2:rgba(255,180,0,0.2);--text:#fff0b8;--text2:#998040;--text3:#554820;--accent:#ffb800;--accent-bg:rgba(255,184,0,0.1);--accent2:#ffd060;--danger:#ff4444;--success:#44cc44;--mention-bg:rgba(255,100,0,0.1);--mention-border:#ff6600;}
+[data-theme="purple"]{--bg:#08040f;--surface:#100818;--surface2:#180d24;--border:rgba(160,80,255,0.1);--border2:rgba(160,80,255,0.2);--text:#e8c8ff;--text2:#7040a0;--text3:#402060;--accent:#b060ff;--accent-bg:rgba(160,80,255,0.1);--accent2:#d090ff;--danger:#ff4466;--success:#44cc88;--mention-bg:rgba(255,80,160,0.1);--mention-border:#ff50a0;}
+[data-theme="red"]{--bg:#100000;--surface:#1a0000;--surface2:#260000;--border:rgba(255,60,60,0.1);--border2:rgba(255,60,60,0.2);--text:#ffc8c8;--text2:#994040;--text3:#552020;--accent:#ff3c3c;--accent-bg:rgba(255,60,60,0.1);--accent2:#ff8080;--danger:#ff6666;--success:#44cc44;--mention-bg:rgba(255,120,0,0.1);--mention-border:#ff8800;}
+[data-theme="cyan"]{--bg:#001018;--surface:#001824;--surface2:#002030;--border:rgba(0,220,255,0.1);--border2:rgba(0,220,255,0.2);--text:#b0f0ff;--text2:#307888;--text3:#104850;--accent:#00d8ff;--accent-bg:rgba(0,220,255,0.1);--accent2:#80eeff;--danger:#ff4455;--success:#00e080;--mention-bg:rgba(255,0,180,0.1);--mention-border:#ff00b4;}
+[data-theme="orange"]{--bg:#100500;--surface:#1a0c00;--surface2:#261400;--border:rgba(255,110,0,0.1);--border2:rgba(255,110,0,0.2);--text:#ffd8a8;--text2:#996030;--text3:#553010;--accent:#ff6a00;--accent-bg:rgba(255,106,0,0.1);--accent2:#ffaa50;--danger:#ff3333;--success:#44cc44;--mention-bg:rgba(255,200,0,0.1);--mention-border:#ffcc00;}
+[data-theme="blue"]{--bg:#00040f;--surface:#00081a;--surface2:#000d26;--border:rgba(60,120,255,0.1);--border2:rgba(60,120,255,0.2);--text:#b0c8ff;--text2:#304880;--text3:#102040;--accent:#4080ff;--accent-bg:rgba(60,120,255,0.1);--accent2:#80a8ff;--danger:#ff4455;--success:#44cc88;--mention-bg:rgba(0,200,255,0.1);--mention-border:#00c8ff;}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;}
+.app{display:flex;flex-direction:column;height:100vh;}
+
+/* TOPBAR */
+.topbar{display:flex;align-items:center;gap:12px;padding:0 16px;height:52px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;}
+.logo{font-size:15px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:8px;}
+.logo-icon{width:28px;height:28px;border-radius:8px;background:var(--accent);display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;font-family:var(--mono);letter-spacing:1px;}
+.theme-row{display:flex;align-items:center;gap:6px;margin-left:auto;}
+.theme-lbl{font-size:11px;color:var(--text2);font-weight:500;}
+.swatches{display:flex;gap:4px;align-items:center;}
+.sw{width:16px;height:16px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:transform .12s;flex-shrink:0;}
+.sw:hover{transform:scale(1.25);}
+.sw.active{border-color:var(--text);transform:scale(1.2);}
+.sw-custom{position:relative;overflow:hidden;}
+.sw-custom input[type=color]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;border:none;padding:0;}
+.topbar-right{display:flex;align-items:center;gap:10px;margin-left:10px;}
+.vol-row{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);}
+.vol-row input[type=range]{width:55px;accent-color:var(--accent);}
+.status-pill{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--success);font-weight:500;}
+.status-dot{width:6px;height:6px;border-radius:50%;background:var(--success);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+
+/* BODY */
+.body{display:flex;flex:1;overflow:hidden;}
+
+/* SIDEBAR */
+.sidebar-wrap{width:210px;display:flex;flex-direction:column;background:var(--surface);border-right:1px solid var(--border);flex-shrink:0;overflow:hidden;}
+.s-section{font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.8px;text-transform:uppercase;padding:14px 14px 5px;}
+.room-list{flex:1;overflow-y:auto;padding:2px 6px 4px;}
+.room-item{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:var(--text2);transition:background .1s,color .1s;}
+.room-item:hover{background:var(--surface2);color:var(--text);}
+.room-item.active{background:var(--accent-bg);color:var(--accent);font-weight:500;}
+.room-hash{font-size:15px;opacity:.4;}
+.new-room{padding:8px;border-top:1px solid var(--border);display:flex;gap:5px;}
+.new-room input{flex:1;padding:5px 8px;border-radius:var(--radius-sm);border:1px solid var(--border2);background:var(--surface2);color:var(--text);font-size:12px;outline:none;font-family:var(--font);}
+.new-room input:focus{border-color:var(--accent);}
+.new-room button{padding:5px 11px;border-radius:var(--radius-sm);border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;font-size:16px;transition:background .1s;}
+.new-room button:hover{background:var(--surface2);}
+.users-panel{border-top:1px solid var(--border);flex-shrink:0;}
+.user-list{padding:2px 6px 8px;max-height:200px;overflow-y:auto;}
+.user-item{display:flex;align-items:center;gap:7px;padding:5px 8px;border-radius:var(--radius-sm);cursor:pointer;transition:background .1s;}
+.user-item:hover{background:var(--surface2);}
+.user-item.muted-user .uname{opacity:.35;text-decoration:line-through;}
+.u-avatar{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;background:var(--accent-bg);color:var(--accent);flex-shrink:0;}
+.uname{font-size:12px;color:var(--text);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.u-you{color:var(--text3);font-size:10px;}
+.u-dot{width:6px;height:6px;border-radius:50%;background:var(--success);flex-shrink:0;}
+.u-dot.idle{background:var(--text3);}
+.u-dot.muted-dot{background:var(--danger);}
+.mute-btn{font-size:11px;padding:2px 5px;border-radius:4px;border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;flex-shrink:0;transition:all .1s;font-family:var(--font);}
+.mute-btn:hover{border-color:var(--danger);color:var(--danger);}
+.mute-btn.on{background:var(--danger);color:#fff;border-color:var(--danger);}
+
+/* CHAT */
+.chat{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
+.chat-header{padding:11px 18px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.chat-title{font-size:14px;font-weight:600;}
+.chat-sub{font-size:11px;color:var(--text2);}
+.messages{flex:1;overflow-y:auto;padding:16px 18px;display:flex;flex-direction:column;gap:14px;background:var(--bg);}
+.messages::-webkit-scrollbar{width:4px;}
+.messages::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+
+/* MESSAGE */
+.msg{display:flex;gap:10px;animation:msgIn .18s ease;}
+@keyframes msgIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;}}
+.m-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;background:var(--accent-bg);color:var(--accent);flex-shrink:0;margin-top:1px;}
+.m-body{flex:1;min-width:0;}
+.m-meta{display:flex;align-items:center;gap:7px;margin-bottom:4px;}
+.m-name{font-size:13px;font-weight:600;}
+.m-time{font-size:11px;color:var(--text3);}
+.m-tag{font-size:10px;font-weight:600;background:var(--mention-bg);color:var(--mention-border);padding:1px 6px;border-radius:99px;border:1px solid var(--mention-border);}
+.m-bubble{background:var(--surface);border:1px solid var(--border);border-radius:3px var(--radius) var(--radius) var(--radius);padding:10px 13px;max-width:680px;cursor:pointer;transition:border-color .12s;}
+.m-bubble:hover{border-color:var(--border2);}
+.m-bubble.hi{background:var(--mention-bg);border-color:var(--mention-border);}
+.m-morse{font-family:var(--mono);font-size:14px;color:var(--accent2);letter-spacing:2px;margin-bottom:5px;word-break:break-all;}
+.m-tr{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text2);}
+.play-btn{margin-left:auto;font-size:11px;padding:2px 9px;border-radius:99px;border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;font-family:var(--font);transition:all .1s;white-space:nowrap;flex-shrink:0;}
+.play-btn:hover{border-color:var(--accent);color:var(--accent);}
+.m-hi{color:var(--mention-border);font-weight:600;}
+
+/* INPUT AREA */
+.input-area{background:var(--surface);border-top:1px solid var(--border);padding:12px 16px;display:flex;flex-direction:column;gap:9px;flex-shrink:0;}
+.input-main{display:flex;gap:8px;align-items:flex-end;}
+.input-col{flex:1;display:flex;flex-direction:column;gap:3px;}
+.morse-input{padding:9px 12px;border-radius:var(--radius-sm);border:1px solid var(--border2);background:var(--surface2);color:var(--text);font-family:var(--mono);font-size:13px;letter-spacing:1.5px;outline:none;transition:border-color .15s;width:100%;}
+.morse-input:focus{border-color:var(--accent);}
+.morse-input::placeholder{color:var(--text3);letter-spacing:.3px;font-size:12px;font-family:var(--font);}
+.live-t{font-size:11px;color:var(--text2);padding:0 2px;min-height:15px;}
+.send-btn{padding:9px 18px;border-radius:var(--radius-sm);background:var(--accent);color:#fff;border:none;font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font);transition:opacity .15s;white-space:nowrap;height:40px;flex-shrink:0;}
+.send-btn:hover{opacity:.85;}
+.toolbar{display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+.cs-lbl{font-size:11px;color:var(--text2);}
+.cs-input{padding:4px 8px;border-radius:var(--radius-sm);border:1px solid var(--border2);background:var(--surface2);color:var(--text);font-size:12px;width:100px;outline:none;font-family:var(--font);}
+.cs-input:focus{border-color:var(--accent);}
+.tool-btn{font-size:12px;padding:4px 10px;border-radius:var(--radius-sm);border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;font-family:var(--font);transition:all .1s;}
+.tool-btn:hover{background:var(--surface2);color:var(--text);}
+.tool-btn.on{background:var(--accent-bg);color:var(--accent);border-color:var(--accent);}
+
+/* REF PANEL */
+.ref-panel{display:none;flex-wrap:wrap;gap:3px;padding:8px;background:var(--surface2);border-radius:var(--radius-sm);border:1px solid var(--border);max-height:120px;overflow-y:auto;}
+.ref-panel.open{display:flex;}
+.ref-item{display:flex;flex-direction:column;align-items:center;padding:3px 6px;border-radius:4px;cursor:pointer;border:1px solid var(--border);background:var(--surface);transition:all .1s;gap:1px;}
+.ref-item:hover{border-color:var(--accent);background:var(--accent-bg);}
+.ref-l{font-size:11px;font-weight:600;color:var(--text);}
+.ref-c{font-family:var(--mono);font-size:9px;color:var(--accent);}
+
+/* CLICKER PANEL */
+.clicker-panel{display:none;padding:12px;background:var(--surface2);border-radius:var(--radius-sm);border:1px solid var(--border);}
+.clicker-panel.open{display:flex;gap:14px;align-items:center;flex-wrap:wrap;}
+.clicker-key{width:72px;height:72px;border-radius:50%;border:2px solid var(--accent);background:var(--surface);color:var(--text2);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-family:var(--font);user-select:none;transition:background .08s,transform .08s,color .08s;outline:none;-webkit-tap-highlight-color:transparent;flex-shrink:0;}
+.clicker-key.pressed,.clicker-key:active{background:var(--accent);color:#fff;transform:scale(.92);}
+.ck-sym{font-size:24px;line-height:1;}
+.ck-lbl{font-size:9px;letter-spacing:1px;text-transform:uppercase;font-weight:500;}
+.ck-controls{display:flex;flex-direction:column;gap:8px;flex:1;min-width:160px;}
+.wpm-row{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text2);}
+.wpm-row input[type=range]{flex:1;accent-color:var(--accent);}
+.ck-preview{font-family:var(--mono);font-size:13px;color:var(--accent);letter-spacing:1.5px;padding:5px 8px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);min-height:28px;word-break:break-all;}
+.ck-btns{display:flex;gap:6px;flex-wrap:wrap;}
+.ck-btn{font-size:11px;padding:4px 10px;border-radius:var(--radius-sm);border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;font-family:var(--font);transition:all .1s;}
+.ck-btn:hover{background:var(--surface);color:var(--text);}
+.ck-btn.danger{border-color:var(--danger);color:var(--danger);}
+.ck-btn.danger:hover{background:var(--danger);color:#fff;}
+
+/* NO ROOM */
+.no-room{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--text2);}
+.no-room-morse{font-family:var(--mono);font-size:24px;letter-spacing:5px;color:var(--border2);}
+
+/* SETUP */
+.setup-msg{padding:12px;font-size:12px;color:var(--text2);line-height:1.8;}
+.setup-code{color:var(--accent);font-family:var(--mono);font-size:10px;word-break:break-all;background:var(--surface2);padding:8px;border-radius:var(--radius-sm);display:block;margin:6px 0;white-space:pre-wrap;}
+.retry-btn{margin-top:8px;width:100%;padding:7px;border-radius:var(--radius-sm);border:1px solid var(--accent);background:var(--accent-bg);color:var(--accent);cursor:pointer;font-family:var(--font);font-size:12px;}
+.retry-btn:hover{background:var(--accent);color:#fff;}
 </style>
 </head>
 <body>
 <div class="app">
-  <header>
-    <div class="logo">MORSE<span>NET</span></div>
-    <div style="font-size:0.7rem;color:var(--text-dim);letter-spacing:2px;">LIVE TRANSMISSION ROOMS</div>
-    <div class="color-switcher">
-      <span class="color-switcher-label">THEME</span>
+
+  <div class="topbar">
+    <div class="logo">
+      <div class="logo-icon">·-·</div>
+      MorseNet
+    </div>
+    <div class="theme-row">
+      <span class="theme-lbl">Theme</span>
       <div class="swatches">
-        <div class="swatch swatch-green  active" onclick="setTheme('green')"  title="Green Phosphor"></div>
-        <div class="swatch swatch-amber"         onclick="setTheme('amber')"  title="Amber"></div>
-        <div class="swatch swatch-cyan"          onclick="setTheme('cyan')"   title="Cyan Ice"></div>
-        <div class="swatch swatch-red"           onclick="setTheme('red')"    title="Red Alert"></div>
-        <div class="swatch swatch-purple"        onclick="setTheme('purple')" title="Purple Haze"></div>
-        <div class="swatch swatch-white"         onclick="setTheme('white')"  title="Paper"></div>
-        <div class="swatch swatch-blue"          onclick="setTheme('blue')"   title="Blue Matrix"></div>
-        <div class="swatch swatch-orange"        onclick="setTheme('orange')" title="Orange Lava"></div>
-        <div class="swatch swatch-custom" title="Custom Color">
-          <input type="color" id="custom-color-picker" value="#00ff41" oninput="setCustomTheme(this.value)" title="Pick custom color">
+        <div class="sw active" style="background:#f5f5f7;border-color:#aaa;" onclick="setTheme('light')" title="Light"></div>
+        <div class="sw" style="background:#1a1a1f;" onclick="setTheme('dark')" title="Dark"></div>
+        <div class="sw" style="background:#00e054;" onclick="setTheme('green')" title="Green"></div>
+        <div class="sw" style="background:#ffb800;" onclick="setTheme('amber')" title="Amber"></div>
+        <div class="sw" style="background:#b060ff;" onclick="setTheme('purple')" title="Purple"></div>
+        <div class="sw" style="background:#ff3c3c;" onclick="setTheme('red')" title="Red"></div>
+        <div class="sw" style="background:#00d8ff;" onclick="setTheme('cyan')" title="Cyan"></div>
+        <div class="sw" style="background:#ff6a00;" onclick="setTheme('orange')" title="Orange"></div>
+        <div class="sw" style="background:#4080ff;" onclick="setTheme('blue')" title="Blue"></div>
+        <div class="sw sw-custom" title="Custom">
+          <input type="color" id="custom-color-picker" value="#3b82f6" oninput="setCustomTheme(this.value)">
         </div>
       </div>
     </div>
-    <div class="status-bar">
-      <div class="dot-live"></div>
-      <span id="conn-status">CONNECTING...</span>
-      <span>|</span>
-      <div class="volume-ctrl">
-        <span>VOL</span>
+    <div class="topbar-right">
+      <div class="vol-row">
+        <span>Vol</span>
         <input type="range" id="volume" min="0" max="1" step="0.05" value="0.5">
       </div>
+      <div class="status-pill">
+        <div class="status-dot"></div>
+        <span id="conn-status">Connecting…</span>
+      </div>
     </div>
-  </header>
+  </div>
 
-  <div class="main">
-    <!-- Sidebar -->
-    <div class="sidebar">
-      <div class="sidebar-title">⬡ Channels</div>
+  <div class="body">
+    <div class="sidebar-wrap">
+      <div class="s-section">Channels</div>
       <div class="room-list" id="room-list">
-        <div class="loading">SCANNING...</div>
+        <div style="padding:10px;font-size:12px;color:var(--text3);">Scanning…</div>
       </div>
-      <div class="create-room">
-        <input type="text" id="new-room-input" placeholder="new channel..." maxlength="20">
-        <button class="btn-small" onclick="createRoom()">+</button>
+      <div class="new-room">
+        <input id="new-room-input" placeholder="new channel…" maxlength="20">
+        <button onclick="createRoom()">+</button>
+      </div>
+      <div class="users-panel">
+        <div class="s-section">Online</div>
+        <div class="user-list" id="user-list">
+          <div style="padding:6px 10px;font-size:12px;color:var(--text3);">No signals yet</div>
+        </div>
       </div>
     </div>
 
-    <!-- Main chat -->
-    <div class="chat-area" id="chat-area">
+    <div class="chat" id="chat-area">
       <div class="no-room">
-        <div class="big">—···—</div>
-        <p>SELECT A CHANNEL TO BEGIN</p>
+        <div class="no-room-morse">— · · · —</div>
+        <div>Select a channel to begin</div>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-// ═══════════════════════════════════════════
-// SUPABASE CONFIG
-// ═══════════════════════════════════════════
-const SUPA_URL = 'https://dsgmmknejsgvyzoiimnh.supabase.co';
-const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRzZ21ta25lanNndnl6b2lpbW5oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwNjUzNDMsImV4cCI6MjA5MjY0MTM0M30.ApQdbSuiCcE0HSi2J14W4Ol2mgDMwipE1scs_PHgwrY';
-
-// ═══════════════════════════════════════════
-// MORSE CODE TABLE
-// ═══════════════════════════════════════════
-const MORSE = {
-  'A':'.-','B':'-...','C':'-.-.','D':'-..','E':'.','F':'..-.','G':'--.','H':'....','I':'..','J':'.---',
-  'K':'-.-','L':'.-..','M':'--','N':'-.','O':'---','P':'.--.','Q':'--.-','R':'.-.','S':'...','T':'-',
-  'U':'..-','V':'...-','W':'.--','X':'-..-','Y':'-.--','Z':'--..',
-  '0':'-----','1':'.----','2':'..---','3':'...--','4':'....-','5':'.....','6':'-....','7':'--...','8':'---..','9':'----.',
-  '.':'.-.-.-',',':'--..--','?':'..--..','!':'-.-.--','/':'-..-.','@':'.--.-.','=':'-...-',' ': '/'
-};
-
-// Build reverse
-const MORSE_REV = {};
-for (const [k,v] of Object.entries(MORSE)) MORSE_REV[v] = k;
-MORSE_REV['/'] = ' ';
-
-function textToMorse(text) {
-  return text.toUpperCase().split('').map(c => MORSE[c] || '').filter(Boolean).join(' ');
+// ── SUPABASE ──
+const SUPA_URL='https://dsgmmknejsgvyzoiimnh.supabase.co';
+const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRzZ21ta25lanNndnl6b2lpbW5oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwNjUzNDMsImV4cCI6MjA5MjY0MTM0M30.ApQdbSuiCcE0HSi2J14W4Ol2mgDMwipE1scs_PHgwrY';
+async function supaFetch(path,opts={}){
+  const res=await fetch(`${SUPA_URL}/rest/v1/${path}`,{...opts,headers:{'apikey':SUPA_KEY,'Authorization':`Bearer ${SUPA_KEY}`,'Content-Type':'application/json','Prefer':opts.prefer||'',...opts.headers}});
+  if(opts.noBody)return res;
+  const t=await res.text();return t?JSON.parse(t):[];
 }
 
-function morseToText(morse) {
-  return morse.trim().split('   ').map(word =>
-    word.split(' ').map(code => code === '/' ? ' ' : (MORSE_REV[code] || '?')).join('')
-  ).join(' ');
-}
+// ── MORSE ──
+const MORSE={A:'.-',B:'-...',C:'-.-.',D:'-..',E:'.',F:'..-.',G:'--.',H:'....',I:'..',J:'.---',K:'-.-',L:'.-..',M:'--',N:'-.',O:'---',P:'.--.',Q:'--.-',R:'.-.',S:'...',T:'-',U:'..-',V:'...-',W:'.--',X:'-..-',Y:'-.--',Z:'--..',0:'-----',1:'.----',2:'..---',3:'...--',4:'....-',5:'.....',6:'-....',7:'--...',8:'---..',9:'----.','.':'.-.-.-',',':'--..--','?':'..--..','!':'-.-.--','/':'-..-.','@':'.--.-.','=':'-...-',' ':'/'};
+const MREV={};for(const[k,v]of Object.entries(MORSE))MREV[v]=k;MREV['/']='\u0020';
+function t2m(txt){return txt.toUpperCase().split('').map(c=>MORSE[c]||'').filter(Boolean).join(' ');}
+function m2t(m){return m.trim().split('   ').map(w=>w.split(' ').map(c=>c==='/'?' ':(MREV[c]||'?')).join('')).join(' ');}
 
-// ═══════════════════════════════════════════
-// AUDIO ENGINE — queued playback (no overlap)
-// ═══════════════════════════════════════════
-let audioCtx = null;
-let volume = 0.5;
-let audioQueue = [];
-let audioPlaying = false;
+// ── AUDIO ──
+let audioCtx=null,volume=0.5,audioQ=[],audioPlay=false;
+document.getElementById('volume').addEventListener('input',e=>volume=parseFloat(e.target.value));
+function getCtx(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();return audioCtx;}
+function playMorse(morse){if(!morse?.trim())return;audioQ.push(morse);if(!audioPlay)drain();}
+function drain(){if(!audioQ.length){audioPlay=false;return;}audioPlay=true;const d=sched(audioQ.shift());setTimeout(drain,Math.max(d*1000+120,100));}
+function sched(morse){const ctx=getCtx(),dot=0.06,freq=650;let t=ctx.currentTime+0.05;for(const s of morse){if(s==='.'){beep(ctx,t,dot,freq);t+=dot*1.3;}else if(s==='-'){beep(ctx,t,dot*3,freq);t+=dot*3.3;}else if(s===' '){t+=dot*2;}else if(s==='/'){t+=dot*4;}}return t-(ctx.currentTime+0.05);}
+function beep(ctx,start,dur,freq){const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.frequency.value=freq;o.type='sine';g.gain.setValueAtTime(0,start);g.gain.linearRampToValueAtTime(volume*.4,start+.005);g.gain.setValueAtTime(volume*.4,start+dur-.005);g.gain.linearRampToValueAtTime(0,start+dur);o.start(start);o.stop(start+dur+.01);}
+function mentionBeep(){const ctx=getCtx(),t=ctx.currentTime;[[880,0,.12],[1100,.15,.12],[880,.3,.08],[1100,.4,.18]].forEach(([fr,off,d])=>{const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.frequency.value=fr;o.type='triangle';g.gain.setValueAtTime(0,t+off);g.gain.linearRampToValueAtTime(volume*.5,t+off+.01);g.gain.setValueAtTime(volume*.5,t+off+d-.01);g.gain.linearRampToValueAtTime(0,t+off+d);o.start(t+off);o.stop(t+off+d+.02);});}
 
-document.getElementById('volume').addEventListener('input', e => {
-  volume = parseFloat(e.target.value);
-});
+// ── STATE ──
+let currentRoom=null,pollInterval=null,lastMsgId=0,rooms=[];
+let username=localStorage.getItem('morsenet-callsign')||('OP_'+Math.random().toString(36).substr(2,4).toUpperCase());
+let refOpen=false,clickerOpen=false;
 
-function getAudioCtx() {
-  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  return audioCtx;
-}
-
-// Public entry point — adds to queue and starts draining if idle
-function playMorseAudio(morseStr) {
-  if (!morseStr || !morseStr.trim()) return;
-  audioQueue.push(morseStr);
-  if (!audioPlaying) drainQueue();
-}
-
-function drainQueue() {
-  if (!audioQueue.length) { audioPlaying = false; return; }
-  audioPlaying = true;
-  const morseStr = audioQueue.shift();
-  const duration = scheduleMorse(morseStr);
-  setTimeout(drainQueue, Math.max(duration * 1000 + 100, 100));
-}
-
-// Schedules all beeps for morseStr, returns total duration in seconds
-function scheduleMorse(morseStr) {
-  const ctx = getAudioCtx();
-  const dotDuration = 0.06;
-  const freq = 650;
-  let t = ctx.currentTime + 0.05;
-
-  for (const symbol of morseStr) {
-    if (symbol === '.') {
-      beep(ctx, t, dotDuration, freq);
-      t += dotDuration + dotDuration * 0.3;
-    } else if (symbol === '-') {
-      beep(ctx, t, dotDuration * 3, freq);
-      t += dotDuration * 3 + dotDuration * 0.3;
-    } else if (symbol === ' ') {
-      t += dotDuration * 2;
-    } else if (symbol === '/') {
-      t += dotDuration * 4;
-    }
-  }
-  return t - (ctx.currentTime + 0.05);
-}
-
-function beep(ctx, start, duration, freq) {
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-  osc.connect(gain);
-  gain.connect(ctx.destination);
-  osc.frequency.value = freq;
-  osc.type = 'sine';
-  gain.gain.setValueAtTime(0, start);
-  gain.gain.linearRampToValueAtTime(volume * 0.4, start + 0.005);
-  gain.gain.setValueAtTime(volume * 0.4, start + duration - 0.005);
-  gain.gain.linearRampToValueAtTime(0, start + duration);
-  osc.start(start);
-  osc.stop(start + duration + 0.01);
-}
-
-// ═══════════════════════════════════════════
-// API HELPERS
-// ═══════════════════════════════════════════
-async function supaFetch(path, options = {}) {
-  const url = `${SUPA_URL}/rest/v1/${path}`;
-  const res = await fetch(url, {
-    ...options,
-    headers: {
-      'apikey': SUPA_KEY,
-      'Authorization': `Bearer ${SUPA_KEY}`,
-      'Content-Type': 'application/json',
-      'Prefer': options.prefer || '',
-      ...options.headers
-    }
-  });
-  if (options.noBody) return res;
-  const text = await res.text();
-  return text ? JSON.parse(text) : [];
-}
-
-// ═══════════════════════════════════════════
-// STATE
-// ═══════════════════════════════════════════
-let currentRoom = null;
-let pollInterval = null;
-let lastMsgId = 0;
-let rooms = [];
-let username = 'OP_' + Math.random().toString(36).substr(2,4).toUpperCase();
-let refOpen = false;
-
-// ═══════════════════════════════════════════
-// DB INIT — ensure tables exist via REST
-// ═══════════════════════════════════════════
-async function ensureTables() {
-  // Try to fetch rooms — if table doesn't exist we'll catch it
-  try {
-    const r = await supaFetch('morse_rooms?select=id&limit=1');
-    if (Array.isArray(r)) {
-      document.getElementById('conn-status').textContent = 'CONNECTED';
-      return true;
-    }
-  } catch(e) {}
-
-  // Try creating via RPC/SQL if available
-  document.getElementById('conn-status').textContent = 'SETUP NEEDED';
-  showSetupMessage();
-  return false;
-}
-
-function showSetupMessage() {
-  document.getElementById('room-list').innerHTML = `
-    <div style="padding:12px;font-size:0.65rem;color:var(--amber);line-height:1.8;">
-      ⚠ TABLES NEEDED<br><br>
-      Run in Supabase SQL editor:<br><br>
-      <code style="color:var(--green);font-size:0.6rem;word-break:break-all;">
-        CREATE TABLE morse_rooms (id serial PRIMARY KEY, name text UNIQUE, created_at timestamptz DEFAULT now());<br><br>
-        CREATE TABLE morse_messages (id serial PRIMARY KEY, room_id int REFERENCES morse_rooms(id), username text, morse text, created_at timestamptz DEFAULT now());<br><br>
-        ALTER TABLE morse_rooms ENABLE ROW LEVEL SECURITY;<br>
-        ALTER TABLE morse_messages ENABLE ROW LEVEL SECURITY;<br><br>
-        CREATE POLICY "public_all" ON morse_rooms FOR ALL USING (true) WITH CHECK (true);<br>
-        CREATE POLICY "public_all" ON morse_messages FOR ALL USING (true) WITH CHECK (true);
-      </code>
-      <button onclick="retryInit()" style="margin-top:10px;width:100%;background:var(--green-dark);border:1px solid var(--green);color:var(--green);font-family:var(--font-mono);padding:6px;cursor:pointer;font-size:0.65rem;">RETRY</button>
+// ── PRESENCE ──
+const roomUsers={};
+const mutedUsers=new Set(JSON.parse(localStorage.getItem('morsenet-muted')||'[]'));
+function saveMuted(){localStorage.setItem('morsenet-muted',JSON.stringify([...mutedUsers]));}
+function toggleMute(u,e){e.stopPropagation();mutedUsers.has(u)?mutedUsers.delete(u):mutedUsers.add(u);saveMuted();renderUsers();}
+function trackUser(u){if(!u)return;roomUsers[u]={lastSeen:Date.now()};renderUsers();}
+function initials(n){return(n||'?').slice(0,2).toUpperCase();}
+function renderUsers(){
+  const list=document.getElementById('user-list');if(!list)return;
+  const now=Date.now();
+  const active=Object.entries(roomUsers).filter(([,v])=>now-v.lastSeen<120000).sort((a,b)=>b[1].lastSeen-a[1].lastSeen);
+  if(!active.length){list.innerHTML='<div style="padding:6px 10px;font-size:12px;color:var(--text3);">No signals yet</div>';return;}
+  list.innerHTML=active.map(([u,v])=>{
+    const me=u===username,muted=mutedUsers.has(u),idle=now-v.lastSeen>30000;
+    return`<div class="user-item${muted?' muted-user':''}" onclick="insertAt('${escH(u)}')" title="@mention">
+      <div class="u-avatar">${initials(u)}</div>
+      <span class="uname">${escH(u)}${me?'<span class="u-you"> (you)</span>':''}</span>
+      <div class="u-dot${muted?' muted-dot':idle?' idle':''}"></div>
+      ${!me?`<button class="mute-btn${muted?' on':''}" onclick="toggleMute('${escH(u)}',event)">${muted?'🔇':'🔊'}</button>`:''}
     </div>`;
+  }).join('');
+}
+function insertAt(u){const i=document.getElementById('morse-input');if(!i)return;i.value=(i.value?i.value+' ':'')+`@${u}`;i.focus();updateLiveT();}
+setInterval(renderUsers,30000);
+
+// ── DB INIT ──
+async function ensureTables(){
+  try{const r=await supaFetch('morse_rooms?select=id&limit=1');if(Array.isArray(r)){document.getElementById('conn-status').textContent='Online';return true;}}catch(e){}
+  document.getElementById('conn-status').textContent='Setup needed';showSetup();return false;
+}
+function showSetup(){
+  document.getElementById('room-list').innerHTML=`<div class="setup-msg">Tables needed. Run in Supabase SQL Editor:<code class="setup-code">CREATE TABLE morse_rooms (id serial PRIMARY KEY, name text UNIQUE, created_at timestamptz DEFAULT now());
+CREATE TABLE morse_messages (id serial PRIMARY KEY, room_id int REFERENCES morse_rooms(id), username text, morse text, created_at timestamptz DEFAULT now());
+ALTER TABLE morse_rooms ENABLE ROW LEVEL SECURITY;
+ALTER TABLE morse_messages ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "pub" ON morse_rooms FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "pub" ON morse_messages FOR ALL USING (true) WITH CHECK (true);</code><button class="retry-btn" onclick="retryInit()">Retry</button></div>`;
+}
+async function retryInit(){document.getElementById('room-list').innerHTML='<div style="padding:10px;font-size:12px;color:var(--text3);">Scanning…</div>';await init();}
+
+// ── ROOMS ──
+async function loadRooms(){rooms=await supaFetch('morse_rooms?select=*&order=created_at.asc');renderRooms();}
+function renderRooms(){
+  const l=document.getElementById('room-list');
+  if(!rooms.length){l.innerHTML='<div style="padding:10px;font-size:12px;color:var(--text3);">No channels yet</div>';return;}
+  l.innerHTML=rooms.map(r=>`<div class="room-item${currentRoom?.id===r.id?' active':''}" onclick="joinRoom(${r.id})"><span class="room-hash">#</span>${escH(r.name)}</div>`).join('');
+}
+async function createRoom(){
+  const inp=document.getElementById('new-room-input');
+  const name=inp.value.trim().replace(/\s+/g,'_').toLowerCase();
+  if(!name)return;inp.value='';
+  await supaFetch('morse_rooms',{method:'POST',prefer:'return=representation',body:JSON.stringify({name})});
+  await loadRooms();const room=rooms.find(r=>r.name===name);if(room)joinRoom(room.id);
+}
+document.getElementById('new-room-input').addEventListener('keydown',e=>{if(e.key==='Enter')createRoom();});
+
+// ── JOIN ──
+function joinRoom(id){
+  currentRoom=rooms.find(r=>r.id===id);if(!currentRoom)return;
+  lastMsgId=0;for(const k in roomUsers)delete roomUsers[k];trackUser(username);
+  renderRooms();renderChat();loadMessages(true);
+  clearInterval(pollInterval);pollInterval=setInterval(pollMessages,2000);
 }
 
-async function retryInit() {
-  document.getElementById('room-list').innerHTML = '<div class="loading">SCANNING...</div>';
-  await init();
+// ── MESSAGES ──
+async function loadMessages(reset=false){
+  if(!currentRoom)return;
+  const msgs=await supaFetch(`morse_messages?room_id=eq.${currentRoom.id}&order=created_at.asc&limit=80`);
+  if(reset){document.getElementById('msg-container').innerHTML='';lastMsgId=0;}
+  for(const m of msgs){if(m.id>lastMsgId){appendMsg(m);lastMsgId=m.id;}}
+  scrollBot();
 }
-
-// ═══════════════════════════════════════════
-// ROOMS
-// ═══════════════════════════════════════════
-async function loadRooms() {
-  try {
-    rooms = await supaFetch('morse_rooms?select=*&order=created_at.asc');
-    renderRoomList();
-  } catch(e) {
-    console.error(e);
+async function pollMessages(){
+  if(!currentRoom)return;
+  const msgs=await supaFetch(`morse_messages?room_id=eq.${currentRoom.id}&id=gt.${lastMsgId}&order=created_at.asc`);
+  for(const m of msgs){appendMsg(m,true);if(m.id>lastMsgId)lastMsgId=m.id;}
+}
+function appendMsg(msg,sound=false){
+  const cont=document.getElementById('msg-container');if(!cont)return;
+  const tr=m2t(msg.morse);
+  const time=new Date(msg.created_at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  const isMention=tr.toUpperCase().includes('@'+username.toUpperCase());
+  const sm=escH(msg.morse);
+  const div=document.createElement('div');div.className='msg';
+  div.innerHTML=`<div class="m-avatar">${initials(msg.username)}</div>
+    <div class="m-body">
+      <div class="m-meta">
+        <span class="m-name">${escH(msg.username)}</span>
+        <span class="m-time">${time}</span>
+        ${isMention?'<span class="m-tag">@ you</span>':''}
+      </div>
+      <div class="m-bubble${isMention?' hi':''}" onclick="playMorse('${sm}')" title="Click to play">
+        <div class="m-morse">${sm}</div>
+        <div class="m-tr">
+          <span>${hiMention(escH(tr))}</span>
+          <button class="play-btn" onclick="event.stopPropagation();playMorse('${sm}')">▶ Play</button>
+        </div>
+      </div>
+    </div>`;
+  cont.appendChild(div);scrollBot();trackUser(msg.username);
+  if(sound&&!mutedUsers.has(msg.username)){
+    if(isMention){mentionBeep();setTimeout(()=>playMorse(msg.morse),600);}
+    else playMorse(msg.morse);
   }
 }
+function hiMention(t){return t.replace(/@([A-Z0-9_]+)/gi,'<span class="m-hi">@$1</span>');}
+function scrollBot(){const e=document.getElementById('msg-scroll');if(e)e.scrollTop=e.scrollHeight;}
 
-function renderRoomList() {
-  const list = document.getElementById('room-list');
-  if (!rooms.length) {
-    list.innerHTML = `<div style="padding:12px;font-size:0.65rem;color:var(--text-dim);">No channels yet.<br>Create one below.</div>`;
-    return;
-  }
-  list.innerHTML = rooms.map(r => `
-    <div class="room-item ${currentRoom?.id === r.id ? 'active' : ''}" onclick="joinRoom(${r.id})">
-      <span class="room-hash">#</span>
-      <span>${r.name}</span>
-    </div>
-  `).join('');
+async function sendMessage(){
+  if(!currentRoom)return;
+  const inp=document.getElementById('morse-input');
+  const raw=inp.value.trim();if(!raw)return;
+  let morse=raw;
+  if(!/^[.\- /]+$/.test(raw)){morse=t2m(raw);if(!morse)return;}
+  inp.value='';updateLiveT();clickerSymbols=[];renderClicker();
+  const result=await supaFetch('morse_messages',{method:'POST',prefer:'return=representation',headers:{'Prefer':'return=representation'},body:JSON.stringify({room_id:currentRoom.id,username,morse})});
+  if(Array.isArray(result)&&result[0]){const m=result[0];if(m.id>lastMsgId){appendMsg(m,true);lastMsgId=m.id;}}
 }
 
-async function createRoom() {
-  const input = document.getElementById('new-room-input');
-  const name = input.value.trim().replace(/\s+/g,'_').toLowerCase();
-  if (!name) return;
-  input.value = '';
-  try {
-    await supaFetch('morse_rooms', {
-      method: 'POST',
-      prefer: 'return=representation',
-      body: JSON.stringify({ name })
-    });
-    await loadRooms();
-    // auto-join
-    const room = rooms.find(r => r.name === name);
-    if (room) joinRoom(room.id);
-  } catch(e) {
-    console.error('Create room error', e);
-  }
-}
-
-document.getElementById('new-room-input').addEventListener('keydown', e => {
-  if (e.key === 'Enter') createRoom();
-});
-
-// ═══════════════════════════════════════════
-// JOIN ROOM
-// ═══════════════════════════════════════════
-function joinRoom(id) {
-  currentRoom = rooms.find(r => r.id === id);
-  if (!currentRoom) return;
-  lastMsgId = 0;
-  renderRoomList();
-  renderChatArea();
-  loadMessages(true);
-  clearInterval(pollInterval);
-  pollInterval = setInterval(() => pollMessages(), 2000);
-}
-
-// ═══════════════════════════════════════════
-// MESSAGES
-// ═══════════════════════════════════════════
-async function loadMessages(reset = false) {
-  if (!currentRoom) return;
-  const msgs = await supaFetch(`morse_messages?room_id=eq.${currentRoom.id}&order=created_at.asc&limit=80`);
-  if (reset) {
-    document.getElementById('msg-container').innerHTML = '';
-    lastMsgId = 0;
-  }
-  for (const m of msgs) {
-    if (m.id > lastMsgId) {
-      appendMessage(m);
-      lastMsgId = m.id;
-    }
-  }
-  scrollBottom();
-}
-
-async function pollMessages() {
-  if (!currentRoom) return;
-  const msgs = await supaFetch(`morse_messages?room_id=eq.${currentRoom.id}&id=gt.${lastMsgId}&order=created_at.asc`);
-  for (const m of msgs) {
-    appendMessage(m, true);
-    if (lastMsgId < m.id) lastMsgId = m.id;
-  }
-}
-
-function appendMessage(msg, withSound = false) {
-  const container = document.getElementById('msg-container');
-  if (!container) return;
-  const translation = morseToText(msg.morse);
-  const time = new Date(msg.created_at).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
-
-  const div = document.createElement('div');
-  div.className = 'msg';
-  div.innerHTML = `
-    <div class="msg-meta">
-      <span class="msg-user">${escHtml(msg.username)}</span>
-      <span>${time}</span>
-    </div>
-    <div class="msg-morse" title="Click to play" onclick="playMorseAudio('${escHtml(msg.morse)}')">${escHtml(msg.morse)}</div>
-    <div class="msg-translation">
-      <span>${escHtml(translation)}</span>
-      <button class="play-btn" onclick="playMorseAudio('${escHtml(msg.morse)}')">▶ PLAY</button>
-    </div>
-  `;
-  container.appendChild(div);
-  scrollBottom();
-
-  if (withSound) {
-    setTimeout(() => playMorseAudio(msg.morse), 50);
-  }
-}
-
-function scrollBottom() {
-  const msgs = document.getElementById('messages-scroll');
-  if (msgs) msgs.scrollTop = msgs.scrollHeight;
-}
-
-async function sendMessage() {
-  if (!currentRoom) return;
-  const input = document.getElementById('morse-input');
-  const morse = input.value.trim();
-  if (!morse) return;
-
-  // validate morse chars
-  const valid = /^[.\- /]+$/.test(morse);
-  if (!valid) {
-    // try to convert text to morse
-    const converted = textToMorse(morse);
-    if (converted) {
-      input.value = converted;
-      updateLiveTranslation();
-      return;
-    }
-    return;
-  }
-
-  input.value = '';
-  updateLiveTranslation();
-
-  const result = await supaFetch('morse_messages', {
-    method: 'POST',
-    prefer: 'return=representation',
-    headers: { 'Prefer': 'return=representation' },
-    body: JSON.stringify({ room_id: currentRoom.id, username, morse })
-  });
-
-  // Immediately append and track so poll doesn't duplicate it
-  if (Array.isArray(result) && result[0]) {
-    const msg = result[0];
-    if (msg.id > lastMsgId) {
-      appendMessage(msg, false);
-      lastMsgId = msg.id;
-    }
-  }
-}
-
-// ═══════════════════════════════════════════
-// RENDER CHAT AREA
-// ═══════════════════════════════════════════
-function renderChatArea() {
-  const area = document.getElementById('chat-area');
-  area.innerHTML = `
+// ── RENDER CHAT ──
+function renderChat(){
+  document.getElementById('chat-area').innerHTML=`
     <div class="chat-header">
-      <span style="color:var(--green-dim)">#</span>
-      <span class="chat-room-name">${escHtml(currentRoom.name)}</span>
-      <span class="chat-meta">morse · live · ${new Date().toLocaleDateString()}</span>
+      <div>
+        <div class="chat-title"># ${escH(currentRoom.name)}</div>
+        <div class="chat-sub">morse · live</div>
+      </div>
     </div>
-
-    <div class="messages" id="messages-scroll">
-      <div id="msg-container"></div>
-    </div>
-
+    <div class="messages" id="msg-scroll"><div id="msg-container"></div></div>
     <div class="input-area">
-      <div class="username-bar">
-        <label>CALLSIGN</label>
-        <input type="text" id="username-input" value="${username}" maxlength="12" placeholder="your name"
-          oninput="username=this.value.trim()||username">
-        <button class="ref-toggle" onclick="toggleRef()">MORSE REF ▾</button>
-      </div>
-
-      <div class="ref-panel" id="ref-panel">
-        <div class="morse-ref" id="morse-ref"></div>
-      </div>
-
-      <div class="morse-input-wrapper">
-        <input class="morse-input" id="morse-input" type="text"
-          placeholder="Type morse (. - space) or plain text → auto-converts"
-          oninput="updateLiveTranslation()"
-          onkeydown="handleMorseKey(event)">
-        <div class="live-translation" id="live-translation">— translation appears here —</div>
-      </div>
-
-      <div class="input-row">
-        <div class="keyboard-section">
-          <span class="kb-label">KEYS:</span>
-          <div class="kb-hints">
-            <div class="kb-key"><span>.</span> dot</div>
-            <div class="kb-key"><span>-</span> dash</div>
-            <div class="kb-key"><span>Space</span> letter gap</div>
-            <div class="kb-key"><span>/ or 3×Space</span> word gap</div>
-            <div class="kb-key"><span>Enter</span> send</div>
-          </div>
+      <div class="input-main">
+        <div class="input-col">
+          <input class="morse-input" id="morse-input" type="text"
+            placeholder="Type morse (. -) or plain text — auto-converts on send"
+            oninput="updateLiveT()" onkeydown="if(event.key==='Enter'){event.preventDefault();sendMessage();}">
+          <div class="live-t" id="live-t">Translation appears here</div>
         </div>
-        <button class="send-btn" onclick="sendMessage()">TRANSMIT ▶</button>
+        <button class="send-btn" onclick="sendMessage()">Transmit</button>
       </div>
-
-      <div style="border-top:1px solid var(--border);padding-top:12px;margin-top:4px;">
-        <div style="font-size:0.6rem;color:var(--text-dim);letter-spacing:3px;margin-bottom:10px;">⬡ TELEGRAPH CLICKER</div>
-        <div class="clicker-row">
-          <button class="clicker-btn" id="clicker-btn"
-            onmousedown="clickerPress()" onmouseup="clickerRelease()"
-            ontouchstart="clickerPress(event)" ontouchend="clickerRelease(event)">
-            <span class="clicker-symbol">●</span>
-            <span class="clicker-label">CLICK</span>
-          </button>
-          <div class="clicker-controls">
-            <div class="clicker-speed">
-              <span>WPM</span>
-              <input type="range" id="clicker-wpm" min="5" max="40" value="15" oninput="updateClickerWpm(this.value)">
-              <span id="clicker-wpm-val">15</span>
-            </div>
-            <div class="clicker-preview" id="clicker-preview">·</div>
-            <div class="clicker-actions">
-              <button class="clicker-undo" onclick="clickerUndo()">⌫ UNDO</button>
-              <button class="clicker-space" onclick="clickerWordSpace()">WORD SP</button>
-              <button class="clicker-space" onclick="clickerClear()" style="border-color:var(--red);color:var(--red);">CLR</button>
-            </div>
+      <div class="toolbar">
+        <span class="cs-lbl">Callsign</span>
+        <input class="cs-input" value="${escH(username)}" maxlength="12"
+          oninput="username=this.value.trim()||username;localStorage.setItem('morsenet-callsign',username);">
+        <button class="tool-btn" id="ref-btn" onclick="toggleRef()">Morse ref</button>
+        <button class="tool-btn" id="ck-toggle" onclick="toggleClicker()">Clicker</button>
+      </div>
+      <div class="ref-panel" id="ref-panel"></div>
+      <div class="clicker-panel" id="clicker-panel">
+        <button class="clicker-key" id="clicker-key"
+          onmousedown="ckPress(event)" onmouseup="ckRelease(event)"
+          ontouchstart="ckPress(event)" ontouchend="ckRelease(event)">
+          <span class="ck-sym">●</span>
+          <span class="ck-lbl">Hold</span>
+        </button>
+        <div class="ck-controls">
+          <div class="wpm-row">
+            <span>Speed</span>
+            <input type="range" id="ck-wpm" min="5" max="40" value="15"
+              oninput="ckWpm=parseInt(this.value);document.getElementById('ck-wpm-val').textContent=this.value+' wpm'">
+            <span id="ck-wpm-val">15 wpm</span>
+          </div>
+          <div class="ck-preview" id="ck-preview">·</div>
+          <div class="ck-btns">
+            <button class="ck-btn" onclick="ckUndo()">⌫ Undo</button>
+            <button class="ck-btn" onclick="ckWordSp()">Word space</button>
+            <button class="ck-btn danger" onclick="ckClear()">Clear</button>
           </div>
         </div>
       </div>
-    </div>
-  `;
-
-  buildMorseRef();
+    </div>`;
+  buildRef();
 }
 
-// ═══════════════════════════════════════════
-// MORSE REFERENCE PANEL
-// ═══════════════════════════════════════════
-function buildMorseRef() {
-  const ref = document.getElementById('morse-ref');
-  if (!ref) return;
-  const letters = Object.entries(MORSE).filter(([k]) => k !== ' ');
-  ref.innerHTML = letters.map(([k,v]) => `
-    <div class="ref-item" onclick="insertMorse('${v}')" title="${k}">
-      <span class="ref-letter">${k}</span>
-      <span class="ref-code">${v}</span>
-    </div>
-  `).join('');
+// ── REF PANEL ──
+function buildRef(){
+  const p=document.getElementById('ref-panel');if(!p)return;
+  p.innerHTML=Object.entries(MORSE).filter(([k])=>k!==' ').map(([k,v])=>`<div class="ref-item" onclick="insMorse('${v}')" title="${k}"><span class="ref-l">${k}</span><span class="ref-c">${v}</span></div>`).join('');
+}
+function toggleRef(){refOpen=!refOpen;document.getElementById('ref-panel')?.classList.toggle('open',refOpen);document.getElementById('ref-btn')?.classList.toggle('on',refOpen);}
+function toggleClicker(){clickerOpen=!clickerOpen;document.getElementById('clicker-panel')?.classList.toggle('open',clickerOpen);document.getElementById('ck-toggle')?.classList.toggle('on',clickerOpen);}
+function insMorse(code){const i=document.getElementById('morse-input');if(!i)return;i.value=i.value?(i.value.endsWith(' ')?i.value+code:i.value+' '+code):code;i.focus();updateLiveT();}
+function updateLiveT(){
+  const i=document.getElementById('morse-input'),l=document.getElementById('live-t');if(!i||!l)return;
+  const v=i.value.trim();
+  if(!v){l.textContent='Translation appears here';return;}
+  if(/^[.\- /]+$/.test(v))l.textContent='→ '+(m2t(v)||'…');
+  else l.textContent='⟳ Will convert: '+(t2m(v)||'…');
 }
 
-function toggleRef() {
-  refOpen = !refOpen;
-  const panel = document.getElementById('ref-panel');
-  if (panel) panel.classList.toggle('open', refOpen);
+// ── CLICKER — clean rewrite ──
+let ckWpm=15,ckPressTime=0,ckLetterTimer=null,ckWordTimer=null,clickerSymbols=[];
+let ckOsc=null,ckGain=null;
+
+function getDot(){return 1200/ckWpm;} // ms
+
+function ckPress(e){
+  if(e)e.preventDefault();
+  if(ckPressTime)return;
+  ckPressTime=Date.now();
+  clearTimeout(ckLetterTimer);clearTimeout(ckWordTimer);
+  document.getElementById('clicker-key')?.classList.add('pressed');
+  // start tone
+  const ctx=getCtx();
+  if(ckOsc){try{ckOsc.stop();}catch(e){}ckOsc=null;}
+  ckOsc=ctx.createOscillator();ckGain=ctx.createGain();
+  ckOsc.connect(ckGain);ckGain.connect(ctx.destination);
+  ckOsc.frequency.value=650;ckOsc.type='sine';
+  ckGain.gain.setValueAtTime(0,ctx.currentTime);
+  ckGain.gain.linearRampToValueAtTime(volume*.4,ctx.currentTime+.008);
+  ckOsc.start();
 }
 
-function insertMorse(code) {
-  const input = document.getElementById('morse-input');
-  if (!input) return;
-  const cur = input.value;
-  input.value = cur ? (cur.endsWith(' ') ? cur + code : cur + ' ' + code) : code;
-  input.focus();
-  updateLiveTranslation();
-}
-
-// ═══════════════════════════════════════════
-// INPUT HANDLING
-// ═══════════════════════════════════════════
-function handleMorseKey(e) {
-  if (e.key === 'Enter') {
-    e.preventDefault();
-    sendMessage();
+function ckRelease(e){
+  if(e)e.preventDefault();
+  if(!ckPressTime)return;
+  const held=Date.now()-ckPressTime;
+  ckPressTime=0;
+  document.getElementById('clicker-key')?.classList.remove('pressed');
+  // stop tone
+  if(ckOsc){
+    const ctx=getCtx();
+    ckGain.gain.linearRampToValueAtTime(0,ctx.currentTime+.008);
+    const o=ckOsc;ckOsc=null;
+    setTimeout(()=>{try{o.stop();}catch(e){}},20);
   }
+  const dot=getDot();
+  // dot = held < 2x dot duration, else dash
+  clickerSymbols.push(held < dot*2 ? '.' : '-');
+  renderClicker();
+  // after 3x dot silence → letter gap
+  ckLetterTimer=setTimeout(()=>{
+    clickerSymbols.push(' ');
+    renderClicker();
+    // after another 4x dot silence → word gap (upgrade the space to /)
+    ckWordTimer=setTimeout(()=>{
+      // find last space and upgrade to word gap
+      for(let i=clickerSymbols.length-1;i>=0;i--){
+        if(clickerSymbols[i]===' '){clickerSymbols[i]='/';break;}
+      }
+      renderClicker();
+    },dot*4);
+  },dot*3);
 }
 
-function updateLiveTranslation() {
-  const input = document.getElementById('morse-input');
-  const display = document.getElementById('live-translation');
-  if (!input || !display) return;
-  const val = input.value.trim();
-  if (!val) {
-    display.textContent = '— translation appears here —';
-    return;
+function renderClicker(){
+  // build clean morse: dots/dashes joined, spaces between letters, / between words
+  let out='';
+  for(let i=0;i<clickerSymbols.length;i++){
+    const s=clickerSymbols[i];
+    if(s==='.'||s==='-') out+=s;
+    else if(s===' ') out+=' ';
+    else if(s==='/') out+=' / ';
   }
-
-  // check if it's morse
-  if (/^[.\- /]+$/.test(val)) {
-    const translation = morseToText(val);
-    display.textContent = '▶ ' + (translation || '...');
-  } else {
-    // plain text
-    const converted = textToMorse(val);
-    display.textContent = '⟳ AUTO-CONVERT: ' + (converted || '...');
-  }
+  out=out.replace(/ {2,}/g,' ').trim();
+  const prev=document.getElementById('ck-preview');if(prev)prev.textContent=out||'·';
+  const inp=document.getElementById('morse-input');if(inp){inp.value=out;updateLiveT();}
 }
 
-// ═══════════════════════════════════════════
-// TELEGRAPH CLICKER
-// ═══════════════════════════════════════════
-let clickerWpm = 15;
-let clickerPressTime = 0;
-let clickerSymbols = [];
-let clickerLetterTimer = null;
-let clickerWordTimer = null;
-let clickerOsc = null;
-let clickerGainNode = null;
-
-function getDotDuration() {
-  return Math.round(1200 / clickerWpm);
+function ckUndo(){
+  clearTimeout(ckLetterTimer);clearTimeout(ckWordTimer);
+  while(clickerSymbols.length&&clickerSymbols[clickerSymbols.length-1]!=='.'&&clickerSymbols[clickerSymbols.length-1]!=='-')clickerSymbols.pop();
+  if(clickerSymbols.length)clickerSymbols.pop();
+  renderClicker();
+}
+function ckWordSp(){
+  clearTimeout(ckLetterTimer);clearTimeout(ckWordTimer);
+  while(clickerSymbols.length&&(clickerSymbols[clickerSymbols.length-1]===' '||clickerSymbols[clickerSymbols.length-1]==='/'))clickerSymbols.pop();
+  clickerSymbols.push('/');renderClicker();
+}
+function ckClear(){
+  clearTimeout(ckLetterTimer);clearTimeout(ckWordTimer);
+  clickerSymbols=[];renderClicker();
+  const i=document.getElementById('morse-input');if(i){i.value='';updateLiveT();}
 }
 
-function updateClickerWpm(val) {
-  clickerWpm = parseInt(val);
-  const el = document.getElementById('clicker-wpm-val');
-  if (el) el.textContent = val;
+// space bar = clicker when panel open and not typing
+document.addEventListener('keydown',e=>{if(e.key===' '&&clickerOpen&&document.activeElement?.tagName!=='INPUT'){e.preventDefault();ckPress();}});
+document.addEventListener('keyup',e=>{if(e.key===' '&&clickerOpen&&document.activeElement?.tagName!=='INPUT'){e.preventDefault();ckRelease();}});
+
+// ── THEMES ──
+const CSS_VARS=['--bg','--surface','--surface2','--border','--border2','--text','--text2','--text3','--accent','--accent-bg','--accent2','--danger','--success','--mention-bg','--mention-border'];
+function setTheme(name){
+  const root=document.documentElement;
+  CSS_VARS.forEach(v=>root.style.removeProperty(v));
+  document.querySelectorAll('.sw').forEach(s=>s.classList.remove('active'));
+  name==='light'?root.removeAttribute('data-theme'):root.setAttribute('data-theme',name);
+  document.querySelector(`.sw[onclick="setTheme('${name}')"]`)?.classList.add('active');
+  document.querySelector('.sw-custom')?.style&&(document.querySelector('.sw-custom').style.background='');
+  localStorage.setItem('morsenet-theme',name);
 }
-
-function clickerPress(e) {
-  if (e) e.preventDefault();
-  if (clickerPressTime) return; // already pressed
-  clickerPressTime = Date.now();
-  clearTimeout(clickerLetterTimer);
-  clearTimeout(clickerWordTimer);
-  const btn = document.getElementById('clicker-btn');
-  if (btn) btn.classList.add('pressed');
-  clickerStartTone();
+function setCustomTheme(hex){
+  const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+  const d=(c,f)=>Math.round(c*f),m=(c)=>Math.min(255,c);
+  const root=document.documentElement;
+  CSS_VARS.forEach(v=>root.style.removeProperty(v));
+  root.setAttribute('data-theme','custom');
+  root.style.setProperty('--bg',`rgb(${d(r,.04)},${d(g,.04)},${d(b,.04)})`);
+  root.style.setProperty('--surface',`rgb(${d(r,.09)},${d(g,.09)},${d(b,.09)})`);
+  root.style.setProperty('--surface2',`rgb(${d(r,.14)},${d(g,.14)},${d(b,.14)})`);
+  root.style.setProperty('--border',`rgba(${r},${g},${b},.12)`);
+  root.style.setProperty('--border2',`rgba(${r},${g},${b},.22)`);
+  root.style.setProperty('--text',`rgb(${m(r*.35+165)},${m(g*.35+165)},${m(b*.35+165)})`);
+  root.style.setProperty('--text2',`rgb(${d(r,.55)},${d(g,.55)},${d(b,.55)})`);
+  root.style.setProperty('--text3',`rgb(${d(r,.32)},${d(g,.32)},${d(b,.32)})`);
+  root.style.setProperty('--accent',hex);
+  root.style.setProperty('--accent-bg',`rgba(${r},${g},${b},.12)`);
+  root.style.setProperty('--accent2',`rgb(${m(r+55)},${m(g+55)},${m(b+55)})`);
+  root.style.setProperty('--danger','#ff4444');root.style.setProperty('--success','#44cc44');
+  root.style.setProperty('--mention-bg',`rgba(${r},${g},${b},.08)`);root.style.setProperty('--mention-border',hex);
+  document.querySelectorAll('.sw').forEach(s=>s.classList.remove('active'));
+  const cust=document.querySelector('.sw-custom');if(cust){cust.classList.add('active');cust.style.background=hex;}
+  localStorage.setItem('morsenet-theme','custom');localStorage.setItem('morsenet-custom-color',hex);
 }
-
-function clickerRelease(e) {
-  if (e) e.preventDefault();
-  if (!clickerPressTime) return;
-  const held = Date.now() - clickerPressTime;
-  const dot = getDotDuration();
-  clickerPressTime = 0;
-  clickerStopTone();
-  const btn = document.getElementById('clicker-btn');
-  if (btn) btn.classList.remove('pressed');
-  const symbol = held < dot * 2 ? '.' : '-';
-  // remove trailing space/slash before adding new symbol
-  while (clickerSymbols.length && (clickerSymbols[clickerSymbols.length-1] === ' ' || clickerSymbols[clickerSymbols.length-1] === '/')) {
-    clickerSymbols.pop();
-  }
-  if (clickerSymbols.length) clickerSymbols.push(' '); // inter-element gap
-  clickerSymbols.push(symbol);
-  updateClickerPreview();
-  // letter gap timer (3x dot)
-  clickerLetterTimer = setTimeout(() => {
-    // find last non-space and add letter separator
-    clickerSymbols.push('  '); // double space = letter sep internally
-    updateClickerPreview();
-    // word gap timer (additional 4x dot)
-    clickerWordTimer = setTimeout(() => {
-      const idx = clickerSymbols.lastIndexOf('  ');
-      if (idx !== -1) clickerSymbols[idx] = '/';
-      updateClickerPreview();
-    }, dot * 4);
-  }, dot * 3);
-}
-
-function clickerStartTone() {
-  const ctx = getAudioCtx();
-  if (clickerOsc) { try { clickerOsc.stop(); } catch(e){} clickerOsc = null; }
-  clickerOsc = ctx.createOscillator();
-  clickerGainNode = ctx.createGain();
-  clickerOsc.connect(clickerGainNode);
-  clickerGainNode.connect(ctx.destination);
-  clickerOsc.frequency.value = 650;
-  clickerOsc.type = 'sine';
-  clickerGainNode.gain.setValueAtTime(0, ctx.currentTime);
-  clickerGainNode.gain.linearRampToValueAtTime(volume * 0.4, ctx.currentTime + 0.005);
-  clickerOsc.start();
-}
-
-function clickerStopTone() {
-  if (!clickerOsc) return;
-  const ctx = getAudioCtx();
-  clickerGainNode.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.008);
-  const osc = clickerOsc; clickerOsc = null;
-  setTimeout(() => { try { osc.stop(); } catch(e){} }, 30);
-}
-
-function updateClickerPreview() {
-  const preview = document.getElementById('clicker-preview');
-  // build morse string: replace double-space with space, collapse spaces
-  const raw = clickerSymbols.join('').replace(/  /g, ' ').replace(/ +/g, ' ').trim();
-  if (preview) preview.textContent = raw || '·';
-  const input = document.getElementById('morse-input');
-  if (input) { input.value = raw; updateLiveTranslation(); }
-}
-
-function clickerUndo() {
-  clearTimeout(clickerLetterTimer);
-  clearTimeout(clickerWordTimer);
-  if (!clickerSymbols.length) return;
-  // pop until we hit a dot or dash
-  while (clickerSymbols.length && clickerSymbols[clickerSymbols.length-1] !== '.' && clickerSymbols[clickerSymbols.length-1] !== '-') {
-    clickerSymbols.pop();
-  }
-  if (clickerSymbols.length) clickerSymbols.pop(); // pop the dot/dash itself
-  updateClickerPreview();
-}
-
-function clickerWordSpace() {
-  clearTimeout(clickerLetterTimer);
-  clearTimeout(clickerWordTimer);
-  while (clickerSymbols.length && (clickerSymbols[clickerSymbols.length-1] === ' ' || clickerSymbols[clickerSymbols.length-1] === '/' || clickerSymbols[clickerSymbols.length-1] === '  ')) {
-    clickerSymbols.pop();
-  }
-  clickerSymbols.push('/');
-  updateClickerPreview();
-}
-
-function clickerClear() {
-  clearTimeout(clickerLetterTimer);
-  clearTimeout(clickerWordTimer);
-  clickerSymbols = [];
-  updateClickerPreview();
-}
-
-// Space bar triggers clicker when clicker-btn is focused
-document.addEventListener('keydown', e => {
-  if (e.key === ' ' && document.activeElement && document.activeElement.id === 'clicker-btn') {
-    e.preventDefault();
-    clickerPress();
-  }
-});
-document.addEventListener('keyup', e => {
-  if (e.key === ' ' && document.activeElement && document.activeElement.id === 'clicker-btn') {
-    e.preventDefault();
-    clickerRelease();
-  }
-});
-
-// ═══════════════════════════════════════════
-// THEME SWITCHER
-// ═══════════════════════════════════════════
-function setTheme(name) {
-  const root = document.documentElement;
-  if (name === 'green') {
-    root.removeAttribute('data-theme');
-  } else {
-    root.setAttribute('data-theme', name);
-  }
-  // update swatch active state
-  document.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
-  const active = document.querySelector('.swatch-' + name);
-  if (active) active.classList.add('active');
-  // fix header bg for white theme
-  const header = document.querySelector('header');
-  if (header) {
-    header.style.background = name === 'white' ? 'rgba(245,245,240,0.95)' : 'rgba(0,0,0,0.85)';
-  }
-  localStorage.setItem('morsenet-theme', name);
-}
-
-// restore saved theme
-(function() {
-  const saved = localStorage.getItem('morsenet-theme');
-  const savedCustom = localStorage.getItem('morsenet-custom-color');
-  if (saved === 'custom' && savedCustom) {
-    setTimeout(() => {
-      document.getElementById('custom-color-picker').value = savedCustom;
-      setCustomTheme(savedCustom);
-    }, 0);
-  } else if (saved) {
-    setTimeout(() => setTheme(saved), 0);
-  }
+(function(){
+  const s=localStorage.getItem('morsenet-theme'),c=localStorage.getItem('morsenet-custom-color');
+  if(s==='custom'&&c)setTimeout(()=>{document.getElementById('custom-color-picker').value=c;setCustomTheme(c);},0);
+  else if(s)setTimeout(()=>setTheme(s),0);
 })();
 
-function setCustomTheme(hex) {
-  // parse hex to rgb
-  const r = parseInt(hex.slice(1,3),16);
-  const g = parseInt(hex.slice(3,5),16);
-  const b = parseInt(hex.slice(5,7),16);
+// ── UTILS ──
+function escH(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 
-  // derive dark bg by darkening primary drastically
-  const bgR = Math.round(r * 0.03), bgG = Math.round(g * 0.03), bgB = Math.round(b * 0.03);
-  const surfR = Math.round(r * 0.06), surfG = Math.round(g * 0.06), surfB = Math.round(b * 0.06);
-  const surf2R = Math.round(r * 0.09), surf2G = Math.round(g * 0.09), surf2B = Math.round(b * 0.09);
-  const borderR = Math.round(r * 0.22), borderG = Math.round(g * 0.22), borderB = Math.round(b * 0.22);
-  const darkR = Math.round(r * 0.14), darkG = Math.round(g * 0.14), darkB = Math.round(b * 0.14);
-  const textR = Math.min(255, Math.round(r * 0.5 + 130)), textG = Math.min(255, Math.round(g * 0.5 + 130)), textB = Math.min(255, Math.round(b * 0.5 + 130));
-  const dimR = Math.round(r * 0.35), dimG = Math.round(g * 0.35), dimB = Math.round(b * 0.35);
-
-  const root = document.documentElement;
-  root.setAttribute('data-theme', 'custom');
-  root.style.setProperty('--bg',           `rgb(${bgR},${bgG},${bgB})`);
-  root.style.setProperty('--surface',      `rgb(${surfR},${surfG},${surfB})`);
-  root.style.setProperty('--surface2',     `rgb(${surf2R},${surf2G},${surf2B})`);
-  root.style.setProperty('--border',       `rgb(${borderR},${borderG},${borderB})`);
-  root.style.setProperty('--primary',      hex);
-  root.style.setProperty('--primary-dim',  `rgb(${Math.round(r*0.8)},${Math.round(g*0.8)},${Math.round(b*0.8)})`);
-  root.style.setProperty('--primary-dark', `rgb(${darkR},${darkG},${darkB})`);
-  root.style.setProperty('--primary-glow', `rgba(${r},${g},${b},0.15)`);
-  root.style.setProperty('--accent',       `rgb(${Math.min(255,r+80)},${Math.min(255,g+60)},${Math.max(0,b-40)})`);
-  root.style.setProperty('--text',         `rgb(${textR},${textG},${textB})`);
-  root.style.setProperty('--text-dim',     `rgb(${dimR},${dimG},${dimB})`);
-  root.style.setProperty('--green',        hex);
-  root.style.setProperty('--green-dim',    `rgb(${Math.round(r*0.8)},${Math.round(g*0.8)},${Math.round(b*0.8)})`);
-  root.style.setProperty('--green-dark',   `rgb(${darkR},${darkG},${darkB})`);
-  root.style.setProperty('--green-glow',   `rgba(${r},${g},${b},0.15)`);
-  root.style.setProperty('--amber',        `rgb(${Math.min(255,r+80)},${Math.min(255,g+60)},${Math.max(0,b-40)})`);
-
-  // header bg
-  const header = document.querySelector('header');
-  if (header) header.style.background = `rgba(${bgR},${bgG},${bgB},0.95)`;
-
-  // update active swatch
-  document.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
-  const customSwatch = document.querySelector('.swatch-custom');
-  if (customSwatch) {
-    customSwatch.classList.add('active');
-    customSwatch.style.background = hex;
-  }
-
-  localStorage.setItem('morsenet-theme', 'custom');
-  localStorage.setItem('morsenet-custom-color', hex);
-}
-
-// ═══════════════════════════════════════════
-// UTILS
-// ═══════════════════════════════════════════
-function escHtml(str) {
-  if (!str) return '';
-  return String(str)
-    .replace(/&/g,'&amp;')
-    .replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;')
-    .replace(/"/g,'&quot;')
-    .replace(/'/g,'&#39;');
-}
-
-// ═══════════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════════
-async function init() {
-  const ok = await ensureTables();
-  if (ok) {
-    await loadRooms();
-    // auto-join first room if exists
-    if (rooms.length) joinRoom(rooms[0].id);
-    document.getElementById('conn-status').textContent = 'ONLINE';
-  }
-}
-
+// ── INIT ──
+async function init(){const ok=await ensureTables();if(ok){await loadRooms();if(rooms.length)joinRoom(rooms[0].id);}}
 init();
 </script>
 </body>
