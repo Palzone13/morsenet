@@ -496,18 +496,26 @@ async function joinRoom(id){
 function showPasswordModal(room){
   const overlay=document.getElementById('modal-overlay');
   overlay.style.display='flex';
-  overlay.innerHTML=`<div class="modal">
+  const rname=escH(room.name);
+  const rid=room.id;
+  const modal=document.createElement('div');
+  modal.className='modal';
+  modal.innerHTML=`
     <div class="modal-title">🔒 Private Channel</div>
-    <div class="modal-sub">Enter the password for <strong>#${escH(room.name)}</strong></div>
-    <input class="modal-input" id="modal-pw-input" type="password" placeholder="Password…" maxlength="64" autofocus
-      onkeydown="if(event.key==='Enter')submitPassword(${room.id})">
+    <div class="modal-sub">Enter the password for <strong>#${rname}</strong></div>
+    <input class="modal-input" id="modal-pw-input" type="password" placeholder="Password…" maxlength="64">
     <div class="modal-err" id="modal-err"></div>
     <div class="modal-row">
-      <button class="modal-btn" onclick="closeModal()">Cancel</button>
-      <button class="modal-btn primary" onclick="submitPassword(${room.id})">Unlock</button>
-    </div>
-  </div>`;
-  setTimeout(()=>document.getElementById('modal-pw-input')?.focus(),50);
+      <button class="modal-btn" id="modal-cancel">Cancel</button>
+      <button class="modal-btn primary" id="modal-submit">Unlock</button>
+    </div>`;
+  overlay.innerHTML='';
+  overlay.appendChild(modal);
+  const pwInp=document.getElementById('modal-pw-input');
+  document.getElementById('modal-cancel').onclick=closeModal;
+  document.getElementById('modal-submit').onclick=()=>submitPassword(rid);
+  pwInp.addEventListener('keydown',e=>{if(e.key==='Enter')submitPassword(rid);});
+  setTimeout(()=>pwInp?.focus(),50);
 }
 
 async function submitPassword(id){
