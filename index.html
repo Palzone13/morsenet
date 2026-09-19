@@ -1,689 +1,5387 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MorseNet</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PAL Chess</title>
+<meta name="color-scheme" content="dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
-
-:root {
-  --bg:#f5f5f7; --surface:#ffffff; --surface2:#f0f0f2;
-  --border:rgba(0,0,0,0.08); --border2:rgba(0,0,0,0.14);
-  --text:#1a1a1e; --text2:#6b6b78; --text3:#a0a0aa;
-  --accent:#3b82f6; --accent-bg:#eff6ff; --accent2:#1d4ed8;
-  --danger:#ef4444; --success:#22c55e;
-  --mention-bg:#fef3c7; --mention-border:#f59e0b;
-  --radius:10px; --radius-sm:6px;
-  --font:'Inter',system-ui,sans-serif; --mono:'JetBrains Mono','Courier New',monospace;
+:root{
+  --ink:#12202b;
+  --panel:#1a2b38;
+  --panel2:#223646;
+  --line:#2f4658;
+  --text:#e8eef3;
+  --muted:#93a8b8;
+  --sea:#d3e2da;
+  --deep:#5a8580;
+  --gold:#f2b83c;
+  --danger:#e5645a;
+  --ok:#59c38e;
+  --f-head:'Bricolage Grotesque','Trebuchet MS',system-ui,sans-serif;
+  --f-body:'Figtree',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-piece:'Noto Sans Symbols 2','Segoe UI Symbol','Apple Symbols','DejaVu Sans','Arial Unicode MS',sans-serif;
+  color-scheme:dark;
 }
-[data-theme="dark"]{--bg:#0f0f11;--surface:#1a1a1f;--surface2:#25252c;--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);--text:#e8e8ee;--text2:#8888a0;--text3:#55556a;--accent:#60a5fa;--accent-bg:#1e2a40;--accent2:#93c5fd;--danger:#f87171;--success:#4ade80;--mention-bg:#2a2210;--mention-border:#d97706;}
-[data-theme="green"]{--bg:#04100a;--surface:#081a0f;--surface2:#0d2417;--border:rgba(0,255,80,0.1);--border2:rgba(0,255,80,0.2);--text:#b8ffd0;--text2:#4a9966;--text3:#2a5540;--accent:#00e054;--accent-bg:rgba(0,224,84,0.1);--accent2:#00ff80;--danger:#ff4444;--success:#00e054;--mention-bg:rgba(255,184,0,0.1);--mention-border:#ffb800;}
-[data-theme="amber"]{--bg:#100b00;--surface:#1a1200;--surface2:#261b00;--border:rgba(255,180,0,0.1);--border2:rgba(255,180,0,0.2);--text:#fff0b8;--text2:#998040;--text3:#554820;--accent:#ffb800;--accent-bg:rgba(255,184,0,0.1);--accent2:#ffd060;--danger:#ff4444;--success:#44cc44;--mention-bg:rgba(255,100,0,0.1);--mention-border:#ff6600;}
-[data-theme="purple"]{--bg:#08040f;--surface:#100818;--surface2:#180d24;--border:rgba(160,80,255,0.1);--border2:rgba(160,80,255,0.2);--text:#e8c8ff;--text2:#7040a0;--text3:#402060;--accent:#b060ff;--accent-bg:rgba(160,80,255,0.1);--accent2:#d090ff;--danger:#ff4466;--success:#44cc88;--mention-bg:rgba(255,80,160,0.1);--mention-border:#ff50a0;}
-[data-theme="red"]{--bg:#100000;--surface:#1a0000;--surface2:#260000;--border:rgba(255,60,60,0.1);--border2:rgba(255,60,60,0.2);--text:#ffc8c8;--text2:#994040;--text3:#552020;--accent:#ff3c3c;--accent-bg:rgba(255,60,60,0.1);--accent2:#ff8080;--danger:#ff6666;--success:#44cc44;--mention-bg:rgba(255,120,0,0.1);--mention-border:#ff8800;}
-[data-theme="cyan"]{--bg:#001018;--surface:#001824;--surface2:#002030;--border:rgba(0,220,255,0.1);--border2:rgba(0,220,255,0.2);--text:#b0f0ff;--text2:#307888;--text3:#104850;--accent:#00d8ff;--accent-bg:rgba(0,220,255,0.1);--accent2:#80eeff;--danger:#ff4455;--success:#00e080;--mention-bg:rgba(255,0,180,0.1);--mention-border:#ff00b4;}
-[data-theme="orange"]{--bg:#100500;--surface:#1a0c00;--surface2:#261400;--border:rgba(255,110,0,0.1);--border2:rgba(255,110,0,0.2);--text:#ffd8a8;--text2:#996030;--text3:#553010;--accent:#ff6a00;--accent-bg:rgba(255,106,0,0.1);--accent2:#ffaa50;--danger:#ff3333;--success:#44cc44;--mention-bg:rgba(255,200,0,0.1);--mention-border:#ffcc00;}
-[data-theme="blue"]{--bg:#00040f;--surface:#00081a;--surface2:#000d26;--border:rgba(60,120,255,0.1);--border2:rgba(60,120,255,0.2);--text:#b0c8ff;--text2:#304880;--text3:#102040;--accent:#4080ff;--accent-bg:rgba(60,120,255,0.1);--accent2:#80a8ff;--danger:#ff4455;--success:#44cc88;--mention-bg:rgba(0,200,255,0.1);--mention-border:#00c8ff;}
 
-*{box-sizing:border-box;margin:0;padding:0;}
-html,body{height:100%;overflow:hidden;}
-body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;}
-.app{display:flex;flex-direction:column;height:100vh;}
+*{box-sizing:border-box}
 
-/* TOPBAR */
-.topbar{display:flex;align-items:center;gap:12px;padding:0 16px;height:52px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;}
-.logo{font-size:15px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:8px;}
-.logo-icon{width:28px;height:28px;border-radius:8px;background:var(--accent);display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;font-family:var(--mono);letter-spacing:1px;}
-.theme-row{display:flex;align-items:center;gap:6px;margin-left:auto;}
-.theme-lbl{font-size:11px;color:var(--text2);font-weight:500;}
-.swatches{display:flex;gap:4px;align-items:center;}
-.sw{width:16px;height:16px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:transform .12s;flex-shrink:0;}
-.sw:hover{transform:scale(1.25);}
-.sw.active{border-color:var(--text);transform:scale(1.2);}
-.sw-custom{position:relative;overflow:hidden;}
-.sw-custom input[type=color]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;border:none;padding:0;}
-.topbar-right{display:flex;align-items:center;gap:10px;margin-left:10px;}
-.vol-row{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);}
-.vol-row input[type=range]{width:55px;accent-color:var(--accent);}
-.stop-btn{padding:4px 11px;border-radius:var(--radius-sm);border:1px solid var(--danger);background:transparent;color:var(--danger);cursor:pointer;font-size:12px;font-weight:500;font-family:var(--font);transition:all .12s;display:flex;align-items:center;gap:5px;white-space:nowrap;flex-shrink:0;}
-.stop-btn:hover{background:var(--danger);color:#fff;}
-.stop-btn:active{transform:scale(.95);}
-.stop-btn.flash{background:var(--danger);color:#fff;}
-.status-pill{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--success);font-weight:500;}
-.status-dot{width:6px;height:6px;border-radius:50%;background:var(--success);animation:pulse 2s infinite;}
-@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+html,body{
+  margin:0;
+  background:var(--ink);
+  color:var(--text);
+  font:400 16px/1.5 var(--f-body);
+  -webkit-text-size-adjust:100%
+}
 
-/* BODY */
-.body{display:flex;flex:1;overflow:hidden;}
+h1,h2,h3,h4{
+  font-family:var(--f-head);
+  margin:0;
+  line-height:1.15;
+  letter-spacing:-.01em
+}
 
-/* SIDEBAR */
-.sidebar-wrap{width:210px;display:flex;flex-direction:column;background:var(--surface);border-right:1px solid var(--border);flex-shrink:0;overflow:hidden;}
-.s-section{font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.8px;text-transform:uppercase;padding:14px 14px 5px;}
-.room-list{flex:1;overflow-y:auto;padding:2px 6px 4px;}
-.room-item{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:var(--text2);transition:background .1s,color .1s;}
-.room-item:hover{background:var(--surface2);color:var(--text);}
-.room-item.active{background:var(--accent-bg);color:var(--accent);font-weight:500;}
-.room-hash{font-size:15px;opacity:.4;}
-.new-room{padding:8px;border-top:1px solid var(--border);display:flex;gap:5px;}
-.new-room input{flex:1;padding:5px 8px;border-radius:var(--radius-sm);border:1px solid var(--border2);background:var(--surface2);color:var(--text);font-size:12px;outline:none;font-family:var(--font);}
-.new-room input:focus{border-color:var(--accent);}
-.new-room button{padding:5px 11px;border-radius:var(--radius-sm);border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;font-size:16px;transition:background .1s;}
-.new-room button:hover{background:var(--surface2);}
-.users-panel{border-top:1px solid var(--border);flex-shrink:0;}
-.user-list{padding:2px 6px 8px;max-height:200px;overflow-y:auto;}
-.user-item{display:flex;align-items:center;gap:7px;padding:5px 8px;border-radius:var(--radius-sm);cursor:pointer;transition:background .1s;}
-.user-item:hover{background:var(--surface2);}
-.user-item.muted-user .uname{opacity:.35;text-decoration:line-through;}
-.u-avatar{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;background:var(--accent-bg);color:var(--accent);flex-shrink:0;}
-.uname{font-size:12px;color:var(--text);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.u-you{color:var(--text3);font-size:10px;}
-.u-dot{width:6px;height:6px;border-radius:50%;background:var(--success);flex-shrink:0;}
-.u-dot.idle{background:var(--text3);}
-.u-dot.muted-dot{background:var(--danger);}
-.mute-btn{font-size:11px;padding:2px 5px;border-radius:4px;border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;flex-shrink:0;transition:all .1s;font-family:var(--font);}
-.mute-btn:hover{border-color:var(--danger);color:var(--danger);}
-.mute-btn.on{background:var(--danger);color:#fff;border-color:var(--danger);}
+h1{
+  font-size:clamp(34px,5.5vw,58px);
+  font-weight:800;
+  letter-spacing:-.03em
+}
 
-/* CHAT */
-.chat{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
-.chat-header{padding:11px 18px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-shrink:0;}
-.chat-title{font-size:14px;font-weight:600;}
-.chat-sub{font-size:11px;color:var(--text2);}
-.messages{flex:1;overflow-y:auto;padding:16px 18px;display:flex;flex-direction:column;gap:14px;background:var(--bg);}
-.messages::-webkit-scrollbar{width:4px;}
-.messages::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+h2{font-size:26px;font-weight:700}
+h3{font-size:18px;font-weight:700;margin-bottom:10px}
+h4{font-size:15px;font-weight:700;margin:18px 0 8px;color:var(--muted)}
+p{margin:0 0 12px}
+.muted{color:var(--muted)}
+.hidden{display:none !important}
 
-/* MESSAGE */
-.msg{display:flex;gap:10px;animation:msgIn .18s ease;}
-@keyframes msgIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;}}
-.m-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;background:var(--accent-bg);color:var(--accent);flex-shrink:0;margin-top:1px;}
-.m-body{flex:1;min-width:0;}
-.m-meta{display:flex;align-items:center;gap:7px;margin-bottom:4px;}
-.m-name{font-size:13px;font-weight:600;}
-.m-time{font-size:11px;color:var(--text3);}
-.m-tag{font-size:10px;font-weight:600;background:var(--mention-bg);color:var(--mention-border);padding:1px 6px;border-radius:99px;border:1px solid var(--mention-border);}
-.m-bubble{background:var(--surface);border:1px solid var(--border);border-radius:3px var(--radius) var(--radius) var(--radius);padding:10px 13px;max-width:680px;cursor:pointer;transition:border-color .12s;}
-.m-bubble:hover{border-color:var(--border2);}
-.m-bubble.hi{background:var(--mention-bg);border-color:var(--mention-border);}
-.m-morse{font-family:var(--mono);font-size:14px;color:var(--accent2);letter-spacing:2px;margin-bottom:5px;word-break:break-all;}
-.m-tr{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text2);}
-.play-btn{margin-left:auto;font-size:11px;padding:2px 9px;border-radius:99px;border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;font-family:var(--font);transition:all .1s;white-space:nowrap;flex-shrink:0;}
-.play-btn:hover{border-color:var(--accent);color:var(--accent);}
-.m-hi{color:var(--mention-border);font-weight:600;}
+:focus-visible{
+  outline:2px solid var(--gold);
+  outline-offset:2px
+}
 
-/* INPUT AREA */
-.input-area{background:var(--surface);border-top:1px solid var(--border);padding:12px 16px;display:flex;flex-direction:column;gap:9px;flex-shrink:0;}
-.input-main{display:flex;gap:8px;align-items:flex-end;}
-.input-col{flex:1;display:flex;flex-direction:column;gap:3px;}
-.morse-input{padding:9px 12px;border-radius:var(--radius-sm);border:1px solid var(--border2);background:var(--surface2);color:var(--text);font-family:var(--mono);font-size:13px;letter-spacing:1.5px;outline:none;transition:border-color .15s;width:100%;}
-.morse-input:focus{border-color:var(--accent);}
-.morse-input::placeholder{color:var(--text3);letter-spacing:.3px;font-size:12px;font-family:var(--font);}
-.live-t{font-size:11px;color:var(--text2);padding:0 2px;min-height:15px;}
-.send-btn{padding:9px 18px;border-radius:var(--radius-sm);background:var(--accent);color:#fff;border:none;font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font);transition:opacity .15s;white-space:nowrap;height:40px;flex-shrink:0;}
-.send-btn:hover{opacity:.85;}
-.toolbar{display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
-.cs-lbl{font-size:11px;color:var(--text2);}
-.cs-input{padding:4px 8px;border-radius:var(--radius-sm);border:1px solid var(--border2);background:var(--surface2);color:var(--text);font-size:12px;width:100px;outline:none;font-family:var(--font);}
-.cs-input:focus{border-color:var(--accent);}
-.tool-btn{font-size:12px;padding:4px 10px;border-radius:var(--radius-sm);border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;font-family:var(--font);transition:all .1s;}
-.tool-btn:hover{background:var(--surface2);color:var(--text);}
-.tool-btn.on{background:var(--accent-bg);color:var(--accent);border-color:var(--accent);}
+button{font-family:inherit}
 
-/* REF PANEL */
-.ref-panel{display:none;flex-wrap:wrap;gap:3px;padding:8px;background:var(--surface2);border-radius:var(--radius-sm);border:1px solid var(--border);max-height:120px;overflow-y:auto;}
-.ref-panel.open{display:flex;}
-.ref-item{display:flex;flex-direction:column;align-items:center;padding:3px 6px;border-radius:4px;cursor:pointer;border:1px solid var(--border);background:var(--surface);transition:all .1s;gap:1px;}
-.ref-item:hover{border-color:var(--accent);background:var(--accent-bg);}
-.ref-l{font-size:11px;font-weight:600;color:var(--text);}
-.ref-c{font-family:var(--mono);font-size:9px;color:var(--accent);}
+/* header */
+.top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:12px 20px;
+  border-bottom:1px solid var(--line);
+  background:var(--panel)
+}
 
-/* CLICKER PANEL */
-.clicker-panel{display:none;padding:12px;background:var(--surface2);border-radius:var(--radius-sm);border:1px solid var(--border);}
-.clicker-panel.open{display:flex;gap:14px;align-items:center;flex-wrap:wrap;}
-.clicker-key{width:72px;height:72px;border-radius:50%;border:2px solid var(--accent);background:var(--surface);color:var(--text2);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-family:var(--font);user-select:none;transition:background .08s,transform .08s,color .08s;outline:none;-webkit-tap-highlight-color:transparent;flex-shrink:0;}
-.clicker-key.pressed,.clicker-key:active{background:var(--accent);color:#fff;transform:scale(.92);}
-.ck-sym{font-size:24px;line-height:1;}
-.ck-lbl{font-size:9px;letter-spacing:1px;text-transform:uppercase;font-weight:500;}
-.ck-controls{display:flex;flex-direction:column;gap:8px;flex:1;min-width:160px;}
-.wpm-row{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text2);}
-.wpm-row input[type=range]{flex:1;accent-color:var(--accent);}
-.ck-preview{font-family:var(--mono);font-size:13px;color:var(--accent);letter-spacing:1.5px;padding:5px 8px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);min-height:28px;word-break:break-all;}
-.ck-btns{display:flex;gap:6px;flex-wrap:wrap;}
-.ck-btn{font-size:11px;padding:4px 10px;border-radius:var(--radius-sm);border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;font-family:var(--font);transition:all .1s;}
-.ck-btn:hover{background:var(--surface);color:var(--text);}
-.ck-btn.danger{border-color:var(--danger);color:var(--danger);}
-.ck-btn.danger:hover{background:var(--danger);color:#fff;}
+.brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  background:none;
+  border:0;
+  color:var(--text);
+  font:800 20px var(--f-head);
+  letter-spacing:-.02em;
+  cursor:pointer;
+  padding:4px 0
+}
 
-/* NO ROOM */
-.no-room{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--text2);}
-.no-room-morse{font-family:var(--mono);font-size:24px;letter-spacing:5px;color:var(--border2);}
+.brand .mark{
+  font-family:var(--f-piece);
+  font-size:28px;
+  color:var(--gold);
+  line-height:1
+}
 
-/* SETUP */
-.setup-msg{padding:12px;font-size:12px;color:var(--text2);line-height:1.8;}
-.setup-code{color:var(--accent);font-family:var(--mono);font-size:10px;word-break:break-all;background:var(--surface2);padding:8px;border-radius:var(--radius-sm);display:block;margin:6px 0;white-space:pre-wrap;}
-.retry-btn{margin-top:8px;width:100%;padding:7px;border-radius:var(--radius-sm);border:1px solid var(--accent);background:var(--accent-bg);color:var(--accent);cursor:pointer;font-family:var(--font);font-size:12px;}
-.retry-btn:hover{background:var(--accent);color:#fff;}
+.userbox{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  font-weight:600
+}
+
+.userbox .rate{
+  color:var(--gold);
+  font-family:var(--f-head);
+  font-weight:700
+}
+
+.userbox .uname{
+  max-width:32vw;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap
+}
+
+/* controls */
+.btn{
+  font:600 14px var(--f-body);
+  padding:10px 16px;
+  border-radius:9px;
+  border:1px solid var(--line);
+  background:var(--panel2);
+  color:var(--text);
+  cursor:pointer;
+  transition:background .15s,border-color .15s
+}
+
+.btn:hover:not(:disabled){
+  border-color:var(--muted)
+}
+
+.btn.primary{
+  background:var(--gold);
+  color:#241a05;
+  border-color:var(--gold)
+}
+
+.btn.primary:hover:not(:disabled){
+  background:#f7c75b;
+  border-color:#f7c75b
+}
+
+.btn.danger{
+  border-color:var(--danger);
+  color:#ffb3ac
+}
+
+.btn.ghost{background:transparent}
+
+.btn.sm{
+  padding:6px 12px;
+  font-size:13px
+}
+
+.btn:disabled{
+  opacity:.45;
+  cursor:not-allowed
+}
+
+.link{
+  background:none;
+  border:0;
+  color:var(--muted);
+  text-decoration:underline;
+  cursor:pointer;
+  font-size:14px;
+  padding:4px 0
+}
+
+input,select{
+  font:500 15px var(--f-body);
+  background:var(--ink);
+  color:var(--text);
+  border:1px solid var(--line);
+  border-radius:9px;
+  padding:11px 12px;
+  width:100%
+}
+
+input::placeholder{color:#5f7686}
+
+label{
+  display:block;
+  font-size:14px;
+  font-weight:600;
+  color:var(--muted);
+  margin-bottom:12px
+}
+
+label input{margin-top:6px}
+
+.seg{
+  display:inline-flex;
+  border:1px solid var(--line);
+  border-radius:9px;
+  overflow:hidden
+}
+
+.seg button{
+  background:var(--ink);
+  color:var(--muted);
+  border:0;
+  padding:9px 14px;
+  font:600 14px var(--f-body);
+  cursor:pointer
+}
+
+.seg button+button{
+  border-left:1px solid var(--line)
+}
+
+.seg button.on{
+  background:var(--panel2);
+  color:var(--text);
+  box-shadow:inset 0 -2px 0 var(--gold)
+}
+
+.row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  align-items:center;
+  margin-bottom:12px
+}
+
+.msg{
+  min-height:22px;
+  font-size:14px;
+  margin-bottom:10px;
+  color:var(--muted)
+}
+
+.msg.bad{color:#ff9d95}
+
+/* pieces */
+.pc,.cp{
+  font-family:var(--f-piece);
+  line-height:1;
+  user-select:none;
+  -webkit-user-select:none
+}
+
+.pc.w,.cp.w{
+  color:#fbf8ef;
+  -webkit-text-stroke:1.4px #1b2b36;
+  paint-order:stroke fill;
+  text-shadow:0 2px 3px rgba(0,0,0,.28)
+}
+
+.pc.b,.cp.b{
+  color:#141e26;
+  -webkit-text-stroke:1.4px rgba(255,255,255,.55);
+  paint-order:stroke fill;
+  text-shadow:0 2px 3px rgba(0,0,0,.3)
+}
+
+.pc{
+  font-size:calc(var(--bs) / 8 * .8);
+  position:relative;
+  z-index:2
+}
+
+.cp{
+  font-size:19px;
+  -webkit-text-stroke-width:.7px;
+  margin-right:-4px
+}
+
+.sq{
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent
+}
+
+.sq.light{background:var(--sea)}
+.sq.dark{background:var(--deep)}
+
+/* auth */
+.auth{
+  display:grid;
+  grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);
+  gap:56px;
+  align-items:center;
+  max-width:1080px;
+  margin:0 auto;
+  padding:56px 24px
+}
+
+.auth-hero p{
+  font-size:18px;
+  color:var(--muted);
+  max-width:46ch;
+  margin:16px 0 28px
+}
+
+.mini{
+  --bs:min(78vw,360px);
+  width:var(--bs);
+  height:var(--bs);
+  display:grid;
+  grid-template-columns:repeat(8,1fr);
+  border-radius:12px;
+  overflow:hidden;
+  box-shadow:0 18px 50px rgba(0,0,0,.45),0 0 0 6px var(--panel2)
+}
+
+.mini .pc{
+  font-size:calc(var(--bs) / 8 * .8)
+}
+
+.auth-card{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:26px
+}
+
+.tabs{
+  display:flex;
+  gap:4px;
+  margin-bottom:20px;
+  border-bottom:1px solid var(--line)
+}
+
+.tabs button{
+  background:none;
+  border:0;
+  color:var(--muted);
+  font:700 16px var(--f-head);
+  padding:10px 14px;
+  cursor:pointer;
+  border-bottom:3px solid transparent;
+  margin-bottom:-1px
+}
+
+.tabs button.on{
+  color:var(--text);
+  border-bottom-color:var(--gold)
+}
+
+.auth-card .btn.primary{
+  width:100%;
+  padding:12px
+}
+
+.or{
+  text-align:center;
+  color:var(--muted);
+  margin:16px 0;
+  font-size:14px
+}
+
+.auth-card #guest{width:100%}
+#forgot{margin-top:8px}
+
+/* lobby */
+.lobby{
+  max-width:1080px;
+  margin:0 auto;
+  padding:32px 24px 64px
+}
+
+.lobby-grid{
+  display:grid;
+  grid-template-columns:minmax(0,1.25fr) minmax(0,.75fr);
+  gap:44px
+}
+
+.block{
+  padding:20px 0;
+  border-top:1px solid var(--line)
+}
+
+.block:first-of-type{
+  border-top:0;
+  padding-top:12px
+}
+
+.block .row+.btn{margin-top:2px}
+
+.glist,.leaders{
+  list-style:none;
+  margin:0;
+  padding:0
+}
+
+.glist li{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 0;
+  border-bottom:1px solid var(--line)
+}
+
+.glist li .who{
+  flex:1;
+  min-width:0
+}
+
+.glist li .who b{font-weight:600}
+
+.glist li .sub{
+  color:var(--muted);
+  font-size:13px;
+  display:block
+}
+
+.tag{
+  font-size:12px;
+  font-weight:700;
+  padding:2px 8px;
+  border-radius:99px;
+  background:var(--panel2);
+  color:var(--gold)
+}
+
+.res-w{color:var(--ok)}
+.res-l{color:#ff9d95}
+.res-d{color:var(--muted)}
+
+.me{
+  display:flex;
+  align-items:center;
+  gap:16px;
+  margin-bottom:28px
+}
+
+.me-rate{
+  font:800 44px var(--f-head);
+  color:var(--gold);
+  letter-spacing:-.03em
+}
+
+.me-name{
+  font:700 20px var(--f-head)
+}
+
+.leaders li{
+  display:grid;
+  grid-template-columns:28px 1fr auto auto;
+  gap:10px;
+  padding:9px 0;
+  border-bottom:1px solid var(--line);
+  align-items:baseline
+}
+
+.leaders .rk{
+  color:var(--muted);
+  font-variant-numeric:tabular-nums
+}
+
+.leaders .rt{
+  font-family:var(--f-head);
+  font-weight:700;
+  color:var(--gold)
+}
+
+.leaders .wl{
+  color:var(--muted);
+  font-size:13px;
+  min-width:64px;
+  text-align:right
+}
+
+.leaders li.me-row .nm{
+  color:var(--gold);
+  font-weight:700
+}
+
+.leaders .nm{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap
+}
+
+.code-row input{
+  max-width:150px;
+  text-transform:uppercase;
+  letter-spacing:.12em;
+  font-weight:700
+}
+
+/* game */
+#view-game{
+  --bs:max(280px,min(calc(100vw - 32px),calc(100vh - 210px),680px))
+}
+
+.game{
+  display:flex;
+  flex-wrap:wrap;
+  gap:32px;
+  justify-content:center;
+  align-items:flex-start;
+  padding:20px 16px 48px
+}
+
+.board-wrap{width:var(--bs)}
+
+.board{
+  width:var(--bs);
+  height:var(--bs);
+  display:grid;
+  grid-template-columns:repeat(8,1fr);
+  grid-template-rows:repeat(8,1fr);
+  border-radius:12px;
+  overflow:hidden;
+  box-shadow:0 20px 56px rgba(0,0,0,.5),0 0 0 6px var(--panel2);
+  touch-action:manipulation
+}
+
+.board .sq.last::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:rgba(242,184,60,.5)
+}
+
+.board .sq.sel{
+  box-shadow:inset 0 0 0 4px var(--gold)
+}
+
+.board .sq.check{
+  background-image:radial-gradient(
+    circle,
+    rgba(229,100,90,.95) 0,
+    rgba(229,100,90,.55) 45%,
+    rgba(229,100,90,0) 72%
+  )
+}
+
+.board .sq.target::after{
+  content:"";
+  position:absolute;
+  width:26%;
+  height:26%;
+  border-radius:50%;
+  background:rgba(18,32,43,.38);
+  z-index:3;
+  pointer-events:none
+}
+
+.board .sq.target.cap::after{
+  width:100%;
+  height:100%;
+  border-radius:0;
+  background:none;
+  box-shadow:inset 0 0 0 5px rgba(18,32,43,.42)
+}
+
+.board .pc[draggable="true"]{cursor:grab}
+
+.co{
+  position:absolute;
+  font:700 clamp(9px,1.6vw,12px) var(--f-body);
+  font-style:normal;
+  z-index:1;
+  pointer-events:none
+}
+
+.co.rk{
+  top:3px;
+  left:4px
+}
+
+.co.fl{
+  bottom:2px;
+  right:4px
+}
+
+.sq.light .co{color:var(--deep)}
+.sq.dark .co{color:var(--sea)}
+
+.pbar{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  height:44px;
+  font-weight:600
+}
+
+.pbar .dot{
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:var(--line);
+  flex:none
+}
+
+.pbar.turn .dot{
+  background:var(--gold);
+  box-shadow:0 0 0 4px rgba(242,184,60,.25)
+}
+
+.pbar .pname{
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis
+}
+
+.pbar .pname em{
+  font-style:normal;
+  color:var(--muted);
+  font-weight:500;
+  margin-left:6px
+}
+
+.pbar .caps{
+  display:flex;
+  align-items:center;
+  margin-left:auto;
+  padding-right:4px
+}
+
+.pbar .adv{
+  color:var(--muted);
+  font-size:13px;
+  margin-left:8px;
+  min-width:22px
+}
+
+.side{
+  width:min(360px,100%);
+  display:flex;
+  flex-direction:column;
+  gap:14px
+}
+
+.status{
+  font:700 21px/1.25 var(--f-head);
+  min-height:54px;
+  padding-top:6px
+}
+
+.status.done{color:var(--gold)}
+
+.invite{
+  background:var(--panel);
+  border:1px dashed var(--muted);
+  border-radius:12px;
+  padding:14px 16px
+}
+
+.invite .big{
+  font:800 34px var(--f-head);
+  letter-spacing:.16em;
+  color:var(--gold)
+}
+
+.moves{
+  list-style:none;
+  margin:0;
+  padding:8px 12px;
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:12px;
+  height:230px;
+  overflow-y:auto;
+  font-variant-numeric:tabular-nums
+}
+
+.moves li{
+  display:grid;
+  grid-template-columns:34px 1fr 1fr;
+  padding:3px 0;
+  font-weight:500
+}
+
+.moves .n{color:var(--muted)}
+
+.moves:empty::before{
+  content:"Moves will appear here.";
+  color:var(--muted);
+  font-size:14px
+}
+
+.controls{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px
+}
+
+.moves span[data-ply]{
+  cursor:pointer;
+  border-radius:5px;
+  padding:0 6px;
+  margin-left:-6px
+}
+
+.moves span[data-ply]:hover{
+  background:var(--panel2)
+}
+
+.moves span.cur{
+  background:var(--gold);
+  color:#241a05;
+  font-weight:700
+}
+
+/* ═════════════ Move review labels ═════════════ */
+
+.move-review{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  margin-left:7px;
+  font-size:11px;
+  font-weight:700;
+  line-height:1;
+  vertical-align:middle;
+  white-space:nowrap
+}
+
+.review-dot{
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  display:inline-block;
+  flex:none
+}
+
+.review-excellent .review-dot{background:#59c38e}
+.review-incredible .review-dot{background:#62b5ff}
+.review-good .review-dot{background:#b7d98b}
+.review-inaccuracy .review-dot{background:#f2b83c}
+.review-mistake .review-dot{background:#e99a52}
+.review-blunder .review-dot{background:#e5645a}
+
+.review-excellent{color:#59c38e}
+.review-incredible{color:#62b5ff}
+.review-good{color:#b7d98b}
+.review-inaccuracy{color:#f2b83c}
+.review-mistake{color:#e99a52}
+.review-blunder{color:#e5645a}
+
+.review-loading{
+  color:var(--muted);
+  font-size:10px;
+  margin-left:6px
+}
+
+.note{
+  font-size:13px;
+  line-height:1.4
+}
+
+/* modal + toast */
+.scrim{
+  position:fixed;
+  inset:0;
+  background:rgba(6,12,18,.66);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  z-index:50
+}
+
+.modal{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:24px;
+  width:min(400px,100%)
+}
+
+.modal h3{font-size:20px}
+
+.mact{
+  display:flex;
+  gap:8px;
+  justify-content:flex-end;
+  margin-top:18px;
+  flex-wrap:wrap
+}
+
+.promo{
+  display:flex;
+  gap:10px;
+  justify-content:center
+}
+
+.promo .btn{padding:6px 10px}
+
+.promo .pc{font-size:46px}
+
+.toast{
+  position:fixed;
+  left:50%;
+  bottom:24px;
+  transform:translate(-50%,20px);
+  background:var(--panel2);
+  border:1px solid var(--line);
+  padding:12px 18px;
+  border-radius:10px;
+  font-weight:600;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .2s,transform .2s;
+  z-index:60;
+  max-width:92vw
+}
+
+.toast.show{
+  opacity:1;
+  transform:translate(-50%,0)
+}
+
+.toast.bad{border-color:var(--danger)}
+
+@media (max-width:860px){
+  .auth{
+    grid-template-columns:1fr;
+    gap:32px;
+    padding:28px 18px
+  }
+
+  .lobby-grid{
+    grid-template-columns:1fr;
+    gap:28px
+  }
+
+  .top{padding:10px 14px}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *{transition:none !important}
+}
 </style>
 </head>
+
 <body>
-<div class="app">
 
-  <div class="topbar">
-    <div class="logo">
-      <div class="logo-icon">·-·</div>
-      MorseNet
+<header class="top">
+  <button class="brand" id="brand" type="button" aria-label="PAL Chess home">
+    <span class="mark">&#9822;&#xFE0E;</span>
+    <span>PAL Chess</span>
+  </button>
+
+  <div class="userbox" id="userbox"></div>
+</header>
+
+<main>
+
+  <!-- Sign in -->
+  <section id="view-auth" class="auth hidden">
+    <div class="auth-hero">
+      <h1>Play chess.<br>Keep your rating.</h1>
+      <p>
+        Sign in to challenge friends online, climb the leaderboard,
+        and pick games back up on any device. Or skip the account and
+        play the computer.
+      </p>
+
+      <div class="mini" id="mini" aria-hidden="true"></div>
     </div>
-    <div class="theme-row">
-      <span class="theme-lbl">Theme</span>
-      <div class="swatches">
-        <div class="sw active" style="background:#f5f5f7;border-color:#aaa;" onclick="setTheme('light')" title="Light"></div>
-        <div class="sw" style="background:#1a1a1f;" onclick="setTheme('dark')" title="Dark"></div>
-        <div class="sw" style="background:#00e054;" onclick="setTheme('green')" title="Green"></div>
-        <div class="sw" style="background:#ffb800;" onclick="setTheme('amber')" title="Amber"></div>
-        <div class="sw" style="background:#b060ff;" onclick="setTheme('purple')" title="Purple"></div>
-        <div class="sw" style="background:#ff3c3c;" onclick="setTheme('red')" title="Red"></div>
-        <div class="sw" style="background:#00d8ff;" onclick="setTheme('cyan')" title="Cyan"></div>
-        <div class="sw" style="background:#ff6a00;" onclick="setTheme('orange')" title="Orange"></div>
-        <div class="sw" style="background:#4080ff;" onclick="setTheme('blue')" title="Blue"></div>
-        <div class="sw sw-custom" title="Custom">
-          <input type="color" id="custom-color-picker" value="#3b82f6" oninput="setCustomTheme(this.value)">
+
+    <div class="auth-card">
+
+      <div class="tabs" role="tablist">
+        <button id="tab-in" type="button" class="on">Sign in</button>
+        <button id="tab-up" type="button">Create account</button>
+      </div>
+
+      <form id="auth-form" novalidate>
+
+        <label id="f-user" class="hidden">
+          Username
+          <input
+            id="a-user"
+            autocomplete="username"
+            maxlength="20"
+            placeholder="3–20 letters, numbers, underscores"
+          >
+        </label>
+
+        <label>
+          Email
+          <input
+            id="a-email"
+            type="email"
+            autocomplete="email"
+            placeholder="you@example.com"
+          >
+        </label>
+
+        <label>
+          Password
+          <input
+            id="a-pass"
+            type="password"
+            autocomplete="current-password"
+            placeholder="At least 6 characters"
+          >
+        </label>
+
+        <div id="auth-msg" class="msg" role="status"></div>
+
+        <button class="btn primary" id="auth-submit" type="submit">
+          Sign in
+        </button>
+
+        <button class="link" type="button" id="forgot">
+          Forgot password?
+        </button>
+      </form>
+
+      <div class="or">or</div>
+
+      <button class="btn" id="guest" type="button">
+        Play as guest
+      </button>
+
+    </div>
+  </section>
+
+  <!-- Lobby -->
+  <section id="view-lobby" class="lobby hidden">
+
+    <div class="lobby-grid">
+
+      <div>
+
+        <h2>Start a game</h2>
+
+        <div class="block">
+
+          <h3>Play the computer</h3>
+
+          <div class="row">
+
+            <div class="seg" id="seg-level" data-val="2" aria-label="Difficulty">
+              <button type="button" data-v="1">Easy</button>
+              <button type="button" data-v="2" class="on">Medium</button>
+              <button type="button" data-v="3">Hard</button>
+            </div>
+
+            <div class="seg" id="seg-color" data-val="w" aria-label="Your color">
+              <button type="button" data-v="w" class="on">White</button>
+              <button type="button" data-v="b">Black</button>
+              <button type="button" data-v="r">Random</button>
+            </div>
+
+          </div>
+
+          <button class="btn primary" id="start-ai" type="button">
+            Start game
+          </button>
+
         </div>
-      </div>
-    </div>
-    <div class="topbar-right">
-      <div class="vol-row">
-        <span>Vol</span>
-        <input type="range" id="volume" min="0" max="1" step="0.05" value="0.5">
-      </div>
-      <button class="stop-btn" id="stop-btn" onclick="stopAllSounds()" title="Stop all audio (Esc)">■ Stop</button>
-      <div class="status-pill">
-        <div class="status-dot"></div>
-        <span id="conn-status">Connecting…</span>
-      </div>
-    </div>
-  </div>
 
-  <div class="body">
-    <div class="sidebar-wrap">
-      <div class="s-section">Channels</div>
-      <div class="room-list" id="room-list">
-        <div style="padding:10px;font-size:12px;color:var(--text3);">Scanning…</div>
-      </div>
-      <div class="new-room">
-        <input id="new-room-input" placeholder="new channel…" maxlength="20">
-        <button onclick="createRoom()">+</button>
-      </div>
-      <div class="users-panel">
-        <div class="s-section">Online</div>
-        <div class="user-list" id="user-list">
-          <div style="padding:6px 10px;font-size:12px;color:var(--text3);">No signals yet</div>
+        <div class="block">
+
+          <h3>Two players, one screen</h3>
+
+          <button class="btn" id="start-local" type="button">
+            Pass and play
+          </button>
+
         </div>
+
+        <div class="block" id="online-block"></div>
+
       </div>
+
+      <div>
+
+        <div id="me-card"></div>
+
+        <h2 style="margin-bottom:8px">Leaderboard</h2>
+
+        <ol class="leaders" id="leaders"></ol>
+
+      </div>
+
     </div>
 
-    <div class="chat" id="chat-area">
-      <div class="no-room">
-        <div class="no-room-morse">— · · · —</div>
-        <div>Select a channel to begin</div>
+  </section>
+
+  <!-- Game -->
+  <section id="view-game" class="hidden">
+
+    <div class="game">
+
+      <div class="board-wrap">
+
+        <div class="pbar" id="pbar-top"></div>
+
+        <div class="board" id="board" aria-label="Chess board"></div>
+
+        <div class="pbar" id="pbar-bot"></div>
+
       </div>
+
+      <aside class="side">
+
+        <div class="status" id="status" role="status" aria-live="polite"></div>
+
+        <div class="invite hidden" id="invite"></div>
+
+        <ol class="moves" id="moves" aria-label="Move list"></ol>
+
+        <div class="note muted hidden" id="note"></div>
+
+        <div class="controls" id="controls"></div>
+
+      </aside>
+
     </div>
-  </div>
-</div>
+
+  </section>
+
+</main>
+
+<div id="modal-root"></div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-// ── SUPABASE ──
-const SUPA_URL='https://dsgmmknejsgvyzoiimnh.supabase.co';
-const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRzZ21ta25lanNndnl6b2lpbW5oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwNjUzNDMsImV4cCI6MjA5MjY0MTM0M30.ApQdbSuiCcE0HSi2J14W4Ol2mgDMwipE1scs_PHgwrY';
-async function supaFetch(path,opts={}){
-  const res=await fetch(`${SUPA_URL}/rest/v1/${path}`,{...opts,headers:{'apikey':SUPA_KEY,'Authorization':`Bearer ${SUPA_KEY}`,'Content-Type':'application/json','Prefer':opts.prefer||'',...opts.headers}});
-  if(opts.noBody)return res;
-  const t=await res.text();return t?JSON.parse(t):[];
+(() => {
+'use strict';
+
+/* ═════════════ Config ═════════════ */
+
+const SUPABASE_URL = 'https://actpttkngkmjmzhukxva.supabase.co';
+
+/*
+  PUT YOUR EXISTING SUPABASE ANON KEY HERE.
+*/
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFjdHB0dGtuZ2ttam16aHVreHZhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyNzg3ODcsImV4cCI6MjA4ODg1NDc4N30.bTB_g1F2bSf5G80cEpII9KUwimscyKt7a3Ll9NFNG2w';
+
+
+/* ═════════════ Helpers ═════════════ */
+
+const $ = id => document.getElementById(id);
+
+const esc = s =>
+  String(s == null ? '' : s).replace(
+    /[&<>"']/g,
+    c => ({
+      '&':'&amp;',
+      '<':'&lt;',
+      '>':'&gt;',
+      '"':'&quot;',
+      "'":'&#39;'
+    }[c])
+  );
+
+const FILES = 'abcdefgh';
+
+const GLYPH = {
+  k:'\u265A\uFE0E',
+  q:'\u265B\uFE0E',
+  r:'\u265C\uFE0E',
+  b:'\u265D\uFE0E',
+  n:'\u265E\uFE0E',
+  p:'\u265F\uFE0E'
+};
+
+const PV = {
+  p:1,
+  n:3,
+  b:3,
+  r:5,
+  q:9,
+  k:0
+};
+
+const pick = a => a[Math.floor(Math.random() * a.length)];
+
+let toastTimer;
+
+function toast(msg, bad) {
+  const t = $('toast');
+
+  t.textContent = msg;
+
+  t.className = 'toast show' + (bad ? ' bad' : '');
+
+  clearTimeout(toastTimer);
+
+  toastTimer = setTimeout(() => {
+    t.className = 'toast';
+  }, 4500);
 }
 
-// ── MORSE ──
-const MORSE={A:'.-',B:'-...',C:'-.-.',D:'-..',E:'.',F:'..-.',G:'--.',H:'....',I:'..',J:'.---',K:'-.-',L:'.-..',M:'--',N:'-.',O:'---',P:'.--.',Q:'--.-',R:'.-.',S:'...',T:'-',U:'..-',V:'...-',W:'.--',X:'-..-',Y:'-.--',Z:'--..',0:'-----',1:'.----',2:'..---',3:'...--',4:'....-',5:'.....',6:'-....',7:'--...',8:'---..',9:'----.','.':'.-.-.-',',':'--..--','?':'..--..','!':'-.-.--','/':'-..-.','@':'.--.-.','=':'-...-',' ':'/'};
-const MREV={};for(const[k,v]of Object.entries(MORSE))MREV[v]=k;MREV['/']='\u0020';
-function t2m(txt){return txt.toUpperCase().split('').map(c=>MORSE[c]||'').filter(Boolean).join(' ');}
-function m2t(m){return m.trim().split('   ').map(w=>w.split(' ').map(c=>c==='/'?' ':(MREV[c]||'?')).join('')).join(' ');}
+function modal(title, bodyHtml, buttons, dismissable) {
 
-// ── AUDIO ──
-let audioCtx=null,volume=0.5,audioQ=[],audioPlay=false;
-document.getElementById('volume').addEventListener('input',e=>volume=parseFloat(e.target.value));
-function getCtx(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();return audioCtx;}
-function playMorse(morse){if(!morse?.trim())return;audioQ.push(morse);if(!audioPlay)drain();}
-function drain(){if(!audioQ.length){audioPlay=false;return;}audioPlay=true;const d=sched(audioQ.shift());setTimeout(drain,Math.max(d*1000+120,100));}
-function sched(morse){const ctx=getCtx(),dot=0.06,freq=650;let t=ctx.currentTime+0.05;for(const s of morse){if(s==='.'){beep(ctx,t,dot,freq);t+=dot*1.3;}else if(s==='-'){beep(ctx,t,dot*3,freq);t+=dot*3.3;}else if(s===' '){t+=dot*2;}else if(s==='/'){t+=dot*4;}}return t-(ctx.currentTime+0.05);}
-function beep(ctx,start,dur,freq){const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.frequency.value=freq;o.type='sine';g.gain.setValueAtTime(0,start);g.gain.linearRampToValueAtTime(volume*.4,start+.005);g.gain.setValueAtTime(volume*.4,start+dur-.005);g.gain.linearRampToValueAtTime(0,start+dur);o.start(start);o.stop(start+dur+.01);}
-function mentionBeep(){const ctx=getCtx(),t=ctx.currentTime;[[880,0,.12],[1100,.15,.12],[880,.3,.08],[1100,.4,.18]].forEach(([fr,off,d])=>{const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.frequency.value=fr;o.type='triangle';g.gain.setValueAtTime(0,t+off);g.gain.linearRampToValueAtTime(volume*.5,t+off+.01);g.gain.setValueAtTime(volume*.5,t+off+d-.01);g.gain.linearRampToValueAtTime(0,t+off+d);o.start(t+off);o.stop(t+off+d+.02);});}
+  const root = $('modal-root');
 
-// ── STOP ALL SOUNDS ──
-function stopAllSounds(){
-  // Clear the playback queue
-  audioQ=[];
-  audioPlay=false;
-  // Stop the clicker oscillator if active
-  if(ckOsc){
-    try{
-      const ctx=getCtx();
-      ckGain.gain.cancelScheduledValues(ctx.currentTime);
-      ckGain.gain.setValueAtTime(0,ctx.currentTime);
-      ckOsc.stop();
-    }catch(e){}
-    ckOsc=null;ckGain=null;
-  }
-  // Close and recreate the AudioContext to kill any scheduled beeps
-  if(audioCtx){
-    try{audioCtx.close();}catch(e){}
-    audioCtx=null;
-  }
-  // Flash the button for feedback
-  const btn=document.getElementById('stop-btn');
-  if(btn){btn.classList.add('flash');setTimeout(()=>btn.classList.remove('flash'),300);}
-}
-
-// Esc key shortcut
-document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'){stopAllSounds();}
-});
-
-// ── STATE ──
-let currentRoom=null,pollInterval=null,presenceInterval=null,heartbeatInterval=null,lastMsgId=0,rooms=[];
-let username=localStorage.getItem('morsenet-callsign')||('OP_'+Math.random().toString(36).substr(2,4).toUpperCase());
-let refOpen=false,clickerOpen=false;
-
-// ── PRESENCE ──
-const mutedUsers=new Set(JSON.parse(localStorage.getItem('morsenet-muted')||'[]'));
-let onlineUsers={}; // username -> last_seen ms
-function saveMuted(){localStorage.setItem('morsenet-muted',JSON.stringify([...mutedUsers]));}
-function toggleMute(u,e){e.stopPropagation();mutedUsers.has(u)?mutedUsers.delete(u):mutedUsers.add(u);saveMuted();renderUsers();}
-function initials(n){return(n||'?').slice(0,2).toUpperCase();}
-
-// Upsert our own presence row into DB
-async function upsertPresence(){
-  if(!currentRoom)return;
-  try{
-    await supaFetch('morse_presence',{method:'POST',prefer:'resolution=merge-duplicates',
-      headers:{'Prefer':'resolution=merge-duplicates,return=minimal'},
-      body:JSON.stringify({room_id:currentRoom.id,username,last_seen:new Date().toISOString()})});
-  }catch(e){}
-}
-
-// Delete our presence row — fires synchronously on tab close
-function deletePresence(){
-  if(!currentRoom)return;
-  const url=`${SUPA_URL}/rest/v1/morse_presence?room_id=eq.${currentRoom.id}&username=eq.${encodeURIComponent(username)}`;
-  // sendBeacon survives page unload; we send an empty body — the DELETE is via the URL filter
-  // Supabase REST requires DELETE method, so we use a keepalive fetch + sync XHR fallback
-  try{
-    fetch(url,{method:'DELETE',keepalive:true,headers:{'apikey':SUPA_KEY,'Authorization':`Bearer ${SUPA_KEY}`}});
-  }catch(e){}
-  try{
-    const x=new XMLHttpRequest();
-    x.open('DELETE',url,false); // synchronous
-    x.setRequestHeader('apikey',SUPA_KEY);
-    x.setRequestHeader('Authorization',`Bearer ${SUPA_KEY}`);
-    x.send();
-  }catch(e){}
-}
-
-// Poll presence from DB and re-render user list
-async function pollPresence(){
-  if(!currentRoom)return;
-  try{
-    const rows=await supaFetch(`morse_presence?room_id=eq.${currentRoom.id}&select=username,last_seen`);
-    if(!Array.isArray(rows))return;
-    // Accept rows seen within 35s (heartbeat=20s, so one missed beat is still ok)
-    const cutoff=Date.now()-35000;
-    onlineUsers={};
-    for(const r of rows){
-      const ts=new Date(r.last_seen).getTime();
-      if(ts>cutoff)onlineUsers[r.username]=ts;
-    }
-    renderUsers();
-  }catch(e){}
-}
-
-function renderUsers(){
-  const list=document.getElementById('user-list');if(!list)return;
-  const entries=Object.entries(onlineUsers).sort((a,b)=>b[1]-a[1]);
-  if(!entries.length){list.innerHTML='<div style="padding:6px 10px;font-size:12px;color:var(--text3);">No signals yet</div>';return;}
-  const now=Date.now();
-  list.innerHTML=entries.map(([u,ts])=>{
-    const me=u===username,muted=mutedUsers.has(u),idle=now-ts>25000;
-    return`<div class="user-item${muted?' muted-user':''}" onclick="insertAt('${escH(u)}')" title="@mention">
-      <div class="u-avatar">${initials(u)}</div>
-      <span class="uname">${escH(u)}${me?'<span class="u-you"> (you)</span>':''}</span>
-      <div class="u-dot${muted?' muted-dot':idle?' idle':''}"></div>
-      ${!me?`<button class="mute-btn${muted?' on':''}" onclick="toggleMute('${escH(u)}',event)">${muted?'🔇':'🔊'}</button>`:''}
-    </div>`;
-  }).join('');
-}
-function insertAt(u){const i=document.getElementById('morse-input');if(!i)return;i.value=(i.value?i.value+' ':'')+`@${u}`;i.focus();updateLiveT();}
-
-// Start heartbeat + presence polling when entering a room
-function startPresence(){
-  clearInterval(heartbeatInterval);clearInterval(presenceInterval);
-  upsertPresence();
-  heartbeatInterval=setInterval(upsertPresence,20000);
-  pollPresence();
-  presenceInterval=setInterval(pollPresence,5000);
-}
-
-// Tab close / hide → delete presence immediately
-window.addEventListener('beforeunload',deletePresence);
-document.addEventListener('visibilitychange',()=>{
-  if(document.visibilityState==='hidden')deletePresence();
-  else{upsertPresence();pollPresence();}
-});
-
-// ── DB INIT ──
-async function ensureTables(){
-  try{const r=await supaFetch('morse_rooms?select=id&limit=1');if(Array.isArray(r)){document.getElementById('conn-status').textContent='Online';return true;}}catch(e){}
-  document.getElementById('conn-status').textContent='Setup needed';showSetup();return false;
-}
-function showSetup(){
-  document.getElementById('room-list').innerHTML=`<div class="setup-msg">Tables needed. Run in Supabase SQL Editor:<code class="setup-code">CREATE TABLE morse_rooms (id serial PRIMARY KEY, name text UNIQUE, created_at timestamptz DEFAULT now());
-CREATE TABLE morse_messages (id serial PRIMARY KEY, room_id int REFERENCES morse_rooms(id), username text, morse text, created_at timestamptz DEFAULT now());
-CREATE TABLE morse_presence (room_id int REFERENCES morse_rooms(id), username text, last_seen timestamptz DEFAULT now(), PRIMARY KEY (room_id, username));
-ALTER TABLE morse_rooms ENABLE ROW LEVEL SECURITY;
-ALTER TABLE morse_messages ENABLE ROW LEVEL SECURITY;
-ALTER TABLE morse_presence ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "pub" ON morse_rooms FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "pub" ON morse_messages FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "pub" ON morse_presence FOR ALL USING (true) WITH CHECK (true);</code><button class="retry-btn" onclick="retryInit()">Retry</button></div>`;
-}
-async function retryInit(){document.getElementById('room-list').innerHTML='<div style="padding:10px;font-size:12px;color:var(--text3);">Scanning…</div>';await init();}
-
-// ── ROOMS ──
-async function loadRooms(){rooms=await supaFetch('morse_rooms?select=*&order=created_at.asc');renderRooms();}
-function renderRooms(){
-  const l=document.getElementById('room-list');
-  if(!rooms.length){l.innerHTML='<div style="padding:10px;font-size:12px;color:var(--text3);">No channels yet</div>';return;}
-  l.innerHTML=rooms.map(r=>`<div class="room-item${currentRoom?.id===r.id?' active':''}" onclick="joinRoom(${r.id})"><span class="room-hash">#</span>${escH(r.name)}</div>`).join('');
-}
-async function createRoom(){
-  const inp=document.getElementById('new-room-input');
-  const name=inp.value.trim().replace(/\s+/g,'_').toLowerCase();
-  if(!name)return;inp.value='';
-  await supaFetch('morse_rooms',{method:'POST',prefer:'return=representation',body:JSON.stringify({name})});
-  await loadRooms();const room=rooms.find(r=>r.name===name);if(room)joinRoom(room.id);
-}
-document.getElementById('new-room-input').addEventListener('keydown',e=>{if(e.key==='Enter')createRoom();});
-
-// ── JOIN ──
-function joinRoom(id){
-  currentRoom=rooms.find(r=>r.id===id);if(!currentRoom)return;
-  lastMsgId=0;onlineUsers={};
-  renderRooms();renderChat();loadMessages(true);
-  clearInterval(pollInterval);pollInterval=setInterval(pollMessages,2000);
-  startPresence();
-}
-
-// ── MESSAGES ──
-async function loadMessages(reset=false){
-  if(!currentRoom)return;
-  const msgs=await supaFetch(`morse_messages?room_id=eq.${currentRoom.id}&order=created_at.asc&limit=80`);
-  if(reset){document.getElementById('msg-container').innerHTML='';lastMsgId=0;}
-  for(const m of msgs){if(m.id>lastMsgId){appendMsg(m);lastMsgId=m.id;}}
-  scrollBot();
-}
-async function pollMessages(){
-  if(!currentRoom)return;
-  const msgs=await supaFetch(`morse_messages?room_id=eq.${currentRoom.id}&id=gt.${lastMsgId}&order=created_at.asc`);
-  for(const m of msgs){appendMsg(m,true);if(m.id>lastMsgId)lastMsgId=m.id;}
-}
-function appendMsg(msg,sound=false){
-  const cont=document.getElementById('msg-container');if(!cont)return;
-  const tr=m2t(msg.morse);
-  const time=new Date(msg.created_at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-  const isMention=tr.toUpperCase().includes('@'+username.toUpperCase());
-  const sm=escH(msg.morse);
-  const div=document.createElement('div');div.className='msg';
-  div.innerHTML=`<div class="m-avatar">${initials(msg.username)}</div>
-    <div class="m-body">
-      <div class="m-meta">
-        <span class="m-name">${escH(msg.username)}</span>
-        <span class="m-time">${time}</span>
-        ${isMention?'<span class="m-tag">@ you</span>':''}
-      </div>
-      <div class="m-bubble${isMention?' hi':''}" onclick="playMorse('${sm}')" title="Click to play">
-        <div class="m-morse">${sm}</div>
-        <div class="m-tr">
-          <span>${hiMention(escH(tr))}</span>
-          <button class="play-btn" onclick="event.stopPropagation();playMorse('${sm}')">▶ Play</button>
-        </div>
+  root.innerHTML =
+    `<div class="scrim">
+      <div class="modal"
+           role="dialog"
+           aria-modal="true"
+           aria-label="${esc(title)}">
+        <h3>${esc(title)}</h3>
+        <div class="mbody">${bodyHtml}</div>
+        <div class="mact"></div>
       </div>
     </div>`;
-  cont.appendChild(div);scrollBot();
-  if(sound&&!mutedUsers.has(msg.username)){
-    if(isMention){mentionBeep();setTimeout(()=>playMorse(msg.morse),600);}
-    else playMorse(msg.morse);
-  }
-}
-function hiMention(t){return t.replace(/@([A-Z0-9_]+)/gi,'<span class="m-hi">@$1</span>');}
-function scrollBot(){const e=document.getElementById('msg-scroll');if(e)e.scrollTop=e.scrollHeight;}
 
-async function sendMessage(){
-  if(!currentRoom)return;
-  const inp=document.getElementById('morse-input');
-  const raw=inp.value.trim();if(!raw)return;
-  let morse=raw;
-  if(!/^[.\- /]+$/.test(raw)){morse=t2m(raw);if(!morse)return;}
-  inp.value='';updateLiveT();clickerSymbols=[];renderClicker();
-  const result=await supaFetch('morse_messages',{method:'POST',prefer:'return=representation',headers:{'Prefer':'return=representation'},body:JSON.stringify({room_id:currentRoom.id,username,morse})});
-  if(Array.isArray(result)&&result[0]){const m=result[0];if(m.id>lastMsgId){appendMsg(m,true);lastMsgId=m.id;}}
-}
+  const act = root.querySelector('.mact');
 
-// ── RENDER CHAT ──
-function renderChat(){
-  document.getElementById('chat-area').innerHTML=`
-    <div class="chat-header">
-      <div>
-        <div class="chat-title"># ${escH(currentRoom.name)}</div>
-        <div class="chat-sub">morse · live</div>
-      </div>
-    </div>
-    <div class="messages" id="msg-scroll"><div id="msg-container"></div></div>
-    <div class="input-area">
-      <div class="input-main">
-        <div class="input-col">
-          <input class="morse-input" id="morse-input" type="text"
-            placeholder="Type morse (. -) or plain text — auto-converts on send"
-            oninput="updateLiveT()" onkeydown="if(event.key==='Enter'){event.preventDefault();sendMessage();}">
-          <div class="live-t" id="live-t">Translation appears here</div>
-        </div>
-        <button class="send-btn" onclick="sendMessage()">Transmit</button>
-      </div>
-      <div class="toolbar">
-        <span class="cs-lbl">Callsign</span>
-        <input class="cs-input" value="${escH(username)}" maxlength="12"
-          oninput="username=this.value.trim()||username;localStorage.setItem('morsenet-callsign',username);">
-        <button class="tool-btn" id="ref-btn" onclick="toggleRef()">Morse ref</button>
-        <button class="tool-btn" id="ck-toggle" onclick="toggleClicker()">Clicker</button>
-      </div>
-      <div class="ref-panel" id="ref-panel"></div>
-      <div class="clicker-panel" id="clicker-panel">
-        <button class="clicker-key" id="clicker-key"
-          onmousedown="ckPress(event)" onmouseup="ckRelease(event)"
-          ontouchstart="ckPress(event)" ontouchend="ckRelease(event)">
-          <span class="ck-sym">●</span>
-          <span class="ck-lbl">Hold</span>
-        </button>
-        <div class="ck-controls">
-          <div class="wpm-row">
-            <span>Speed</span>
-            <input type="range" id="ck-wpm" min="5" max="40" value="15"
-              oninput="ckWpm=parseInt(this.value);document.getElementById('ck-wpm-val').textContent=this.value+' wpm'">
-            <span id="ck-wpm-val">15 wpm</span>
-          </div>
-          <div class="ck-preview" id="ck-preview">·</div>
-          <div class="ck-btns">
-            <button class="ck-btn" onclick="ckUndo()">⌫ Undo</button>
-            <button class="ck-btn" onclick="ckWordSp()">Word space</button>
-            <button class="ck-btn danger" onclick="ckClear()">Clear</button>
-          </div>
-        </div>
-      </div>
-    </div>`;
-  buildRef();
-}
+  (buttons || []).forEach(b => {
 
-// ── REF PANEL ──
-function buildRef(){
-  const p=document.getElementById('ref-panel');if(!p)return;
-  p.innerHTML=Object.entries(MORSE).filter(([k])=>k!==' ').map(([k,v])=>`<div class="ref-item" onclick="insMorse('${v}')" title="${k}"><span class="ref-l">${k}</span><span class="ref-c">${v}</span></div>`).join('');
-}
-function toggleRef(){refOpen=!refOpen;document.getElementById('ref-panel')?.classList.toggle('open',refOpen);document.getElementById('ref-btn')?.classList.toggle('on',refOpen);}
-function toggleClicker(){clickerOpen=!clickerOpen;document.getElementById('clicker-panel')?.classList.toggle('open',clickerOpen);document.getElementById('ck-toggle')?.classList.toggle('on',clickerOpen);}
-function insMorse(code){const i=document.getElementById('morse-input');if(!i)return;i.value=i.value?(i.value.endsWith(' ')?i.value+code:i.value+' '+code):code;i.focus();updateLiveT();}
-function updateLiveT(){
-  const i=document.getElementById('morse-input'),l=document.getElementById('live-t');if(!i||!l)return;
-  const v=i.value.trim();
-  if(!v){l.textContent='Translation appears here';return;}
-  if(/^[.\- /]+$/.test(v))l.textContent='→ '+(m2t(v)||'…');
-  else l.textContent='⟳ Will convert: '+(t2m(v)||'…');
-}
+    const btn = document.createElement('button');
 
-// ── CLICKER — clean rewrite ──
-let ckWpm=15,ckPressTime=0,ckLetterTimer=null,ckWordTimer=null,clickerSymbols=[];
-let ckOsc=null,ckGain=null;
+    btn.type = 'button';
 
-function getDot(){return 1200/ckWpm;} // ms
+    btn.className = 'btn ' + (b.cls || '');
 
-function ckPress(e){
-  if(e)e.preventDefault();
-  if(ckPressTime)return;
-  ckPressTime=Date.now();
-  clearTimeout(ckLetterTimer);clearTimeout(ckWordTimer);
-  document.getElementById('clicker-key')?.classList.add('pressed');
-  // start tone
-  const ctx=getCtx();
-  if(ckOsc){try{ckOsc.stop();}catch(e){}ckOsc=null;}
-  ckOsc=ctx.createOscillator();ckGain=ctx.createGain();
-  ckOsc.connect(ckGain);ckGain.connect(ctx.destination);
-  ckOsc.frequency.value=650;ckOsc.type='sine';
-  ckGain.gain.setValueAtTime(0,ctx.currentTime);
-  ckGain.gain.linearRampToValueAtTime(volume*.4,ctx.currentTime+.008);
-  ckOsc.start();
-}
+    btn.textContent = b.label;
 
-function ckRelease(e){
-  if(e)e.preventDefault();
-  if(!ckPressTime)return;
-  const held=Date.now()-ckPressTime;
-  ckPressTime=0;
-  document.getElementById('clicker-key')?.classList.remove('pressed');
-  // stop tone
-  if(ckOsc){
-    const ctx=getCtx();
-    ckGain.gain.linearRampToValueAtTime(0,ctx.currentTime+.008);
-    const o=ckOsc;ckOsc=null;
-    setTimeout(()=>{try{o.stop();}catch(e){}},20);
-  }
-  const dot=getDot();
-  // dot = held < 2x dot duration, else dash
-  clickerSymbols.push(held < dot*2 ? '.' : '-');
-  renderClicker();
-  // after 3x dot silence → letter gap
-  ckLetterTimer=setTimeout(()=>{
-    clickerSymbols.push(' ');
-    renderClicker();
-    // after another 4x dot silence → word gap (upgrade the space to /)
-    ckWordTimer=setTimeout(()=>{
-      // find last space and upgrade to word gap
-      for(let i=clickerSymbols.length-1;i>=0;i--){
-        if(clickerSymbols[i]===' '){clickerSymbols[i]='/';break;}
+    btn.onclick = () => {
+
+      const r = b.onClick ? b.onClick(root) : undefined;
+
+      if (r !== false) closeModal();
+
+    };
+
+    act.appendChild(btn);
+
+  });
+
+  if (dismissable) {
+
+    root.querySelector('.scrim').addEventListener(
+      'mousedown',
+      e => {
+        if (e.target.classList.contains('scrim')) {
+          closeModal();
+        }
       }
-      renderClicker();
-    },dot*4);
-  },dot*3);
-}
+    );
 
-function renderClicker(){
-  // build clean morse: dots/dashes joined, spaces between letters, / between words
-  let out='';
-  for(let i=0;i<clickerSymbols.length;i++){
-    const s=clickerSymbols[i];
-    if(s==='.'||s==='-') out+=s;
-    else if(s===' ') out+=' ';
-    else if(s==='/') out+=' / ';
   }
-  out=out.replace(/ {2,}/g,' ').trim();
-  const prev=document.getElementById('ck-preview');if(prev)prev.textContent=out||'·';
-  const inp=document.getElementById('morse-input');if(inp){inp.value=out;updateLiveT();}
+
+  const first = root.querySelector('button, input');
+
+  if (first) first.focus();
+
+  return root;
 }
 
-function ckUndo(){
-  clearTimeout(ckLetterTimer);clearTimeout(ckWordTimer);
-  while(clickerSymbols.length&&clickerSymbols[clickerSymbols.length-1]!=='.'&&clickerSymbols[clickerSymbols.length-1]!=='-')clickerSymbols.pop();
-  if(clickerSymbols.length)clickerSymbols.pop();
-  renderClicker();
-}
-function ckWordSp(){
-  clearTimeout(ckLetterTimer);clearTimeout(ckWordTimer);
-  while(clickerSymbols.length&&(clickerSymbols[clickerSymbols.length-1]===' '||clickerSymbols[clickerSymbols.length-1]==='/'))clickerSymbols.pop();
-  clickerSymbols.push('/');renderClicker();
-}
-function ckClear(){
-  clearTimeout(ckLetterTimer);clearTimeout(ckWordTimer);
-  clickerSymbols=[];renderClicker();
-  const i=document.getElementById('morse-input');if(i){i.value='';updateLiveT();}
+function closeModal() {
+  $('modal-root').innerHTML = '';
 }
 
-// space bar = clicker when panel open and not typing
-document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'){stopAllSounds();return;}
-  if(e.key===' '&&clickerOpen&&document.activeElement?.tagName!=='INPUT'){e.preventDefault();ckPress();}
+document.addEventListener('keydown', e => {
+
+  if (
+    e.key === 'Escape' &&
+    $('modal-root').querySelector('.promo')
+  ) {
+    closeModal();
+  }
+
 });
-document.addEventListener('keyup',e=>{if(e.key===' '&&clickerOpen&&document.activeElement?.tagName!=='INPUT'){e.preventDefault();ckRelease();}});
 
-// ── THEMES ──
-const CSS_VARS=['--bg','--surface','--surface2','--border','--border2','--text','--text2','--text3','--accent','--accent-bg','--accent2','--danger','--success','--mention-bg','--mention-border'];
-function setTheme(name){
-  const root=document.documentElement;
-  CSS_VARS.forEach(v=>root.style.removeProperty(v));
-  document.querySelectorAll('.sw').forEach(s=>s.classList.remove('active'));
-  name==='light'?root.removeAttribute('data-theme'):root.setAttribute('data-theme',name);
-  document.querySelector(`.sw[onclick="setTheme('${name}')"]`)?.classList.add('active');
-  document.querySelector('.sw-custom')?.style&&(document.querySelector('.sw-custom').style.background='');
-  localStorage.setItem('morsenet-theme',name);
+
+/* ═════════════ Chess engine for computer ═════════════ */
+
+const VAL = {
+  p:100,
+  n:320,
+  b:330,
+  r:500,
+  q:900,
+  k:0
+};
+
+const PST = {
+
+  p:[
+     0, 0, 0, 0, 0, 0, 0, 0,
+    50,50,50,50,50,50,50,50,
+    10,10,20,30,30,20,10,10,
+     5, 5,10,25,25,10, 5, 5,
+     0, 0, 0,20,20, 0, 0, 0,
+     5,-5,-10,0, 0,-10,-5, 5,
+     5,10,10,-20,-20,10,10, 5,
+     0, 0, 0, 0, 0, 0, 0, 0
+  ],
+
+  n:[
+    -50,-40,-30,-30,-30,-30,-40,-50,
+    -40,-20,  0,  0,  0,  0,-20,-40,
+    -30,  0, 10, 15, 15, 10,  0,-30,
+    -30,  5, 15, 20, 20, 15,  5,-30,
+    -30,  0, 15, 20, 20, 15,  0,-30,
+    -30,  5, 10, 15, 15, 10,  5,-30,
+    -40,-20,  0,  5,  5,  0,-20,-40,
+    -50,-40,-30,-30,-30,-30,-40,-50
+  ],
+
+  b:[
+    -20,-10,-10,-10,-10,-10,-10,-20,
+    -10,  0,  0,  0,  0,  0,  0,-10,
+    -10,  0,  5, 10, 10,  5,  0,-10,
+    -10,  5,  5, 10, 10,  5,  5,-10,
+    -10,  0, 10, 10, 10, 10,  0,-10,
+    -10, 10, 10, 10, 10, 10, 10,-10,
+    -10,  5,  0,  0,  0,  0,  5,-10,
+    -20,-10,-10,-10,-10,-10,-10,-20
+  ],
+
+  r:[
+     0, 0, 0, 0, 0, 0, 0, 0,
+     5,10,10,10,10,10,10, 5,
+    -5, 0, 0, 0, 0, 0, 0,-5,
+    -5, 0, 0, 0, 0, 0, 0,-5,
+    -5, 0, 0, 0, 0, 0, 0,-5,
+    -5, 0, 0, 0, 0, 0, 0,-5,
+    -5, 0, 0, 0, 0, 0, 0,-5,
+     0, 0, 0, 5, 5, 0, 0, 0
+  ],
+
+  q:[
+    -20,-10,-10, -5, -5,-10,-10,-20,
+    -10,  0,  0,  0,  0,  0,  0,-10,
+    -10,  0,  5,  5,  5,  5,  0,-10,
+     -5,  0,  5,  5,  5,  5,  0, -5,
+      0,  0,  5,  5,  5,  5,  0, -5,
+    -10,  5,  5,  5,  5,  5,  0,-10,
+    -10,  0,  5,  0,  0,  0,  0,-10,
+    -20,-10,-10, -5, -5,-10,-10,-20
+  ],
+
+  k:[
+    -30,-40,-40,-50,-50,-40,-40,-30,
+    -30,-40,-40,-50,-50,-40,-40,-30,
+    -30,-40,-40,-50,-50,-40,-40,-30,
+    -30,-40,-40,-50,-50,-40,-40,-30,
+    -20,-30,-30,-40,-40,-30,-30,-20,
+    -10,-20,-20,-20,-20,-20,-20,-10,
+     20, 20,  0,  0,  0,  0, 20, 20,
+     20, 30, 10,  0,  0, 10, 30, 20
+  ]
+
+};
+
+function evaluate(g) {
+
+  const b = g.board();
+
+  let s = 0;
+
+  for (let r = 0; r < 8; r++) {
+
+    for (let c = 0; c < 8; c++) {
+
+      const p = b[r][c];
+
+      if (!p) continue;
+
+      const idx =
+        p.color === 'w'
+          ? r * 8 + c
+          : (7 - r) * 8 + c;
+
+      const v =
+        VAL[p.type] +
+        PST[p.type][idx];
+
+      s += p.color === 'w' ? v : -v;
+
+    }
+
+  }
+
+  return s;
 }
-function setCustomTheme(hex){
-  const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
-  const d=(c,f)=>Math.round(c*f),m=(c)=>Math.min(255,c);
-  const root=document.documentElement;
-  CSS_VARS.forEach(v=>root.style.removeProperty(v));
-  root.setAttribute('data-theme','custom');
-  root.style.setProperty('--bg',`rgb(${d(r,.04)},${d(g,.04)},${d(b,.04)})`);
-  root.style.setProperty('--surface',`rgb(${d(r,.09)},${d(g,.09)},${d(b,.09)})`);
-  root.style.setProperty('--surface2',`rgb(${d(r,.14)},${d(g,.14)},${d(b,.14)})`);
-  root.style.setProperty('--border',`rgba(${r},${g},${b},.12)`);
-  root.style.setProperty('--border2',`rgba(${r},${g},${b},.22)`);
-  root.style.setProperty('--text',`rgb(${m(r*.35+165)},${m(g*.35+165)},${m(b*.35+165)})`);
-  root.style.setProperty('--text2',`rgb(${d(r,.55)},${d(g,.55)},${d(b,.55)})`);
-  root.style.setProperty('--text3',`rgb(${d(r,.32)},${d(g,.32)},${d(b,.32)})`);
-  root.style.setProperty('--accent',hex);
-  root.style.setProperty('--accent-bg',`rgba(${r},${g},${b},.12)`);
-  root.style.setProperty('--accent2',`rgb(${m(r+55)},${m(g+55)},${m(b+55)})`);
-  root.style.setProperty('--danger','#ff4444');root.style.setProperty('--success','#44cc44');
-  root.style.setProperty('--mention-bg',`rgba(${r},${g},${b},.08)`);root.style.setProperty('--mention-border',hex);
-  document.querySelectorAll('.sw').forEach(s=>s.classList.remove('active'));
-  const cust=document.querySelector('.sw-custom');if(cust){cust.classList.add('active');cust.style.background=hex;}
-  localStorage.setItem('morsenet-theme','custom');localStorage.setItem('morsenet-custom-color',hex);
+
+function moveScore(m) {
+
+  return (
+    (m.captured
+      ? VAL[m.captured] * 10 - VAL[m.piece]
+      : 0)
+    +
+    (m.promotion ? 800 : 0)
+  );
+
 }
-(function(){
-  const s=localStorage.getItem('morsenet-theme'),c=localStorage.getItem('morsenet-custom-color');
-  if(s==='custom'&&c)setTimeout(()=>{document.getElementById('custom-color-picker').value=c;setCustomTheme(c);},0);
-  else if(s)setTimeout(()=>setTheme(s),0);
+
+function orderMoves(moves) {
+  return moves.sort(
+    (a,b) => moveScore(b) - moveScore(a)
+  );
+}
+
+function negamax(g, depth, alpha, beta) {
+
+  if (depth === 0) {
+    return (
+      (g.turn() === 'w' ? 1 : -1) *
+      evaluate(g)
+    );
+  }
+
+  const moves = g.moves({verbose:true});
+
+  if (!moves.length) {
+    return g.in_check()
+      ? -100000 - depth
+      : 0;
+  }
+
+  orderMoves(moves);
+
+  let best = -Infinity;
+
+  for (const m of moves) {
+
+    g.move({
+      from:m.from,
+      to:m.to,
+      promotion:m.promotion
+    });
+
+    const sc =
+      -negamax(
+        g,
+        depth - 1,
+        -beta,
+        -alpha
+      );
+
+    g.undo();
+
+    if (sc > best) best = sc;
+
+    if (best > alpha) alpha = best;
+
+    if (alpha >= beta) break;
+
+  }
+
+  return best;
+}
+
+function pickAIMove(g, level) {
+
+  const moves =
+    g.moves({verbose:true});
+
+  if (!moves.length) return null;
+
+  if (level === 1) {
+
+    const caps =
+      moves.filter(m => m.captured);
+
+    return (
+      caps.length &&
+      Math.random() < .5
+    )
+      ? pick(caps)
+      : pick(moves);
+
+  }
+
+  if (g.history().length < 2) {
+
+    const book = [
+      'e4','d4','c4','Nf3',
+      'e5','c5','e6','c6',
+      'd5','Nf6'
+    ];
+
+    const opts =
+      moves.filter(m =>
+        book.includes(m.san)
+      );
+
+    if (opts.length) return pick(opts);
+
+  }
+
+  const depth =
+    level === 2 ? 2 : 3;
+
+  moves.sort(
+    () => Math.random() - .5
+  );
+
+  orderMoves(moves);
+
+  let best = moves[0];
+  let alpha = -Infinity;
+
+  for (const m of moves) {
+
+    g.move({
+      from:m.from,
+      to:m.to,
+      promotion:m.promotion
+    });
+
+    const sc =
+      -negamax(
+        g,
+        depth - 1,
+        -Infinity,
+        -alpha
+      );
+
+    g.undo();
+
+    if (sc > alpha) {
+      alpha = sc;
+      best = m;
+    }
+
+  }
+
+  return best;
+}
+
+
+/* ═════════════ Game ending ═════════════ */
+
+function gameEnd(g) {
+
+  if (g.in_checkmate()) {
+    return {
+      result:g.turn() === 'w'
+        ? '0-1'
+        : '1-0',
+      reason:'checkmate'
+    };
+  }
+
+  if (g.in_stalemate()) {
+    return {
+      result:'1/2-1/2',
+      reason:'stalemate'
+    };
+  }
+
+  if (g.insufficient_material()) {
+    return {
+      result:'1/2-1/2',
+      reason:'insufficient material'
+    };
+  }
+
+  if (g.in_threefold_repetition()) {
+    return {
+      result:'1/2-1/2',
+      reason:'repetition'
+    };
+  }
+
+  if (g.in_draw()) {
+    return {
+      result:'1/2-1/2',
+      reason:'the fifty-move rule'
+    };
+  }
+
+  return null;
+}
+
+function rebuild(moves) {
+
+  const g = new Chess();
+
+  for (const san of (moves || [])) {
+
+    if (!g.move(san)) break;
+
+  }
+
+  return g;
+}
+
+
+/* ═════════════ State ═════════════ */
+
+if (!window.supabase) {
+
+  document.body.insertAdjacentHTML(
+    'afterbegin',
+    '<p style="padding:24px">Could not load the Supabase library. Check your connection and reload.</p>'
+  );
+
+  return;
+}
+
+const sb =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+  );
+
+const redirect =
+  location.protocol.indexOf('http') === 0
+    ? location.href.split('#')[0].split('?')[0]
+    : undefined;
+
+const S = {
+
+  user:null,
+  profile:null,
+  guest:false,
+
+  mode:null,
+
+  game:null,
+
+  color:'w',
+  colorPref:'w',
+  flip:false,
+
+  sel:null,
+  targets:[],
+  last:null,
+
+  over:null,
+
+  aiLevel:2,
+  aiThinking:false,
+
+  online:null,
+  lobbyTimer:null,
+
+  /*
+    Review state:
+      ply       = current review position
+      timer     = autoplay interval
+      analysis  = analysis result for each ply
+      analyzing = whether analysis is still running
+  */
+  review:null
+
+};
+
+const PC = {};
+
+
+function showView(name) {
+
+  ['auth','lobby','game'].forEach(v => {
+
+    $('view-' + v).classList.toggle(
+      'hidden',
+      v !== name
+    );
+
+  });
+
+  if (name !== 'lobby') {
+    clearInterval(S.lobbyTimer);
+  }
+
+  window.scrollTo(0,0);
+
+}
+
+
+/* ═════════════ Accounts ═════════════ */
+
+let authMode = 'in';
+
+function setAuthMode(m) {
+
+  authMode = m;
+
+  $('tab-in').classList.toggle(
+    'on',
+    m === 'in'
+  );
+
+  $('tab-up').classList.toggle(
+    'on',
+    m === 'up'
+  );
+
+  $('f-user').classList.toggle(
+    'hidden',
+    m !== 'up'
+  );
+
+  $('forgot').classList.toggle(
+    'hidden',
+    m !== 'in'
+  );
+
+  $('auth-submit').textContent =
+    m === 'in'
+      ? 'Sign in'
+      : 'Create account';
+
+  $('a-pass').autocomplete =
+    m === 'in'
+      ? 'current-password'
+      : 'new-password';
+
+  authMsg('');
+
+}
+
+function authMsg(t,bad) {
+
+  const m = $('auth-msg');
+
+  m.textContent = t;
+
+  m.className =
+    'msg' +
+    (bad ? ' bad' : '');
+
+}
+
+async function submitAuth(e) {
+
+  e.preventDefault();
+
+  const email =
+    $('a-email').value.trim();
+
+  const pass =
+    $('a-pass').value;
+
+  const uname =
+    $('a-user').value.trim();
+
+  if (!email || !pass) {
+    return authMsg(
+      'Enter your email and password.',
+      true
+    );
+  }
+
+  const btn = $('auth-submit');
+
+  btn.disabled = true;
+
+  authMsg('');
+
+  try {
+
+    if (authMode === 'in') {
+
+      const {error} =
+        await sb.auth.signInWithPassword({
+          email,
+          password:pass
+        });
+
+      if (error) throw error;
+
+    } else {
+
+      if (!/^[A-Za-z0-9_]{3,20}$/.test(uname)) {
+        throw new Error(
+          'Pick a username with 3–20 letters, numbers or underscores.'
+        );
+      }
+
+      if (pass.length < 6) {
+        throw new Error(
+          'Use a password with at least 6 characters.'
+        );
+      }
+
+      const chk =
+        await sb.rpc(
+          'username_available',
+          {name:uname}
+        );
+
+      if (chk.error) {
+        throw new Error(
+          'The database is not set up yet. Run setup.sql in the Supabase SQL editor.'
+        );
+      }
+
+      if (!chk.data) {
+        throw new Error(
+          'That username is taken.'
+        );
+      }
+
+      const {data,error} =
+        await sb.auth.signUp({
+          email,
+          password:pass,
+          options:{
+            data:{
+              username:uname
+            },
+            emailRedirectTo:redirect
+          }
+        });
+
+      if (error) throw error;
+
+      if (!data.session) {
+        authMsg(
+          'Account created. Check your email for a confirmation link, then sign in.'
+        );
+      }
+
+    }
+
+  } catch(err) {
+
+    authMsg(
+      err.message ||
+      'Something went wrong.',
+      true
+    );
+
+  } finally {
+
+    btn.disabled = false;
+
+  }
+
+}
+
+async function forgotPassword() {
+
+  const email =
+    $('a-email').value.trim();
+
+  if (!email) {
+    return authMsg(
+      'Enter your email above, then select “Forgot password?”.',
+      true
+    );
+  }
+
+  const {error} =
+    await sb.auth.resetPasswordForEmail(
+      email,
+      {redirectTo:redirect}
+    );
+
+  authMsg(
+    error
+      ? error.message
+      : 'Password reset email sent. Check your inbox.',
+    !!error
+  );
+
+}
+
+function promptNewPassword() {
+
+  modal(
+    'Choose a new password',
+    '<label>New password<input id="np" type="password" autocomplete="new-password" minlength="6"></label>',
+    [
+      {
+        label:'Save password',
+        cls:'primary',
+
+        onClick:root => {
+
+          const v =
+            root.querySelector('#np').value;
+
+          if (v.length < 6) {
+            toast(
+              'Use at least 6 characters.',
+              true
+            );
+
+            return false;
+          }
+
+          sb.auth.updateUser({
+            password:v
+          }).then(r =>
+            toast(
+              r.error
+                ? r.error.message
+                : 'Password updated.',
+              !!r.error
+            )
+          );
+
+        }
+      },
+
+      {
+        label:'Cancel'
+      }
+    ]
+  );
+
+}
+
+async function signOut() {
+  await sb.auth.signOut();
+}
+
+async function loadProfile() {
+
+  if (!S.user) return;
+
+  let {data} =
+    await sb
+      .from('profiles')
+      .select('*')
+      .eq('id',S.user.id)
+      .maybeSingle();
+
+  if (!data) {
+
+    const uname =
+      (
+        S.user.user_metadata &&
+        S.user.user_metadata.username
+      ) ||
+      (
+        'player_' +
+        S.user.id.slice(0,8)
+      );
+
+    await sb
+      .from('profiles')
+      .insert({
+        id:S.user.id,
+        username:uname
+      });
+
+    ({data} =
+      await sb
+        .from('profiles')
+        .select('*')
+        .eq('id',S.user.id)
+        .maybeSingle());
+
+  }
+
+  S.profile = data;
+
+  if (data) {
+    PC[data.id] = data;
+  }
+
+}
+
+async function fetchProfiles(ids,force) {
+
+  ids =
+    [...new Set(
+      (ids || []).filter(Boolean)
+    )]
+    .filter(
+      i => force || !PC[i]
+    );
+
+  if (!ids.length) return;
+
+  const {data} =
+    await sb
+      .from('profiles')
+      .select('*')
+      .in('id',ids);
+
+  (data || []).forEach(p => {
+    PC[p.id] = p;
+  });
+
+}
+
+async function handleUser(u) {
+
+  const changed =
+    (u ? u.id : null) !==
+    (S.user ? S.user.id : null);
+
+  if (
+    !changed &&
+    (!u || S.profile)
+  ) return;
+
+  S.user = u;
+
+  if (u) {
+
+    S.guest = false;
+
+    await loadProfile();
+
+    renderUserBox();
+
+    if (changed) {
+
+      teardownOnline();
+
+      S.mode = null;
+      S.game = null;
+
+      goLobby();
+
+    }
+
+  } else {
+
+    S.profile = null;
+
+    teardownOnline();
+
+    S.mode = null;
+    S.game = null;
+
+    renderUserBox();
+
+    showView('auth');
+
+  }
+
+}
+
+function renderUserBox() {
+
+  const box = $('userbox');
+
+  if (S.profile) {
+
+    box.innerHTML =
+      `<span class="uname">${esc(S.profile.username)}</span>
+       <span class="rate" title="Your rating">${S.profile.rating}</span>
+       <button class="btn ghost sm" id="btn-out" type="button">
+         Sign out
+       </button>`;
+
+    $('btn-out').onclick = signOut;
+
+  } else if (S.guest) {
+
+    box.innerHTML =
+      `<span class="uname muted">Guest</span>
+       <button class="btn sm" id="btn-in" type="button">
+         Sign in
+       </button>`;
+
+    $('btn-in').onclick = () => {
+
+      teardownOnline();
+
+      S.mode = null;
+      S.game = null;
+      S.guest = false;
+
+      renderUserBox();
+
+      showView('auth');
+
+    };
+
+  } else {
+
+    box.innerHTML = '';
+
+  }
+
+}
+
+
+/* ═════════════ Lobby ═════════════ */
+
+function initSeg(root) {
+
+  root.addEventListener('click',e => {
+
+    const b =
+      e.target.closest('button[data-v]');
+
+    if (!b) return;
+
+    root.querySelectorAll('button')
+      .forEach(x =>
+        x.classList.toggle(
+          'on',
+          x === b
+        )
+      );
+
+    root.dataset.val = b.dataset.v;
+
+  });
+
+}
+
+function goLobby() {
+
+  showView('lobby');
+
+  renderLobby();
+
+  cleanupThenLoad();
+
+  clearInterval(S.lobbyTimer);
+
+  S.lobbyTimer =
+    setInterval(
+      loadLobbyData,
+      8000
+    );
+
+}
+
+async function cleanupThenLoad() {
+
+  if (S.user) {
+
+    try {
+      await sb.rpc('cleanup_finished');
+    } catch(e) {}
+
+  }
+
+  loadLobbyData();
+
+}
+
+function renderLobby() {
+
+  const o = $('online-block');
+
+  if (!S.user) {
+
+    o.innerHTML =
+      `<h3>Online</h3>
+       <p class="muted">
+         Create an account to challenge other players and earn a rating.
+       </p>
+       <button class="btn primary" id="lb-signin" type="button">
+         Sign in or create account
+       </button>`;
+
+    $('lb-signin').onclick = () => {
+
+      S.guest = false;
+
+      renderUserBox();
+
+      showView('auth');
+
+    };
+
+    $('me-card').innerHTML = '';
+
+    return;
+
+  }
+
+  o.innerHTML =
+    `<h3>Play online</h3>
+
+     <div class="row">
+
+       <div class="seg" id="seg-ocolor" data-val="r" aria-label="Your color">
+         <button type="button" data-v="w">White</button>
+         <button type="button" data-v="b">Black</button>
+         <button type="button" data-v="r" class="on">Random</button>
+       </div>
+
+       <button class="btn primary" id="create-game" type="button">
+         Create game
+       </button>
+
+     </div>
+
+     <div class="row code-row">
+       <input
+         id="code-in"
+         placeholder="Game code"
+         maxlength="6"
+         autocomplete="off"
+         aria-label="Game code"
+       >
+
+       <button class="btn" id="join-code" type="button">
+         Join with code
+       </button>
+     </div>
+
+     <div class="msg bad" id="online-msg"></div>
+
+     <h4>Open games</h4>
+     <ul class="glist" id="open-games">
+       <li class="muted">Loading…</li>
+     </ul>
+
+     <h4>Your games</h4>
+     <ul class="glist" id="my-games"></ul>`;
+
+  initSeg($('seg-ocolor'));
+
+  $('create-game').onclick =
+    () =>
+      createGame(
+        $('seg-ocolor').dataset.val
+      );
+
+  $('join-code').onclick =
+    joinByCode;
+
+  $('code-in').addEventListener(
+    'keydown',
+    e => {
+      if (e.key === 'Enter') {
+        joinByCode();
+      }
+    }
+  );
+
+  ['open-games','my-games']
+    .forEach(id =>
+      $(id).addEventListener(
+        'click',
+        onGameListClick
+      )
+    );
+
+  renderMeCard();
+
+}
+
+function renderMeCard() {
+
+  const p = S.profile;
+
+  $('me-card').innerHTML =
+    p
+      ? `<div class="me">
+           <div class="me-rate">${p.rating}</div>
+           <div>
+             <div class="me-name">${esc(p.username)}</div>
+             <div class="muted">
+               ${p.wins} wins,
+               ${p.losses} losses,
+               ${p.draws} draws
+             </div>
+           </div>
+         </div>`
+      : '';
+
+}
+
+async function loadLobbyData() {
+
+  const top =
+    await sb
+      .from('profiles')
+      .select(
+        'id,username,rating,wins,losses,draws'
+      )
+      .order(
+        'rating',
+        {ascending:false}
+      )
+      .order(
+        'wins',
+        {ascending:false}
+      )
+      .limit(10);
+
+  if (
+    !$('view-lobby').classList.contains('hidden')
+  ) {
+    renderLeaders(top.data || []);
+  }
+
+  if (!S.user || !$('open-games')) return;
+
+  const uid = S.user.id;
+
+  const mineFilter =
+    `white_id.eq.${uid},black_id.eq.${uid}`;
+
+  const [open,mine] =
+    await Promise.all([
+
+      sb
+        .from('games')
+        .select('*')
+        .eq('status','waiting')
+        .neq('creator_id',uid)
+        .order(
+          'created_at',
+          {ascending:false}
+        )
+        .limit(15),
+
+      sb
+        .from('games')
+        .select('*')
+        .or(mineFilter)
+        .in(
+          'status',
+          ['waiting','active']
+        )
+        .order(
+          'updated_at',
+          {ascending:false}
+        )
+        .limit(15)
+
+    ]);
+
+  const msg = $('online-msg');
+
+  if (!msg) return;
+
+  if (open.error) {
+
+    msg.textContent =
+      'Online play needs the database set up. Run setup.sql in the Supabase SQL editor.';
+
+    return;
+
+  }
+
+  msg.textContent = '';
+
+  const all =
+    [].concat(
+      open.data || [],
+      mine.data || []
+    );
+
+  await fetchProfiles(
+    all.flatMap(
+      g => [g.white_id,g.black_id]
+    )
+  );
+
+  if (!$('open-games')) return;
+
+  renderGameLists(
+    open.data || [],
+    mine.data || []
+  );
+
+}
+
+function renderLeaders(rows) {
+
+  const ol = $('leaders');
+
+  if (!rows.length) {
+
+    ol.innerHTML =
+      `<li class="muted" style="display:block">
+        No players yet. Create an account and be the first.
+      </li>`;
+
+    return;
+
+  }
+
+  ol.innerHTML =
+    rows.map(
+      (p,i) =>
+        `<li class="${S.user && p.id === S.user.id ? 'me-row' : ''}">
+          <span class="rk">${i + 1}</span>
+          <span class="nm">${esc(p.username)}</span>
+          <span class="rt">${p.rating}</span>
+          <span class="wl">
+            ${p.wins}-${p.losses}-${p.draws}
+          </span>
+        </li>`
+    ).join('');
+
+}
+
+function nameOf(id) {
+
+  const p = PC[id];
+
+  return p
+    ? p.username
+    : 'Player';
+
+}
+
+function renderGameLists(open,mine) {
+
+  const uid = S.user.id;
+
+  $('open-games').innerHTML =
+    open.length
+      ? open.map(g => {
+
+          const p = PC[g.creator_id];
+
+          const youPlay =
+            g.white_id
+              ? 'Black'
+              : 'White';
+
+          return `
+            <li>
+              <span class="who">
+                <b>${esc(nameOf(g.creator_id))}</b>
+                ${p ? ' (' + p.rating + ')' : ''}
+                <span class="sub">
+                  You would play ${youPlay}
+                </span>
+              </span>
+
+              <button
+                class="btn sm primary"
+                data-act="join"
+                data-id="${g.id}"
+                type="button">
+                Join
+              </button>
+            </li>`;
+
+        }).join('')
+      : `<li class="muted">
+           No open games right now. Create one and share the code.
+         </li>`;
+
+  $('my-games').innerHTML =
+    mine.length
+      ? mine.map(g => {
+
+          const myColor =
+            g.white_id === uid
+              ? 'w'
+              : 'b';
+
+          const oppId =
+            myColor === 'w'
+              ? g.black_id
+              : g.white_id;
+
+          const opp =
+            oppId
+              ? esc(nameOf(oppId))
+              : 'Waiting for an opponent';
+
+          const yourMove =
+            g.status === 'active' &&
+            g.turn === myColor;
+
+          const cancel =
+            g.status === 'waiting' &&
+            g.creator_id === uid
+              ? `<button
+                   class="btn sm ghost"
+                   data-act="cancel"
+                   data-id="${g.id}"
+                   type="button">
+                   Cancel
+                 </button>`
+              : '';
+
+          return `
+            <li>
+              <span class="who">
+                <b>${opp}</b>
+                <span class="sub">
+                  ${myColor === 'w' ? 'White' : 'Black'}
+                  ${g.status === 'waiting'
+                    ? ', code ' + esc(g.code)
+                    : ''}
+                </span>
+              </span>
+
+              ${yourMove
+                ? '<span class="tag">Your move</span>'
+                : ''}
+
+              ${cancel}
+
+              <button
+                class="btn sm"
+                data-act="resume"
+                data-id="${g.id}"
+                type="button">
+                Open
+              </button>
+            </li>`;
+
+        }).join('')
+      : `<li class="muted">
+           No games in progress.
+         </li>`;
+
+}
+
+function onGameListClick(e) {
+
+  const b =
+    e.target.closest('button[data-act]');
+
+  if (!b) return;
+
+  const id = b.dataset.id;
+
+  if (b.dataset.act === 'join') {
+    joinGame(id);
+  }
+
+  else if (b.dataset.act === 'resume') {
+    resume(id);
+  }
+
+  else if (b.dataset.act === 'cancel') {
+    cancelGame(id);
+  }
+
+}
+
+
+/* ═════════════ Starting games ═════════════ */
+
+function clearSel() {
+  S.sel = null;
+  S.targets = [];
+}
+
+function startAI(level,pref) {
+
+  teardownOnline();
+
+  S.mode = 'ai';
+  S.aiLevel = level;
+  S.colorPref = pref;
+
+  S.color =
+    pref === 'r'
+      ? (
+          Math.random() < .5
+            ? 'w'
+            : 'b'
+        )
+      : pref;
+
+  S.flip =
+    S.color === 'b';
+
+  S.game =
+    new Chess();
+
+  S.over = null;
+  S.last = null;
+  S.aiThinking = false;
+
+  clearSel();
+
+  showView('game');
+
+  render();
+
+  if (S.color === 'b') {
+    aiMove();
+  }
+
+}
+
+function startLocal() {
+
+  teardownOnline();
+
+  S.mode = 'local';
+  S.color = 'w';
+  S.flip = false;
+
+  S.game =
+    new Chess();
+
+  S.over = null;
+  S.last = null;
+  S.aiThinking = false;
+
+  clearSel();
+
+  showView('game');
+
+  render();
+
+}
+
+async function createGame(pref) {
+
+  const c =
+    pref === 'r'
+      ? (
+          Math.random() < .5
+            ? 'w'
+            : 'b'
+        )
+      : pref;
+
+  const row = {
+    creator_id:S.user.id
+  };
+
+  row[
+    c === 'w'
+      ? 'white_id'
+      : 'black_id'
+  ] = S.user.id;
+
+  const {data,error} =
+    await sb
+      .from('games')
+      .insert(row)
+      .select()
+      .single();
+
+  if (error) {
+    return toast(
+      error.message,
+      true
+    );
+  }
+
+  openOnline(data);
+
+}
+
+async function joinGame(id) {
+
+  const {data,error} =
+    await sb.rpc(
+      'join_game',
+      {gid:id}
+    );
+
+  if (error) {
+    return toast(
+      error.message,
+      true
+    );
+  }
+
+  openOnline(
+    Array.isArray(data)
+      ? data[0]
+      : data
+  );
+
+}
+
+async function joinByCode() {
+
+  const code =
+    $('code-in')
+      .value
+      .trim()
+      .toUpperCase();
+
+  if (code.length < 4) {
+    return toast(
+      'Enter the 6-character game code.',
+      true
+    );
+  }
+
+  const {data,error} =
+    await sb
+      .from('games')
+      .select(
+        'id,status,white_id,black_id'
+      )
+      .eq('code',code)
+      .maybeSingle();
+
+  if (error) {
+    return toast(
+      error.message,
+      true
+    );
+  }
+
+  if (!data) {
+    return toast(
+      'No game found with that code.',
+      true
+    );
+  }
+
+  if (data.status === 'waiting') {
+    return joinGame(data.id);
+  }
+
+  if (
+    data.white_id === S.user.id ||
+    data.black_id === S.user.id
+  ) {
+    return resume(data.id);
+  }
+
+  toast(
+    'That game has already started.',
+    true
+  );
+
+}
+
+async function resume(id) {
+
+  const {data,error} =
+    await sb
+      .from('games')
+      .select('*')
+      .eq('id',id)
+      .maybeSingle();
+
+  if (error || !data) {
+    return toast(
+      'Could not open that game.',
+      true
+    );
+  }
+
+  if (
+    data.white_id !== S.user.id &&
+    data.black_id !== S.user.id
+  ) {
+    return toast(
+      'You are not a player in that game.',
+      true
+    );
+  }
+
+  openOnline(data);
+
+}
+
+async function cancelGame(id) {
+
+  const {error} =
+    await sb
+      .from('games')
+      .delete()
+      .eq('id',id);
+
+  if (error) {
+    toast(
+      error.message,
+      true
+    );
+  }
+
+  loadLobbyData();
+
+}
+
+
+/* ═════════════ Online games ═════════════ */
+
+function teardownOnline() {
+
+  endReview();
+
+  if (S.online) {
+
+    if (S.online.channel) {
+      sb.removeChannel(
+        S.online.channel
+      );
+    }
+
+    clearInterval(
+      S.online.poll
+    );
+
+  }
+
+  S.online = null;
+
+}
+
+async function openOnline(row) {
+
+  teardownOnline();
+
+  clearSel();
+
+  S.mode = 'online';
+
+  S.color =
+    row.white_id === S.user.id
+      ? 'w'
+      : 'b';
+
+  S.flip =
+    S.color === 'b';
+
+  S.online = {
+    row,
+    busy:false,
+    settled:false,
+    channel:null,
+    poll:null
+  };
+
+  await fetchProfiles([
+    row.white_id,
+    row.black_id
+  ]);
+
+  S.game =
+    rebuild(row.moves);
+
+  syncLast();
+
+  S.over =
+    row.status === 'finished'
+      ? {
+          result:row.result,
+          reason:row.reason
+        }
+      : null;
+
+  showView('game');
+
+  render();
+
+  const id = row.id;
+
+  S.online.channel =
+    sb
+      .channel('game-' + id)
+      .on(
+        'postgres_changes',
+        {
+          event:'UPDATE',
+          schema:'public',
+          table:'games',
+          filter:'id=eq.' + id
+        },
+        p => applyRow(p.new)
+      )
+      .subscribe();
+
+  S.online.poll =
+    setInterval(
+      pollOnline,
+      3000
+    );
+
+  if (S.over) settle();
+
+}
+
+async function pollOnline() {
+
+  if (
+    !S.online ||
+    S.online.busy
+  ) return;
+
+  const {data} =
+    await sb
+      .from('games')
+      .select('*')
+      .eq('id',S.online.row.id)
+      .maybeSingle();
+
+  if (data) {
+    applyRow(data);
+  }
+
+}
+
+async function applyRow(row) {
+
+  if (
+    !S.online ||
+    S.online.row.id !== row.id
+  ) return;
+
+  const cur =
+    S.online.row;
+
+  if (
+    row.moves.length <
+    cur.moves.length
+  ) return;
+
+  const same =
+    row.moves.length ===
+      cur.moves.length &&
+    row.status === cur.status &&
+    row.draw_offer === cur.draw_offer &&
+    row.black_id === cur.black_id &&
+    row.white_id === cur.white_id;
+
+  if (same) return;
+
+  await fetchProfiles([
+    row.white_id,
+    row.black_id
+  ]);
+
+  if (
+    !S.online ||
+    S.online.row.id !== row.id
+  ) return;
+
+  S.online.row = row;
+
+  if (
+    row.moves.length !==
+    cur.moves.length
+  ) {
+
+    S.game =
+      rebuild(row.moves);
+
+    syncLast();
+
+    clearSel();
+
+  }
+
+  if (
+    row.status === 'finished' &&
+    !S.over
+  ) {
+
+    S.over = {
+      result:row.result,
+      reason:row.reason
+    };
+
+    settle();
+
+  }
+
+  render();
+
+  if (
+    row.status === 'active' &&
+    row.draw_offer &&
+    row.draw_offer !== S.color &&
+    cur.draw_offer !== row.draw_offer
+  ) {
+
+    modal(
+      'Draw offer',
+      `<p>
+        ${esc(
+          nameOf(
+            S.color === 'w'
+              ? row.black_id
+              : row.white_id
+          )
+        )}
+        offers a draw.
+      </p>`,
+      [
+        {
+          label:'Accept',
+          cls:'primary',
+          onClick:acceptDraw
+        },
+        {
+          label:'Decline',
+          onClick:() =>
+            pushPatch(
+              {draw_offer:null},
+              {status:'active'}
+            ).then(render)
+        }
+      ]
+    );
+
+  }
+
+}
+
+async function pushPatch(patch,guard) {
+
+  const row =
+    S.online.row;
+
+  S.online.busy = true;
+
+  let q =
+    sb
+      .from('games')
+      .update(patch)
+      .eq('id',row.id);
+
+  Object.keys(guard || {})
+    .forEach(k => {
+      q = q.eq(k,guard[k]);
+    });
+
+  const {data,error} =
+    await q.select().single();
+
+  S.online.busy = false;
+
+  if (error) {
+
+    toast(
+      error.message,
+      true
+    );
+
+    return null;
+
+  }
+
+  S.online.row = data;
+
+  return data;
+
+}
+
+async function sendMove(end) {
+
+  const patch = {
+    moves:S.game.history(),
+    draw_offer:null
+  };
+
+  if (end) {
+
+    patch.status = 'finished';
+    patch.result = end.result;
+    patch.reason = end.reason;
+
+  }
+
+  const data =
+    await pushPatch(
+      patch,
+      {
+        turn:S.color,
+        status:'active'
+      }
+    );
+
+  if (!data) {
+    return resync();
+  }
+
+  render();
+
+  if (end) {
+    settle();
+  }
+
+}
+
+async function resync() {
+
+  if (!S.online) return;
+
+  const {data} =
+    await sb
+      .from('games')
+      .select('*')
+      .eq('id',S.online.row.id)
+      .maybeSingle();
+
+  if (!data) return;
+
+  S.online.row = data;
+
+  S.game =
+    rebuild(data.moves);
+
+  syncLast();
+
+  clearSel();
+
+  S.over =
+    data.status === 'finished'
+      ? {
+          result:data.result,
+          reason:data.reason
+        }
+      : null;
+
+  render();
+
+}
+
+async function settle() {
+
+  if (
+    !S.online ||
+    S.online.settled
+  ) return;
+
+  S.online.settled = true;
+
+  clearInterval(
+    S.online.poll
+  );
+
+  const row =
+    S.online.row;
+
+  const before =
+    S.profile
+      ? S.profile.rating
+      : null;
+
+  const ack =
+    await sb.rpc(
+      'acknowledge_game',
+      {gid:row.id}
+    );
+
+  if (ack.error) {
+    await sb.rpc(
+      'record_result',
+      {gid:row.id}
+    );
+  }
+
+  await loadProfile();
+
+  await fetchProfiles(
+    [row.white_id,row.black_id],
+    true
+  );
+
+  renderUserBox();
+
+  render();
+
+  if (
+    before != null &&
+    S.profile &&
+    S.profile.rating !== before
+  ) {
+
+    const d =
+      S.profile.rating - before;
+
+    toast(
+      `Rating ${before} to ${S.profile.rating} (${d > 0 ? '+' : ''}${d})`
+    );
+
+  }
+
+}
+
+function offerDraw() {
+
+  pushPatch(
+    {draw_offer:S.color},
+    {status:'active'}
+  ).then(d => {
+
+    if (d) {
+      toast('Draw offered.');
+    }
+
+    render();
+
+  });
+
+}
+
+async function acceptDraw() {
+
+  const d =
+    await pushPatch(
+      {
+        status:'finished',
+        result:'1/2-1/2',
+        reason:'agreement',
+        draw_offer:null
+      },
+      {status:'active'}
+    );
+
+  if (d) {
+
+    S.over = {
+      result:'1/2-1/2',
+      reason:'agreement'
+    };
+
+    render();
+
+    settle();
+
+  }
+
+}
+
+function confirmResign() {
+
+  modal(
+    'Resign this game?',
+    '<p>Your opponent wins and your rating drops.</p>',
+    [
+      {
+        label:'Resign',
+        cls:'danger',
+
+        onClick:async () => {
+
+          const res =
+            S.color === 'w'
+              ? '0-1'
+              : '1-0';
+
+          const d =
+            await pushPatch(
+              {
+                status:'finished',
+                result:res,
+                reason:'resignation',
+                draw_offer:null
+              },
+              {status:'active'}
+            );
+
+          if (d) {
+
+            S.over = {
+              result:res,
+              reason:'resignation'
+            };
+
+            render();
+
+            settle();
+
+          }
+
+        }
+
+      },
+
+      {
+        label:'Keep playing'
+      }
+
+    ]
+  );
+
+}
+
+function leaveGame() {
+
+  teardownOnline();
+
+  S.mode = null;
+  S.game = null;
+  S.over = null;
+  S.aiThinking = false;
+
+  clearSel();
+
+  if (
+    S.user ||
+    S.guest
+  ) {
+    goLobby();
+  } else {
+    showView('auth');
+  }
+
+}
+
+
+/* ═════════════ Playing ═════════════ */
+
+function syncLast() {
+
+  const h =
+    S.game.history({
+      verbose:true
+    });
+
+  S.last =
+    h.length
+      ? {
+          from:h[h.length - 1].from,
+          to:h[h.length - 1].to
+        }
+      : null;
+
+}
+
+function canInteract() {
+
+  if (
+    !S.game ||
+    S.over ||
+    S.review
+  ) return false;
+
+  if (S.mode === 'ai') {
+    return (
+      !S.aiThinking &&
+      S.game.turn() === S.color
+    );
+  }
+
+  if (S.mode === 'online') {
+
+    return (
+      !!S.online &&
+      !S.online.busy &&
+      S.online.row.status === 'active' &&
+      S.game.turn() === S.color
+    );
+
+  }
+
+  return S.mode === 'local';
+
+}
+
+function ownsPiece(p) {
+
+  return (
+    p.color === S.game.turn() &&
+    (
+      S.mode === 'local' ||
+      p.color === S.color
+    )
+  );
+
+}
+
+function onSquare(sq) {
+
+  if (!canInteract()) return;
+
+  if (
+    S.sel &&
+    S.targets.includes(sq)
+  ) {
+    return tryMove(
+      S.sel,
+      sq
+    );
+  }
+
+  const p =
+    S.game.get(sq);
+
+  if (
+    p &&
+    ownsPiece(p)
+  ) {
+
+    if (S.sel === sq) {
+
+      clearSel();
+
+    } else {
+
+      S.sel = sq;
+
+      S.targets =
+        S.game
+          .moves({
+            square:sq,
+            verbose:true
+          })
+          .map(m => m.to);
+
+    }
+
+  } else {
+
+    clearSel();
+
+  }
+
+  paintTargets();
+
+}
+
+function tryMove(from,to) {
+
+  const mv =
+    S.game
+      .moves({
+        square:from,
+        verbose:true
+      })
+      .filter(
+        m => m.to === to
+      );
+
+  if (!mv.length) return;
+
+  if (mv[0].promotion) {
+
+    const color =
+      mv[0].color;
+
+    const root =
+      modal(
+        'Promote pawn to',
+        `<div class="promo">
+          ${['q','r','b','n']
+            .map(t =>
+              `<button
+                 type="button"
+                 class="btn"
+                 data-t="${t}"
+                 aria-label="${t}">
+                 <span class="pc ${color}">
+                   ${GLYPH[t]}
+                 </span>
+               </button>`
+            )
+            .join('')}
+        </div>`,
+        [],
+        true
+      );
+
+    root
+      .querySelectorAll(
+        'button[data-t]'
+      )
+      .forEach(b => {
+
+        b.onclick = () => {
+
+          closeModal();
+
+          commit(
+            from,
+            to,
+            b.dataset.t
+          );
+
+        };
+
+      });
+
+    return;
+
+  }
+
+  commit(
+    from,
+    to
+  );
+
+}
+
+function commit(from,to,promo) {
+
+  const m =
+    S.game.move({
+      from,
+      to,
+      promotion:promo || 'q'
+    });
+
+  if (!m) return;
+
+  S.last = {
+    from,
+    to
+  };
+
+  clearSel();
+
+  const end =
+    gameEnd(S.game);
+
+  if (end) {
+    S.over = end;
+  }
+
+  render();
+
+  if (S.mode === 'online') {
+
+    sendMove(end);
+
+  }
+
+  else if (
+    S.mode === 'ai' &&
+    !end
+  ) {
+
+    aiMove();
+
+  }
+
+}
+
+function aiMove() {
+
+  const g =
+    S.game;
+
+  S.aiThinking = true;
+
+  render();
+
+  setTimeout(() => {
+
+    if (
+      S.game !== g ||
+      S.mode !== 'ai'
+    ) return;
+
+    const m =
+      pickAIMove(
+        g,
+        S.aiLevel
+      );
+
+    S.aiThinking = false;
+
+    if (m) {
+
+      g.move({
+        from:m.from,
+        to:m.to,
+        promotion:m.promotion || 'q'
+      });
+
+      S.last = {
+        from:m.from,
+        to:m.to
+      };
+
+      const end =
+        gameEnd(g);
+
+      if (end) {
+        S.over = end;
+      }
+
+    }
+
+    render();
+
+  },250);
+
+}
+
+function undo() {
+
+  if (
+    S.aiThinking ||
+    !S.game.history().length
+  ) return;
+
+  S.game.undo();
+
+  if (
+    S.mode === 'ai' &&
+    S.game.turn() !== S.color &&
+    S.game.history().length
+  ) {
+    S.game.undo();
+  }
+
+  S.over = null;
+
+  syncLast();
+
+  clearSel();
+
+  render();
+
+  if (
+    S.mode === 'ai' &&
+    S.game.turn() !== S.color
+  ) {
+    aiMove();
+  }
+
+}
+
+function newGame() {
+
+  if (S.mode === 'ai') {
+    startAI(
+      S.aiLevel,
+      S.colorPref
+    );
+  } else {
+    startLocal();
+  }
+
+}
+
+
+/* ═════════════ Rendering ═════════════ */
+
+function viewGame() {
+
+  if (!S.game) return null;
+
+  return S.review
+    ? rebuild(
+        S.game
+          .history()
+          .slice(
+            0,
+            S.review.ply
+          )
+      )
+    : S.game;
+
+}
+
+function lastOf(g) {
+
+  const h =
+    g.history({
+      verbose:true
+    });
+
+  return h.length
+    ? {
+        from:h[h.length - 1].from,
+        to:h[h.length - 1].to
+      }
+    : null;
+
+}
+
+function render() {
+
+  const vg =
+    viewGame();
+
+  renderBoard(vg);
+  renderSide(vg);
+
+}
+
+function findKing(brd,color) {
+
+  for (
+    let r = 0;
+    r < 8;
+    r++
+  ) {
+
+    for (
+      let c = 0;
+      c < 8;
+      c++
+    ) {
+
+      const p =
+        brd[r][c];
+
+      if (
+        p &&
+        p.type === 'k' &&
+        p.color === color
+      ) {
+        return (
+          FILES[c] +
+          (8 - r)
+        );
+      }
+
+    }
+
+  }
+
+  return null;
+
+}
+
+function renderBoard(g) {
+
+  const b = $('board');
+
+  if (!g) {
+    b.innerHTML = '';
+    return;
+  }
+
+  const last =
+    S.review
+      ? lastOf(g)
+      : S.last;
+
+  const brd =
+    g.board();
+
+  const chk =
+    g.in_check()
+      ? findKing(
+          brd,
+          g.turn()
+        )
+      : null;
+
+  const can =
+    canInteract();
+
+  let html = '';
+
+  for (
+    let r = 0;
+    r < 8;
+    r++
+  ) {
+
+    for (
+      let c = 0;
+      c < 8;
+      c++
+    ) {
+
+      const f =
+        S.flip
+          ? 7 - c
+          : c;
+
+      const rk =
+        S.flip
+          ? r
+          : 7 - r;
+
+      const sq =
+        FILES[f] +
+        (rk + 1);
+
+      const p =
+        brd[7 - rk][f];
+
+      let cls =
+        'sq ' +
+        (
+          (f + rk) % 2 === 0
+            ? 'dark'
+            : 'light'
+        );
+
+      if (
+        last &&
+        (
+          last.from === sq ||
+          last.to === sq
+        )
+      ) {
+        cls += ' last';
+      }
+
+      if (S.sel === sq) {
+        cls += ' sel';
+      }
+
+      if (
+        S.targets.includes(sq)
+      ) {
+
+        cls +=
+          ' target' +
+          (p ? ' cap' : '');
+
+      }
+
+      if (chk === sq) {
+        cls += ' check';
+      }
+
+      let inner = '';
+
+      if (c === 0) {
+
+        inner +=
+          `<i class="co rk">
+            ${rk + 1}
+          </i>`;
+
+      }
+
+      if (r === 7) {
+
+        inner +=
+          `<i class="co fl">
+            ${FILES[f]}
+          </i>`;
+
+      }
+
+      if (p) {
+
+        inner +=
+          `<span
+             class="pc ${p.color}"
+             ${
+               can && ownsPiece(p)
+                 ? 'draggable="true"'
+                 : ''
+             }>
+             ${GLYPH[p.type]}
+           </span>`;
+
+      }
+
+      html +=
+        `<div
+           class="${cls}"
+           data-sq="${sq}">
+           ${inner}
+         </div>`;
+
+    }
+
+  }
+
+  b.innerHTML = html;
+
+}
+
+function paintTargets() {
+
+  $('board')
+    .querySelectorAll('.sq')
+    .forEach(el => {
+
+      const sq =
+        el.dataset.sq;
+
+      const t =
+        S.targets.includes(sq);
+
+      el.classList.toggle(
+        'sel',
+        sq === S.sel
+      );
+
+      el.classList.toggle(
+        'target',
+        t
+      );
+
+      el.classList.toggle(
+        'cap',
+        t && !!S.game.get(sq)
+      );
+
+    });
+
+}
+
+function bindBoard() {
+
+  const b = $('board');
+
+  b.addEventListener(
+    'click',
+    e => {
+
+      const s =
+        e.target.closest('.sq');
+
+      if (s) {
+        onSquare(
+          s.dataset.sq
+        );
+      }
+
+    }
+  );
+
+  b.addEventListener(
+    'dragstart',
+    e => {
+
+      const s =
+        e.target.closest('.sq');
+
+      const p =
+        s && S.game
+          ? S.game.get(
+              s.dataset.sq
+            )
+          : null;
+
+      if (
+        !s ||
+        !p ||
+        !canInteract() ||
+        !ownsPiece(p)
+      ) {
+
+        e.preventDefault();
+
+        return;
+
+      }
+
+      S.sel =
+        s.dataset.sq;
+
+      S.targets =
+        S.game
+          .moves({
+            square:S.sel,
+            verbose:true
+          })
+          .map(
+            m => m.to
+          );
+
+      e.dataTransfer.setData(
+        'text/plain',
+        S.sel
+      );
+
+      e.dataTransfer.effectAllowed =
+        'move';
+
+      paintTargets();
+
+    }
+  );
+
+  b.addEventListener(
+    'dragover',
+    e => {
+      if (S.sel) {
+        e.preventDefault();
+      }
+    }
+  );
+
+  b.addEventListener(
+    'drop',
+    e => {
+
+      e.preventDefault();
+
+      const s =
+        e.target.closest('.sq');
+
+      if (!s || !S.sel) return;
+
+      const from = S.sel;
+      const to = s.dataset.sq;
+
+      if (
+        S.targets.includes(to)
+      ) {
+
+        tryMove(
+          from,
+          to
+        );
+
+      } else {
+
+        clearSel();
+        render();
+
+      }
+
+    }
+  );
+
+  b.addEventListener(
+    'dragend',
+    () => {
+
+      if (S.sel) {
+
+        clearSel();
+        render();
+
+      }
+
+    }
+  );
+
+}
+
+function playerInfo(color) {
+
+  if (S.mode === 'local') {
+
+    return {
+      name:
+        color === 'w'
+          ? 'White'
+          : 'Black'
+    };
+
+  }
+
+  if (S.mode === 'ai') {
+
+    if (color === S.color) {
+
+      return {
+        name:
+          S.profile
+            ? S.profile.username
+            : 'You'
+      };
+
+    }
+
+    return {
+      name:'Computer',
+      sub:[
+        '',
+        'Easy',
+        'Medium',
+        'Hard'
+      ][S.aiLevel]
+    };
+
+  }
+
+  const row =
+    S.online.row;
+
+  const id =
+    color === 'w'
+      ? row.white_id
+      : row.black_id;
+
+  if (!id) {
+    return {
+      name:'Waiting for opponent…'
+    };
+  }
+
+  const p = PC[id];
+
+  return {
+    name:
+      p
+        ? p.username
+        : 'Player',
+
+    sub:
+      p
+        ? String(p.rating)
+        : ''
+  };
+
+}
+
+function captured(g) {
+
+  const out = {
+    w:[],
+    b:[]
+  };
+
+  const val = {
+    w:0,
+    b:0
+  };
+
+  g.history({
+    verbose:true
+  }).forEach(m => {
+
+    if (m.captured) {
+
+      out[m.color].push(
+        m.captured
+      );
+
+      val[m.color] +=
+        PV[m.captured];
+
+    }
+
+  });
+
+  ['w','b'].forEach(c => {
+
+    out[c].sort(
+      (a,b) =>
+        PV[b] - PV[a]
+    );
+
+  });
+
+  return {
+    out,
+    diff:{
+      w:val.w - val.b,
+      b:val.b - val.w
+    }
+  };
+
+}
+
+function fillBar(el,color,g) {
+
+  const info =
+    playerInfo(color);
+
+  const cap =
+    captured(g);
+
+  const active =
+    !S.over &&
+    !S.review &&
+    g.turn() === color &&
+    (
+      S.mode !== 'online' ||
+      S.online.row.status === 'active'
+    );
+
+  el.className =
+    'pbar' +
+    (
+      active
+        ? ' turn'
+        : ''
+    );
+
+  const opp =
+    color === 'w'
+      ? 'b'
+      : 'w';
+
+  el.innerHTML =
+    `<span class="dot"></span>
+     <span class="pname">
+       ${esc(info.name)}
+       ${
+         info.sub
+           ? `<em>${esc(info.sub)}</em>`
+           : ''
+       }
+     </span>
+
+     <span class="caps">
+       ${
+         cap.out[color]
+           .map(
+             t =>
+               `<span class="cp ${opp}">
+                 ${GLYPH[t]}
+               </span>`
+           )
+           .join('')
+       }
+     </span>
+
+     <span class="adv">
+       ${
+         cap.diff[color] > 0
+           ? '+' + cap.diff[color]
+           : ''
+       }
+     </span>`;
+
+}
+
+function statusText() {
+
+  const g =
+    S.game;
+
+  if (S.over) {
+
+    const {
+      result,
+      reason
+    } = S.over;
+
+    if (
+      result === '1/2-1/2'
+    ) {
+      return `Draw by ${reason}.`;
+    }
+
+    const wWon =
+      result === '1-0';
+
+    const winner =
+      wWon
+        ? 'White'
+        : 'Black';
+
+    const loser =
+      wWon
+        ? 'Black'
+        : 'White';
+
+    let line;
+
+    if (
+      reason === 'resignation'
+    ) {
+
+      line =
+        `${loser} resigned.`;
+
+    } else {
+
+      line =
+        reason.charAt(0).toUpperCase() +
+        reason.slice(1) +
+        '.';
+
+    }
+
+    if (
+      S.mode === 'local'
+    ) {
+      return `${line} ${winner} wins.`;
+    }
+
+    return (
+      `${line} ` +
+      (
+        wWon ===
+        (S.color === 'w')
+          ? 'You win.'
+          : 'You lose.'
+      )
+    );
+
+  }
+
+  if (
+    S.mode === 'online' &&
+    S.online.row.status === 'waiting'
+  ) {
+    return 'Waiting for an opponent to join.';
+  }
+
+  const chk =
+    g.in_check()
+      ? ' Check.'
+      : '';
+
+  if (
+    S.mode === 'local'
+  ) {
+    return (
+      `${
+        g.turn() === 'w'
+          ? 'White'
+          : 'Black'
+      } to move.${chk}`
+    );
+  }
+
+  if (
+    S.mode === 'ai' &&
+    S.aiThinking
+  ) {
+    return 'Computer is thinking…';
+  }
+
+  return (
+    (
+      g.turn() === S.color
+        ? 'Your move.'
+        : 'Opponent’s move.'
+    ) +
+    chk
+  );
+
+}
+
+
+/* ═════════════ MOVE REVIEW SYSTEM ═════════════ */
+
+/*
+  The review system uses the same chess evaluator
+  already used by the computer.
+
+  It compares:
+    1. The best move the engine finds.
+    2. The move that was actually played.
+
+  The difference becomes the move-quality label.
+*/
+
+const REVIEW_DEPTH = 2;
+
+function sideEvaluation(g) {
+
+  return g.turn() === 'w'
+    ? evaluate(g)
+    : -evaluate(g);
+
+}
+
+function reviewSearch(g,depth) {
+
+  if (depth <= 0) {
+    return sideEvaluation(g);
+  }
+
+  const moves =
+    g.moves({
+      verbose:true
+    });
+
+  if (!moves.length) {
+
+    return g.in_check()
+      ? -100000
+      : 0;
+
+  }
+
+  orderMoves(moves);
+
+  let best = -Infinity;
+
+  for (const m of moves) {
+
+    g.move({
+      from:m.from,
+      to:m.to,
+      promotion:m.promotion || 'q'
+    });
+
+    const score =
+      -reviewSearch(
+        g,
+        depth - 1
+      );
+
+    g.undo();
+
+    if (score > best) {
+      best = score;
+    }
+
+  }
+
+  return best;
+
+}
+
+function analyzeReviewMove(history,ply) {
+
+  if (
+    !history ||
+    !history[ply - 1]
+  ) {
+    return null;
+  }
+
+  const before =
+    rebuild(
+      history.slice(
+        0,
+        ply - 1
+      )
+    );
+
+  const san =
+    history[ply - 1];
+
+  const legal =
+    before.moves({
+      verbose:true
+    });
+
+  if (!legal.length) {
+    return null;
+  }
+
+  const mover =
+    before.turn();
+
+  /*
+    Find best legal move.
+  */
+
+  let bestScore = -Infinity;
+  let bestMove = null;
+
+  for (const m of legal) {
+
+    before.move({
+      from:m.from,
+      to:m.to,
+      promotion:m.promotion || 'q'
+    });
+
+    const score =
+      -reviewSearch(
+        before,
+        REVIEW_DEPTH - 1
+      );
+
+    before.undo();
+
+    if (score > bestScore) {
+
+      bestScore = score;
+      bestMove = m;
+
+    }
+
+  }
+
+  /*
+    Find actual move.
+  */
+
+  const actual =
+    legal.find(
+      m => m.san === san
+    );
+
+  if (!actual) {
+
+    return {
+      label:'Good',
+      cls:'review-good',
+      loss:0,
+      best:
+        bestMove
+          ? bestMove.san
+          : '',
+      score:0
+    };
+
+  }
+
+  before.move({
+    from:actual.from,
+    to:actual.to,
+    promotion:actual.promotion || 'q'
+  });
+
+  const actualScore =
+    -reviewSearch(
+      before,
+      REVIEW_DEPTH - 1
+    );
+
+  const loss =
+    Math.max(
+      0,
+      bestScore - actualScore
+    );
+
+  const wasMate =
+    before.in_checkmate();
+
+  /*
+    Classifications.
+
+    The numbers are evaluation points from
+    the perspective of the player making
+    the move.
+  */
+
+  let label;
+  let cls;
+
+  if (wasMate) {
+
+    label = 'Incredible';
+    cls = 'review-incredible';
+
+  } else if (loss <= 12) {
+
+    /*
+      Very close to the engine's best move.
+    */
+
+    if (
+      actualScore -
+        sideEvaluation(
+          rebuild(
+            history.slice(
+              0,
+              ply - 1
+            )
+          )
+        ) >= 250 &&
+      actual.captured
+    ) {
+
+      label = 'Incredible';
+      cls = 'review-incredible';
+
+    } else {
+
+      label = 'Excellent';
+      cls = 'review-excellent';
+
+    }
+
+  } else if (loss <= 35) {
+
+    label = 'Good';
+    cls = 'review-good';
+
+  } else if (loss <= 80) {
+
+    label = 'Inaccuracy';
+    cls = 'review-inaccuracy';
+
+  } else if (loss <= 180) {
+
+    label = 'Mistake';
+    cls = 'review-mistake';
+
+  } else {
+
+    label = 'Blunder';
+    cls = 'review-blunder';
+
+  }
+
+  return {
+    label,
+    cls,
+    loss,
+    best:
+      bestMove
+        ? bestMove.san
+        : '',
+    score:actualScore,
+    bestScore,
+    mover
+  };
+
+}
+
+function analyzeEntireReview() {
+
+  if (
+    !S.review ||
+    S.review.analyzing ||
+    !S.game
+  ) {
+    return;
+  }
+
+  const history =
+    S.game.history();
+
+  S.review.analyzing = true;
+
+  let ply = 1;
+
+  function next() {
+
+    if (!S.review) return;
+
+    if (ply > history.length) {
+
+      S.review.analyzing = false;
+
+      render();
+
+      return;
+
+    }
+
+    if (
+      !S.review.analysis[ply]
+    ) {
+
+      setTimeout(() => {
+
+        if (!S.review) return;
+
+        try {
+
+          S.review.analysis[ply] =
+            analyzeReviewMove(
+              history,
+              ply
+            );
+
+        } catch(err) {
+
+          console.warn(
+            'Review analysis failed for ply',
+            ply,
+            err
+          );
+
+          S.review.analysis[ply] =
+            null;
+
+        }
+
+        render();
+
+        ply++;
+
+        setTimeout(
+          next,
+          0
+        );
+
+      },0);
+
+    } else {
+
+      ply++;
+
+      setTimeout(
+        next,
+        0
+      );
+
+    }
+
+  }
+
+  next();
+
+}
+
+function reviewLabelHtml(ply) {
+
+  if (!S.review) {
+    return '';
+  }
+
+  const a =
+    S.review.analysis &&
+    S.review.analysis[ply];
+
+  if (
+    S.review.analyzing &&
+    !a
+  ) {
+
+    return `
+      <span class="review-loading">
+        analyzing…
+      </span>
+    `;
+
+  }
+
+  if (!a) {
+    return '';
+  }
+
+  return `
+    <span
+      class="move-review ${a.cls}"
+      title="Best move: ${esc(a.best || '—')} · Lost ${Math.round(a.loss)} evaluation points">
+
+      <span class="review-dot"></span>
+
+      ${esc(a.label)}
+
+    </span>
+  `;
+
+}
+
+
+/* ═════════════ Game side panel ═════════════ */
+
+function renderSide(vg) {
+
+  const g = S.game;
+
+  if (!g) return;
+
+  fillBar(
+    $('pbar-top'),
+    S.flip ? 'w' : 'b',
+    vg
+  );
+
+  fillBar(
+    $('pbar-bot'),
+    S.flip ? 'b' : 'w',
+    vg
+  );
+
+  const h =
+    g.history();
+
+  const total =
+    h.length;
+
+  const st =
+    $('status');
+
+  if (S.review) {
+
+    if (
+      S.review.ply === 0
+    ) {
+
+      st.textContent =
+        'Overview: starting position.';
+
+    } else {
+
+      st.textContent =
+        `Overview: after move ${S.review.ply} of ${total}.`;
+
+    }
+
+  } else {
+
+    st.textContent =
+      statusText();
+
+  }
+
+  st.className =
+    'status' +
+    (
+      S.over
+        ? ' done'
+        : ''
+    );
+
+  const inv =
+    $('invite');
+
+  if (
+    S.mode === 'online' &&
+    S.online.row.status === 'waiting'
+  ) {
+
+    inv.classList.remove(
+      'hidden'
+    );
+
+    inv.innerHTML =
+      `<div class="muted">
+         Share this code with a friend
+       </div>
+
+       <div class="big">
+         ${esc(S.online.row.code)}
+       </div>
+
+       <button
+         class="btn sm"
+         id="copy-code"
+         type="button">
+         Copy code
+       </button>`;
+
+    $('copy-code').onclick =
+      () => {
+
+        if (navigator.clipboard) {
+
+          navigator.clipboard
+            .writeText(
+              S.online.row.code
+            )
+            .then(() =>
+              toast(
+                'Code copied.'
+              )
+            );
+
+        }
+
+      };
+
+  } else {
+
+    inv.classList.add(
+      'hidden'
+    );
+
+  }
+
+  const note =
+    $('note');
+
+  note.classList.toggle(
+    'hidden',
+    !(
+      S.mode === 'online' &&
+      S.over
+    )
+  );
+
+  note.textContent =
+    'Online games are deleted from the server once they finish. Use Overview to review this one before you leave.';
+
+  const dp =
+    ply =>
+      S.review
+        ? ` data-ply="${ply}"${
+            S.review.ply === ply
+              ? ' class="cur"'
+              : ''
+          }`
+        : '';
+
+  let mv = '';
+
+  /*
+    MOVE LIST WITH REVIEW LABELS
+  */
+
+  for (
+    let i = 0;
+    i < total;
+    i += 2
+  ) {
+
+    const whitePly =
+      i + 1;
+
+    const blackPly =
+      i + 2;
+
+    mv += `
+      <li>
+
+        <span class="n">
+          ${i / 2 + 1}.
+        </span>
+
+        <span${dp(whitePly)}>
+          ${esc(h[i])}
+          ${reviewLabelHtml(whitePly)}
+        </span>
+
+        ${
+          h[i + 1]
+            ? `
+              <span${dp(blackPly)}>
+                ${esc(h[i + 1])}
+                ${reviewLabelHtml(blackPly)}
+              </span>
+            `
+            : '<span></span>'
+        }
+
+      </li>
+    `;
+
+  }
+
+  const ml =
+    $('moves');
+
+  ml.innerHTML = mv;
+
+  const cur =
+    S.review &&
+    ml.querySelector('.cur');
+
+  if (cur) {
+
+    ml.scrollTop =
+      Math.max(
+        0,
+        cur.offsetTop -
+        ml.clientHeight / 2
+      );
+
+  } else if (!S.review) {
+
+    ml.scrollTop =
+      ml.scrollHeight;
+
+  }
+
+  const c =
+    $('controls');
+
+  c.innerHTML = '';
+
+  const add =
+    (label,fn,cls) => {
+
+      const b =
+        document.createElement(
+          'button'
+        );
+
+      b.type = 'button';
+
+      b.className =
+        'btn ' +
+        (cls || '');
+
+      b.textContent =
+        label;
+
+      b.onclick = fn;
+
+      c.appendChild(b);
+
+      return b;
+
+    };
+
+  if (S.review) {
+
+    const r =
+      S.review;
+
+    add(
+      'First',
+      () => {
+        stopAuto();
+        setPly(0);
+      }
+    ).disabled =
+      r.ply === 0;
+
+    add(
+      'Back',
+      () => {
+        stopAuto();
+        setPly(
+          r.ply - 1
+        );
+      }
+    ).disabled =
+      r.ply === 0;
+
+    add(
+      'Next',
+      () => {
+        stopAuto();
+        setPly(
+          r.ply + 1
+        );
+      }
+    ).disabled =
+      r.ply === total;
+
+    add(
+      'Last',
+      () => {
+        stopAuto();
+        setPly(total);
+      }
+    ).disabled =
+      r.ply === total;
+
+    add(
+      r.timer
+        ? 'Pause'
+        : 'Auto-play',
+      toggleAuto
+    );
+
+    add(
+      'Flip board',
+      () => {
+        S.flip = !S.flip;
+        render();
+      }
+    );
+
+    add(
+      'Exit overview',
+      () => {
+        endReview();
+        render();
+      },
+      'primary'
+    );
+
+    return;
+
+  }
+
+  add(
+    'Flip board',
+    () => {
+      S.flip = !S.flip;
+      render();
+    }
+  );
+
+  if (
+    S.over &&
+    total
+  ) {
+
+    add(
+      'Overview',
+      startReview,
+      'primary'
+    );
+
+  }
+
+  if (
+    S.mode === 'ai' ||
+    S.mode === 'local'
+  ) {
+
+    add(
+      'Undo',
+      undo
+    ).disabled =
+      !total ||
+      S.aiThinking;
+
+    add(
+      'New game',
+      newGame
+    );
+
+  }
+
+  if (
+    S.mode === 'online' &&
+    S.online.row.status === 'active' &&
+    !S.over
+  ) {
+
+    if (
+      S.online.row.draw_offer === S.color
+    ) {
+
+      add(
+        'Draw offered',
+        () => {}
+      ).disabled = true;
+
+    } else {
+
+      add(
+        'Offer draw',
+        offerDraw
+      );
+
+    }
+
+    add(
+      'Resign',
+      confirmResign,
+      'danger'
+    );
+
+  }
+
+  add(
+    'Back to lobby',
+    leaveGame,
+    'ghost'
+  );
+
+}
+
+
+/* ═════════════ Post-game overview ═════════════ */
+
+function startReview() {
+
+  if (
+    !S.over ||
+    !S.game ||
+    !S.game.history().length
+  ) {
+    return;
+  }
+
+  clearSel();
+
+  S.review = {
+    ply:
+      S.game.history().length,
+
+    timer:null,
+
+    analysis:{},
+
+    analyzing:false
+  };
+
+  render();
+
+  /*
+    Let Overview render first,
+    then begin move analysis.
+  */
+
+  setTimeout(
+    analyzeEntireReview,
+    50
+  );
+
+}
+
+function setPly(p) {
+
+  if (!S.review) return;
+
+  const total =
+    S.game.history().length;
+
+  S.review.ply =
+    Math.max(
+      0,
+      Math.min(
+        total,
+        p
+      )
+    );
+
+  if (
+    S.review.ply === total
+  ) {
+    stopAuto();
+  }
+
+  render();
+
+}
+
+function stopAuto() {
+
+  if (
+    S.review &&
+    S.review.timer
+  ) {
+
+    clearInterval(
+      S.review.timer
+    );
+
+    S.review.timer = null;
+
+  }
+
+}
+
+function toggleAuto() {
+
+  if (!S.review) return;
+
+  if (S.review.timer) {
+
+    stopAuto();
+
+    render();
+
+    return;
+
+  }
+
+  if (
+    S.review.ply >=
+    S.game.history().length
+  ) {
+
+    S.review.ply = 0;
+
+  }
+
+  S.review.timer =
+    setInterval(
+      () =>
+        setPly(
+          S.review.ply + 1
+        ),
+      900
+    );
+
+  render();
+
+}
+
+function endReview() {
+
+  if (S.review) {
+
+    stopAuto();
+
+    S.review = null;
+
+  }
+
+}
+
+
+/* ═════════════ Decorative board ═════════════ */
+
+function miniBoard(el,fen) {
+
+  let html = '';
+  let r = 0;
+
+  fen
+    .split(' ')[0]
+    .split('/')
+    .forEach(row => {
+
+      let c = 0;
+
+      const cell = ch => {
+
+        const cls =
+          (r + c) % 2 === 0
+            ? 'light'
+            : 'dark';
+
+        const piece =
+          ch
+            ? `<span class="pc ${
+                ch === ch.toUpperCase()
+                  ? 'w'
+                  : 'b'
+              }">
+                ${GLYPH[ch.toLowerCase()]}
+              </span>`
+            : '';
+
+        html +=
+          `<div
+             class="sq ${cls}"
+             style="cursor:default">
+             ${piece}
+           </div>`;
+
+        c++;
+
+      };
+
+      for (const ch of row) {
+
+        if (/\d/.test(ch)) {
+
+          for (
+            let i = 0;
+            i < +ch;
+            i++
+          ) {
+            cell(null);
+          }
+
+        } else {
+
+          cell(ch);
+
+        }
+
+      }
+
+      r++;
+
+    });
+
+  el.innerHTML = html;
+
+}
+
+
+/* ═════════════ Wiring ═════════════ */
+
+function bindStatic() {
+
+  $('tab-in').onclick =
+    () => setAuthMode('in');
+
+  $('tab-up').onclick =
+    () => setAuthMode('up');
+
+  $('auth-form')
+    .addEventListener(
+      'submit',
+      submitAuth
+    );
+
+  $('forgot').onclick =
+    forgotPassword;
+
+  $('guest').onclick =
+    () => {
+
+      S.guest = true;
+
+      renderUserBox();
+
+      goLobby();
+
+    };
+
+  $('brand').onclick =
+    () => {
+
+      if (S.mode) {
+
+        leaveGame();
+
+      } else if (
+        S.user ||
+        S.guest
+      ) {
+
+        goLobby();
+
+      }
+
+    };
+
+  [
+    'seg-level',
+    'seg-color'
+  ].forEach(id =>
+    initSeg($(id))
+  );
+
+  $('start-ai').onclick =
+    () =>
+      startAI(
+        +$('seg-level').dataset.val,
+        $('seg-color').dataset.val
+      );
+
+  $('start-local').onclick =
+    startLocal;
+
+  $('moves').addEventListener(
+    'click',
+    e => {
+
+      const t =
+        e.target.closest(
+          '[data-ply]'
+        );
+
+      if (
+        t &&
+        S.review
+      ) {
+
+        stopAuto();
+
+        setPly(
+          +t.dataset.ply
+        );
+
+      }
+
+    }
+  );
+
+  document.addEventListener(
+    'keydown',
+    e => {
+
+      if (
+        !S.review ||
+        $('modal-root').firstChild
+      ) {
+        return;
+      }
+
+      const total =
+        S.game.history().length;
+
+      const keys = {
+        ArrowLeft:
+          S.review.ply - 1,
+
+        ArrowRight:
+          S.review.ply + 1,
+
+        Home:0,
+
+        End:total
+      };
+
+      if (
+        e.key in keys
+      ) {
+
+        e.preventDefault();
+
+        stopAuto();
+
+        setPly(
+          keys[e.key]
+        );
+
+      }
+
+    }
+  );
+
+  bindBoard();
+
+  miniBoard(
+    $('mini'),
+    'r1bqkb1r/pppp1Qpp/2n2n2/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4'
+  );
+
+}
+
+
+/* ═════════════ Init ═════════════ */
+
+(async function init() {
+
+  bindStatic();
+
+  const {data} =
+    await sb.auth.getSession();
+
+  const session =
+    data &&
+    data.session;
+
+  if (session) {
+
+    await handleUser(
+      session.user
+    );
+
+  } else {
+
+    showView('auth');
+
+  }
+
+  sb.auth.onAuthStateChange(
+    (event,sess) => {
+
+      if (
+        event === 'PASSWORD_RECOVERY'
+      ) {
+
+        setTimeout(
+          promptNewPassword,
+          0
+        );
+
+      }
+
+      if (
+        event === 'SIGNED_IN' ||
+        event === 'SIGNED_OUT' ||
+        event === 'USER_UPDATED'
+      ) {
+
+        setTimeout(
+          () =>
+            handleUser(
+              sess
+                ? sess.user
+                : null
+            ),
+          0
+        );
+
+      }
+
+    }
+  );
+
 })();
 
-// ── UTILS ──
-function escH(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
-
-// ── INIT ──
-async function init(){const ok=await ensureTables();if(ok){await loadRooms();if(rooms.length)joinRoom(rooms[0].id);}}
-init();
+})();
 </script>
+
 </body>
 </html>
