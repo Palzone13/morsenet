@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>PAL Chess</title>
 <meta name="color-scheme" content="dark">
+<!-- Google AdSense: replace with your own publisher id once your account is approved (Settings > Account in AdSense). -->
+<meta name="google-adsense-account" content="ca-pub-0000000000000000">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
@@ -33,10 +35,10 @@ p{margin:0 0 12px}
 button{font-family:inherit}
 
 /* header */
-.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 20px;border-bottom:1px solid var(--line);background:var(--panel)}
+.top{display:flex;flex-wrap:wrap;row-gap:8px;align-items:center;justify-content:space-between;gap:12px;padding:12px 20px;border-bottom:1px solid var(--line);background:var(--panel)}
 .brand{display:flex;align-items:center;gap:10px;background:none;border:0;color:var(--text);font:800 20px var(--f-head);letter-spacing:-.02em;cursor:pointer;padding:4px 0}
 .brand .mark{font-family:var(--f-piece);font-size:28px;color:var(--gold);line-height:1}
-.userbox{display:flex;align-items:center;gap:12px;font-weight:600}
+.userbox{display:flex;flex-wrap:wrap;row-gap:6px;align-items:center;gap:12px;font-weight:600}
 .userbox .rate{color:var(--gold);font-family:var(--f-head);font-weight:700}
 .userbox .uname{max-width:32vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
@@ -99,7 +101,7 @@ label input{margin-top:6px}
 .tag{font-size:12px;font-weight:700;padding:2px 8px;border-radius:99px;background:var(--panel2);color:var(--gold)}
 .res-w{color:var(--ok)} .res-l{color:#ff9d95} .res-d{color:var(--muted)}
 .me{display:flex;align-items:center;gap:16px;margin-bottom:28px}
-.me-rate{font:800 44px var(--f-head);color:var(--gold);letter-spacing:-.03em}
+.me-rate{font:800 clamp(32px,9vw,44px) var(--f-head);color:var(--gold);letter-spacing:-.03em}
 .me-name{font:700 20px var(--f-head)}
 .leaders li{display:grid;grid-template-columns:28px 1fr auto auto;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);align-items:baseline}
 .leaders .rk{color:var(--muted);font-variant-numeric:tabular-nums}
@@ -112,7 +114,7 @@ label input{margin-top:6px}
 /* game */
 #view-game{--bs:max(280px,min(calc(100vw - 32px),calc(100vh - 210px),680px))}
 .game{display:flex;flex-wrap:wrap;gap:32px;justify-content:center;align-items:flex-start;padding:20px 16px 48px}
-.board-wrap{width:var(--bs)}
+.board-wrap{width:var(--bs);position:relative}
 .board{width:var(--bs);height:var(--bs);display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(8,1fr);border-radius:12px;overflow:hidden;box-shadow:0 20px 56px rgba(0,0,0,.5),0 0 0 6px var(--panel2);touch-action:manipulation}
 .board .sq.last::before{content:"";position:absolute;inset:0;background:rgba(242,184,60,.5)}
 .board .sq.sel{box-shadow:inset 0 0 0 4px var(--gold)}
@@ -124,7 +126,7 @@ label input{margin-top:6px}
 .co.rk{top:3px;left:4px}
 .co.fl{bottom:2px;right:4px}
 .sq.light .co{color:var(--deep)} .sq.dark .co{color:var(--sea)}
-.pbar{display:flex;align-items:center;gap:10px;height:44px;font-weight:600}
+.pbar{display:flex;flex-wrap:wrap;row-gap:6px;align-items:center;gap:10px;min-height:44px;font-weight:600}
 .pbar .dot{width:10px;height:10px;border-radius:50%;background:var(--line);flex:none}
 .pbar.turn .dot{background:var(--gold);box-shadow:0 0 0 4px rgba(242,184,60,.25)}
 .pbar .pname{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -135,7 +137,7 @@ label input{margin-top:6px}
 .status{font:700 21px/1.25 var(--f-head);min-height:54px;padding-top:6px}
 .status.done{color:var(--gold)}
 .invite{background:var(--panel);border:1px dashed var(--muted);border-radius:12px;padding:14px 16px}
-.invite .big{font:800 34px var(--f-head);letter-spacing:.16em;color:var(--gold)}
+.invite .big{font:800 clamp(24px,8vw,34px) var(--f-head);letter-spacing:.16em;color:var(--gold);word-break:break-all}
 .moves{list-style:none;margin:0;padding:8px 12px;background:var(--panel);border:1px solid var(--line);border-radius:12px;height:230px;overflow-y:auto;font-variant-numeric:tabular-nums}
 .moves li{display:grid;grid-template-columns:34px 1fr 1fr;padding:3px 0;font-weight:500;align-items:center}
 .moves .n{color:var(--muted)}
@@ -167,8 +169,115 @@ label input{margin-top:6px}
 .pbar .clk.low{color:#ff9d95}
 .pbar .clk.run.low{background:var(--danger);color:#fff}
 #friend-in{flex:1;min-width:0;width:auto}
+.sq-badge{position:absolute;top:2px;right:2px;z-index:4;display:flex;align-items:center;justify-content:center;width:calc(var(--bs) / 8 * .38);height:calc(var(--bs) / 8 * .38);border-radius:50%;background:var(--panel);box-shadow:0 0 0 2px var(--line),0 2px 6px rgba(0,0,0,.45);font-size:calc(var(--bs) / 8 * .24);line-height:1;pointer-events:none}
+.moves{position:relative}
 .friends{margin-bottom:28px}
 .friends .glist:empty{display:none}
+
+/* 4-player chess */
+#view-game4{--b4:max(300px,min(calc(100vw - 24px),calc(100vh - 250px),700px));--bs:calc(var(--b4) * 8 / 14)}
+#view-game4 .board-wrap{width:var(--b4)}
+.board.board4{width:var(--b4);height:var(--b4);grid-template-columns:repeat(14,1fr);grid-template-rows:repeat(14,1fr);border-radius:10px}
+.board4 .sq.void{visibility:hidden;cursor:default}
+.board4 .pc{-webkit-text-stroke:1.3px #141e26;paint-order:stroke fill;text-shadow:0 2px 3px rgba(0,0,0,.3)}
+.board4 .pc.p0{color:#ee7a6f}.board4 .pc.p1{color:#62b5ff}.board4 .pc.p2{color:#f2c94c}.board4 .pc.p3{color:#59c38e}
+.board4 .pc.dead{color:#8b98a3;opacity:.55}
+.p4bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;width:var(--b4)}
+.p4chip{display:flex;align-items:center;gap:8px;padding:6px 10px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font-weight:600;font-size:14px;max-width:100%}
+.p4chip .dotc,#moves4 .dotc{width:10px;height:10px;border-radius:50%;background:var(--pc);flex:none}
+.p4chip.turn{border-color:var(--gold);box-shadow:0 0 0 3px rgba(242,184,60,.25)}
+.p4chip.out{opacity:.5}
+.p4chip .p4n{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:110px}
+.p4chip .p4c{color:var(--muted);font-weight:500;font-size:12px}
+.lbseg{margin-bottom:6px;flex-wrap:wrap}
+.p4chip .clk{font:700 15px var(--f-head);min-width:56px;text-align:center;padding:2px 8px;border-radius:7px;background:var(--panel2);font-variant-numeric:tabular-nums}
+.p4chip .clk.run{background:var(--gold);color:#241a05}
+.p4chip .clk.low{color:#ff9d95}
+.p4chip .clk.run.low{background:var(--danger);color:#fff}
+.p4chip .pts{color:var(--gold);font-family:var(--f-head)}
+.p4chip .tag.chk{color:#ff9d95}
+#moves4 li{display:flex;align-items:center;gap:8px;padding:3px 0;font-size:14px}
+#moves4 li.cur{color:var(--gold);font-weight:700}
+.rules{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;font-size:14px;color:var(--muted)}
+.codein{flex:1;min-width:120px;width:auto}
+
+/* chess titles next to names */
+.ttl{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:99px;font:700 11px/1.5 var(--f-body);letter-spacing:.02em;white-space:nowrap;vertical-align:middle;background:var(--panel2);border:1px solid var(--line);color:var(--muted);font-style:normal}
+.ttl.t-sgm{background:var(--gold);border-color:var(--gold);color:#241a05}
+.ttl.t-gm{border-color:var(--gold);color:var(--gold)}
+.ttl.t-im{border-color:#b9a3ff;color:#c9b8ff}
+.ttl.t-fm{border-color:#62b5ff;color:#8ccaff}
+.ttl.t-cm{border-color:#59c38e;color:#7fd8a9}
+.ttl.t-ex{border-color:#8fd1c2;color:#a9e0d3}
+.ttl.t-ca,.ttl.t-cb{border-color:#b7d98b;color:#c6e2a3}
+.pbar .pname .ttl{font-size:10px}
+
+/* lobby: Single / Multi / 4 Player dropdowns */
+.accs{display:flex;flex-direction:column;gap:12px}
+.acc{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;transition:border-color .15s}
+.acc.open{border-color:var(--gold)}
+.acc-h{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 18px;background:none;border:0;color:var(--text);cursor:pointer;text-align:left;font:inherit}
+.acc-h:hover{background:var(--panel2)}
+.acc-t{display:flex;flex-direction:column;gap:2px}
+.acc-t b{font:800 21px var(--f-head);letter-spacing:-.01em}
+.acc-t small{color:var(--muted);font-size:13px;font-weight:500}
+.chev{width:10px;height:10px;flex:none;margin:0 4px 4px 0;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);transition:transform .2s}
+.acc.open .chev{transform:rotate(225deg);margin-bottom:-2px}
+.acc-b{padding:6px 18px 20px;border-top:1px solid var(--line)}
+.acc-b[hidden]{display:none}
+.acc-b .block{border-top:0;padding:14px 0 0}
+.acc-b .block + .block{border-top:1px solid var(--line);margin-top:20px}
+.acc-b .block > h3:first-child{font-size:16px}
+.ctl{margin-top:16px}
+.lbl{display:block;font-size:14px;font-weight:600;color:var(--muted);margin:0 0 8px}
+.lbl b{margin:0 8px 0 6px;font:800 20px var(--f-head);color:var(--gold)}
+input[type=range]{padding:0;border:0;background:none;accent-color:var(--gold);height:28px;cursor:pointer}
+.scale{display:flex;flex-wrap:wrap;gap:4px;justify-content:space-between;font-size:12px;color:var(--muted)}
+
+/* ad slots */
+.site-foot{text-align:center;padding:24px 16px 40px;color:var(--muted);font-size:13px}
+.site-foot a{color:var(--muted);text-decoration:underline}
+.site-foot a:hover{color:var(--text)}
+.adslot{margin-top:22px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--panel)}
+.adslot .adlabel{padding:6px 10px 0;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.adslot .adbody{min-height:100px;display:flex;align-items:center;justify-content:center;padding:6px}
+.adslot .adbody ins{width:100%}
+@media (min-width:640px){.adslot .adbody{min-height:250px}}
+
+/* notification center */
+.bell{position:relative}
+.bell .badge{position:absolute;top:-7px;right:-7px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--gold);color:#241a05;font:800 11px/18px var(--f-body);text-align:center}
+.npanel{position:fixed;top:64px;right:16px;z-index:65;width:min(380px,calc(100vw - 32px));max-height:min(70vh,560px);overflow-y:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 16px 40px rgba(0,0,0,.5)}
+.nhead{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--panel)}
+.ntoggle{display:flex;align-items:center;gap:6px;margin:0;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer}
+.ntoggle input{width:auto;margin:0}
+.nlist{list-style:none;margin:0;padding:0}
+.nlist li{display:flex;flex-direction:column;gap:8px;padding:12px 14px;border-bottom:1px solid var(--line)}
+.nlist li:last-child{border-bottom:0}
+.nlist .ntitle{font-weight:600}
+.nlist .nsub{color:var(--muted);font-size:13px}
+.nlist .nact{display:flex;gap:8px;flex-wrap:wrap}
+.nempty{padding:24px 14px;text-align:center;color:var(--muted)}
+.small{font-size:13px}
+
+/* live alerts */
+.hright{display:flex;flex-wrap:wrap;row-gap:8px;align-items:center;justify-content:flex-end;gap:12px}
+.alerts{position:fixed;top:66px;right:16px;z-index:70;display:flex;flex-direction:column;gap:10px;width:min(340px,calc(100vw - 32px))}
+.alert{position:relative;display:flex;flex-direction:column;gap:10px;background:var(--panel2);border:1px solid var(--gold);border-radius:12px;padding:12px 40px 12px 14px;box-shadow:0 12px 32px rgba(0,0,0,.45);animation:alert-in .25s ease-out}
+.alert .atxt{display:flex;flex-direction:column;gap:2px}
+.alert .atxt span{color:var(--muted);font-size:14px}
+.alert .aact{display:flex;gap:8px;flex-wrap:wrap}
+.alert .aact:empty{display:none}
+.alert .aclose{position:absolute;top:6px;right:8px;width:28px;height:28px;border:0;border-radius:6px;background:none;color:var(--muted);font-size:20px;line-height:1;cursor:pointer}
+.alert .aclose:hover{color:var(--text);background:var(--line)}
+@keyframes alert-in{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+
+/* PAL admin analysis menu */
+.admin-panel{position:fixed;top:64px;right:16px;z-index:66;width:min(390px,calc(100vw - 32px));background:var(--panel);border:1px solid var(--gold);border-radius:14px;box-shadow:0 16px 40px rgba(0,0,0,.55);padding:18px}
+.admin-panel h3{margin-bottom:6px}
+.admin-panel .admin-move{font:800 30px var(--f-head);color:var(--gold);margin:10px 0}
+.admin-panel .admin-meta{color:var(--muted);font-size:13px;margin-bottom:14px}
+.admin-panel .admin-actions{display:flex;gap:8px;flex-wrap:wrap}
 
 /* modal + toast */
 .scrim{position:fixed;inset:0;background:rgba(6,12,18,.66);display:flex;align-items:center;justify-content:center;padding:20px;z-index:50}
@@ -194,14 +303,66 @@ label input{margin-top:6px}
   .move-review{margin-left:4px}
   .seg.tc{grid-auto-flow:row;grid-template-columns:repeat(3,1fr)}
 }
-@media (prefers-reduced-motion:reduce){*{transition:none !important}}
+@media (max-width:480px){
+  /* header: room is tight, so shrink everything and let it wrap onto a second row rather than overflow */
+  .top{padding:8px 12px}
+  .brand{font-size:17px;gap:7px}
+  .brand .mark{font-size:23px}
+  .hright{gap:8px}
+  .hright > .btn{padding:8px 10px;min-height:38px}
+  .userbox{gap:8px;font-size:14px}
+  .userbox .uname{max-width:34vw}
+  .userbox .rate{font-size:14px}
+  .ttl{font-size:10px;padding:1px 6px}
+
+  /* a wrapped header can run two lines tall - keep fixed panels clear of it */
+  .npanel,.alerts,.admin-panel{top:104px}
+
+  /* board screens: a little less vertical padding, and more headroom subtracted for the taller header */
+  #view-game{--bs:max(260px,min(calc(100vw - 24px),calc(100vh - 250px),680px))}
+  #view-game4{--b4:max(280px,min(calc(100vw - 20px),calc(100vh - 300px),700px))}
+  .game{gap:18px;padding:14px 10px 40px}
+  .board-wrap{width:100%;display:flex;flex-direction:column;align-items:center}
+  .side{width:100%}
+  .status{font-size:18px;min-height:auto}
+  .controls .btn{padding:11px 14px}
+  .pbar .clk{min-width:64px;font-size:17px}
+  .pbar .caps{padding-right:0}
+  .p4chip{font-size:13px;padding:5px 8px}
+  .p4chip .p4n{max-width:84px}
+
+  /* lobby: tighter padding, single-column everywhere */
+  .lobby{padding:20px 14px 48px}
+  .acc-h{padding:14px}
+  .acc-t b{font-size:18px}
+  .acc-b{padding:4px 14px 16px}
+  .me{gap:12px}
+
+  /* lists: let each row wrap instead of clipping names or squeezing buttons */
+  .glist li{flex-wrap:wrap;row-gap:8px}
+  .glist li .who{flex-basis:100%}
+  .leaders li{grid-template-columns:22px 1fr auto;gap:8px}
+  .leaders .wl{display:none}
+
+  /* modals: full-width stacked buttons are easier to tap with a thumb */
+  .modal{padding:18px;width:100%}
+  .mact{flex-direction:column}
+  .mact .btn{width:100%}
+  .promo{flex-wrap:wrap}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none !important;animation:none !important}}
 </style>
 </head>
 <body>
 
 <header class="top">
   <button class="brand" id="brand" type="button" aria-label="PAL Chess home"><span class="mark">&#9822;&#xFE0E;</span><span>PAL Chess</span></button>
-  <div class="userbox" id="userbox"></div>
+  <div class="hright">
+    <button class="btn ghost sm bell hidden" id="btn-bell" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Notifications"><span aria-hidden="true">🔔</span><span class="badge hidden" id="bell-badge">0</span></button>
+    <button class="btn ghost sm" id="btn-sound" type="button" aria-pressed="false"></button>
+    <button class="btn ghost sm hidden" id="btn-admin" type="button" aria-haspopup="dialog">Admin</button>
+    <div class="userbox" id="userbox"></div>
+  </div>
 </header>
 
 <main>
@@ -232,32 +393,63 @@ label input{margin-top:6px}
   <section id="view-lobby" class="lobby hidden">
     <div class="lobby-grid">
       <div>
-        <h2>Start a game</h2>
-        <div class="block">
-          <h3>Play the computer</h3>
-          <div class="row">
-            <div class="seg" id="seg-level" data-val="2" aria-label="Difficulty">
-              <button type="button" data-v="1">Easy</button><button type="button" data-v="2" class="on">Medium</button><button type="button" data-v="3">Hard</button>
-            </div>
-            <div class="seg" id="seg-color" data-val="w" aria-label="Your color">
-              <button type="button" data-v="w" class="on">White</button><button type="button" data-v="b">Black</button><button type="button" data-v="r">Random</button>
+        <h2>Play</h2>
+        <div class="accs">
+          <div class="acc" id="acc-single">
+            <button class="acc-h" type="button" aria-expanded="false" aria-controls="accb-single">
+              <span class="acc-t"><b>Single</b><small>Play the computer at any level</small></span><span class="chev" aria-hidden="true"></span>
+            </button>
+            <div class="acc-b" id="accb-single" hidden>
+              <div class="ctl">
+                <label class="lbl" for="elo-slider">Computer rating <b id="elo-val">400</b><span id="elo-name" class="muted"></span></label>
+                <input type="range" id="elo-slider" min="100" max="3200" step="50" value="400">
+                <div class="scale"><span>100 Novice</span><span>3200 Super Grandmaster</span></div>
+              </div>
+              <div class="ctl">
+                <span class="lbl">Your colour</span>
+                <div class="seg" id="seg-color" data-val="w" aria-label="Your color">
+                  <button type="button" data-v="w" class="on">White</button><button type="button" data-v="b">Black</button><button type="button" data-v="r">Random</button>
+                </div>
+              </div>
+              <div class="ctl"><span class="lbl">Time</span><div id="tc-ai"></div></div>
+              <div class="ctl"><button class="btn primary" id="start-ai" type="button">Start game</button></div>
+              <p class="muted small" style="margin:12px 0 0">Practice game, not rated. Slide the rating to make the computer easier or harder.</p>
             </div>
           </div>
-          <div class="row" id="tc-ai"></div>
-          <button class="btn primary" id="start-ai" type="button">Start game</button>
+
+          <div class="acc" id="acc-multi">
+            <button class="acc-h" type="button" aria-expanded="false" aria-controls="accb-multi">
+              <span class="acc-t"><b>Multi</b><small>Online with a rating, or two players on one screen</small></span><span class="chev" aria-hidden="true"></span>
+            </button>
+            <div class="acc-b" id="accb-multi" hidden>
+              <div class="block" id="online-block"></div>
+              <div class="block">
+                <h3>Two players, one screen</h3>
+                <div class="row" id="tc-local"></div>
+                <button class="btn" id="start-local" type="button">Pass and play</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="acc" id="acc-four">
+            <button class="acc-h" type="button" aria-expanded="false" aria-controls="accb-four">
+              <span class="acc-t"><b>4 Player</b><small>Four colours, one board, last one standing wins</small></span><span class="chev" aria-hidden="true"></span>
+            </button>
+            <div class="acc-b" id="accb-four" hidden>
+              <div class="block" id="p4-block"></div>
+            </div>
+          </div>
         </div>
-        <div class="block">
-          <h3>Two players, one screen</h3>
-          <div class="row" id="tc-local"></div>
-          <button class="btn" id="start-local" type="button">Pass and play</button>
-        </div>
-        <div class="block" id="online-block"></div>
       </div>
       <div>
         <div id="me-card"></div>
         <div class="friends" id="friends-block"></div>
         <h2 style="margin-bottom:8px">Leaderboard</h2>
+        <div class="seg lbseg" id="seg-lb" data-val="rating" aria-label="Which ranking">
+          <button type="button" data-v="rating" class="on">2P Standard</button><button type="button" data-v="rating_bullet">2P Bullet</button><button type="button" data-v="rating_blitz">2P Blitz</button><button type="button" data-v="rating4_bullet">4P Bullet</button><button type="button" data-v="rating4_blitz">4P Blitz</button><button type="button" data-v="rating4_std">4P Standard</button>
+        </div>
         <ol class="leaders" id="leaders"></ol>
+        <div class="adslot" id="ad-lobby"><div class="adlabel">Advertisement</div><div class="adbody"></div></div>
       </div>
     </div>
   </section>
@@ -276,12 +468,32 @@ label input{margin-top:6px}
         <ol class="moves" id="moves" aria-label="Move list"></ol>
         <div class="note muted hidden" id="note"></div>
         <div class="controls" id="controls"></div>
+        <div class="adslot" id="ad-game"><div class="adlabel">Advertisement</div><div class="adbody"></div></div>
+      </aside>
+    </div>
+  </section>
+  <!-- 4-player game -->
+  <section id="view-game4" class="hidden">
+    <div class="game">
+      <div class="board-wrap">
+        <div class="p4bar" id="p4bar"></div>
+        <div class="board board4" id="board4" aria-label="4-player chess board"></div>
+      </div>
+      <aside class="side">
+        <div class="status" id="status4" role="status" aria-live="polite"></div>
+        <div class="invite hidden" id="invite4"></div>
+        <ol class="moves" id="moves4" aria-label="Moves"></ol>
+        <div class="controls" id="controls4"></div>
+        <div class="adslot" id="ad-game4"><div class="adlabel">Advertisement</div><div class="adbody"></div></div>
       </aside>
     </div>
   </section>
 </main>
 
+<footer class="site-foot">&copy; PAL Labs. <a href="/privacy.html">Privacy</a></footer>
 <div id="modal-root"></div>
+<div class="npanel hidden" id="npanel" role="dialog" aria-label="Notifications"></div>
+<div class="alerts" id="alerts" aria-live="polite"></div>
 <div class="toast" id="toast" role="status"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
@@ -294,10 +506,6 @@ label input{margin-top:6px}
 const SUPABASE_URL = 'https://actpttkngkmjmzhukxva.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFjdHB0dGtuZ2ttam16aHVreHZhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyNzg3ODcsImV4cCI6MjA4ODg1NDc4N30.bTB_g1F2bSf5G80cEpII9KUwimscyKt7a3Ll9NFNG2w';
 
-// Accounts are username + password. Supabase Auth needs an email, so one is derived from the username
-// (<username>@EMAIL_DOMAIN). Nothing is ever sent to it. Avoid example.com / *.test: Supabase rejects those.
-const EMAIL_DOMAIN = 'palchess.app';
-
 // Time controls (seconds per side). 0 = untimed.
 const TC = [
   {v: 0,   name: 'Untimed',  sub: ''},
@@ -308,6 +516,21 @@ const TC = [
 ];
 const tcLabel = v => { const t = TC.find(x => x.v === v); return t && t.v ? `${t.name} ${t.sub}` : 'Untimed'; };
 const tcSeg = (id, def) => `<div class="seg tc" id="${id}" data-val="${def}" aria-label="Time control">${TC.map(t => `<button type="button" data-v="${t.v}"${t.v === def ? ' class="on"' : ''}><b>${t.name}</b>${t.sub ? `<small>${t.sub}</small>` : ''}</button>`).join('')}</div>`;
+
+// Invite links: palchess.vercel.app/AB12CD, where AB12CD is the game's own 6-character code.
+// Requires the host's server to send every path to index.html - see vercel.json.
+const inviteLink = code => `${location.origin}/${code}`;
+function copyInviteLink(code, label) {
+  const link = inviteLink(code);
+  if (navigator.clipboard) navigator.clipboard.writeText(link).then(() => toast((label || 'Invite link') + ' copied.'));
+  else toast(link);
+}
+// A code straight in the address bar (from a shared link) - grabbed once on load, then the URL is cleaned up.
+function takeUrlInviteCode() {
+  const seg = location.pathname.replace(/^\/+|\/+$/g, '');
+  if (history.replaceState && seg) { try { history.replaceState(null, '', '/'); } catch (e) { /* some hosting contexts (e.g. file://) refuse this; harmless to skip */ } }
+  return /^[A-Za-z0-9]{4,8}$/.test(seg) ? seg.toUpperCase() : null;
+}
 
 /* ═════════════ Helpers ═════════════ */
 const $ = id => document.getElementById(id);
@@ -443,7 +666,7 @@ function negamax(g, depth, alpha, beta) {
   return best;
 }
 
-function pickAIMove(g, level) {
+function pickAIMove(g, level, maxDepth) {
   const moves = g.moves({verbose: true});
   if (!moves.length) return null;
   if (level === 1) {
@@ -455,7 +678,7 @@ function pickAIMove(g, level) {
     const opts = moves.filter(m => book.includes(m.san));
     if (opts.length) return pick(opts);
   }
-  const depth = level === 2 ? 2 : 3;
+  const depth = Math.min(maxDepth || 3, level === 2 ? 2 : 3);
   moves.sort(() => Math.random() - 0.5);
   orderMoves(moves);
   let best = moves[0], alpha = -Infinity;
@@ -466,6 +689,41 @@ function pickAIMove(g, level) {
     if (sc > alpha) { alpha = sc; best = m; }
   }
   return best;
+}
+
+// A bot with a target rating. Weaker bots search shallower and pick among decent moves more loosely
+// (softmax over the search scores); stronger bots almost always play their best line.
+// The rating is a rough guide, not a measured strength.
+function pickBotMove(g, elo, maxDepth, budgetMs) {
+  const t0 = Date.now();
+  const moves = g.moves({verbose: true});
+  if (!moves.length) return null;
+  if (elo >= 900 && g.history().length < 2) {
+    const book = ['e4','d4','c4','Nf3','e5','c5','e6','c6','d5','Nf6'];
+    const opts = moves.filter(m => book.includes(m.san));
+    if (opts.length) return pick(opts);
+  }
+  const depth = Math.min(maxDepth || 3, elo < 1000 ? 1 : elo < 1400 ? 2 : 3);
+  const T = Math.max(5, Math.min(260, (1750 - elo) * 0.35));   // centipawns of "looseness"
+  const margin = Math.max(60, 4 * T);                           // moves worse than best by more than this are as good as ruled out
+  orderMoves(moves);
+  let best = -Infinity;
+  const scored = [];
+  for (const m of moves) {
+    // out of thinking time: the moves not looked at yet (least promising, since they are sorted last) count as bad
+    if (budgetMs && scored.length >= 4 && Date.now() - t0 > budgetMs) { scored.push({m, sc: best - margin - 1}); continue; }
+    g.move({from: m.from, to: m.to, promotion: m.promotion});
+    // narrow window: anything scoring below (best - margin) only needs to be known as "bad"
+    const floor = best === -Infinity ? -Infinity : best - margin;
+    const sc = -negamax(g, depth - 1, -Infinity, -floor);
+    g.undo();
+    if (sc > best) best = sc;
+    scored.push({m, sc});
+  }
+  const w = scored.map(x => Math.exp(Math.max(-50, (x.sc - best) / T)));
+  let r = Math.random() * w.reduce((a, b) => a + b, 0);
+  for (let i = 0; i < w.length; i++) { r -= w[i]; if (r <= 0) return scored[i].m; }
+  return scored[0].m;
 }
 // </ai>
 
@@ -499,12 +757,22 @@ const S = {
   aiLevel: 2, aiThinking: false,
   online: null, lobbyTimer: null,
   review: null,          // {ply, timer, analysis} while the post-game overview is open
-  tc: 0, clock: null     // time control (seconds) and clocks for computer / pass-and-play games
+  tc: 0, clock: null,    // time control (seconds) and clocks for computer / pass-and-play games
+  pendingCode: null,      // a game code taken from the URL (e.g. /AB12CD), waiting to be joined
+  sfxPly: -1, endPlayed: null, lowSec: 0, unread: 0,
+  notes: [], pending: {friends: [], challenges: []}, notesTimer: null,   // notification centre
+  mm: null,                                                                // quick-match search in progress
+  botElo: 0, botShown: 0, botName: '', botMatchId: null, botResultSettled: false, botLabel: '',                                                   // set when playing a quick-match bot
+  adminOpen: false, adminSuggestion: null
 };
 const PC = {}; // profile cache
 
 function showView(name) {
-  ['auth', 'lobby', 'game'].forEach(v => $('view-' + v).classList.toggle('hidden', v !== name));
+  if (name !== 'game') closeAdminMenu();
+  ['auth', 'lobby', 'game', 'game4'].forEach(v => $('view-' + v).classList.toggle('hidden', v !== name));
+  if (name === 'lobby' || name === 'game' || name === 'game4') ensureAd(name);
+  const ab = $('btn-admin');
+  if (ab) { ab.classList.toggle('hidden', !(name === 'game' && isPalAdmin())); if (name !== 'game') closeAdminMenu(); }
   if (name !== 'lobby') clearInterval(S.lobbyTimer);
   window.scrollTo(0, 0);
 }
@@ -521,7 +789,69 @@ function setAuthMode(m) {
 }
 function authMsg(t, bad) { const m = $('auth-msg'); m.textContent = t; m.className = 'msg' + (bad ? ' bad' : ''); }
 
-const emailFor = uname => uname.toLowerCase() + '@' + EMAIL_DOMAIN;
+const ANON_OFF_HELP = 'Turn on "Allow anonymous sign-ins" in Supabase (Authentication, Sign In / Providers). Email can stay off.';
+const NOT_SET_UP = 'The database is not set up yet. Run setup.sql in the Supabase SQL editor.';
+
+/* ═════════════ Ads (Google AdSense) ═════════════
+   Fill these in once your AdSense account is approved (ignore until then - ads just stay hidden):
+     ADSENSE_CLIENT: your publisher id, "ca-pub-XXXXXXXXXXXXXXXX" (AdSense > Account > Settings)
+     AD_SLOTS: one ad unit id per placement, from AdSense > Ads > By ad unit > Display ads (any responsive unit works for all three)
+   Also update the <meta name="google-adsense-account"> tag in <head> to the same publisher id -
+   AdSense reads that tag (not this file) to confirm you own the site. */
+const ADSENSE_CLIENT = 'ca-pub-0000000000000000';
+const AD_SLOTS = {lobby: '0000000000', game: '0000000000', game4: '0000000000'};
+const adsConfigured = () => /^ca-pub-\d+$/.test(ADSENSE_CLIENT) && ADSENSE_CLIENT !== 'ca-pub-0000000000000000';
+
+let adsLoading = null;
+function loadAdsense() {
+  if (adsLoading) return adsLoading;
+  adsLoading = new Promise((res, rej) => {
+    const s = document.createElement('script');
+    s.async = true;
+    s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADSENSE_CLIENT;
+    s.crossOrigin = 'anonymous';
+    s.onload = res; s.onerror = () => rej(new Error('AdSense script failed to load'));
+    document.head.appendChild(s);
+  });
+  return adsLoading;
+}
+
+// Renders one ad the first time its slot becomes visible (AdSense asks that ads not be requested
+// inside a display:none container, so this is called from showView() rather than at page load).
+const adsRendered = {};
+function ensureAd(key) {
+  if (!adsConfigured() || adsRendered[key]) return;
+  const slot = AD_SLOTS[key], box = $('ad-' + key);
+  if (!slot || !box) return;
+  adsRendered[key] = true;
+  const body = box.querySelector('.adbody');
+  body.innerHTML = `<ins class="adsbygoogle" style="display:block" data-ad-client="${ADSENSE_CLIENT}" data-ad-slot="${esc(slot)}" data-ad-format="auto" data-full-width-responsive="true"></ins>`;
+  loadAdsense().then(() => { (window.adsbygoogle = window.adsbygoogle || []).push({}); })
+    .catch(() => { box.classList.add('hidden'); });
+}
+
+// Accounts are username + password, stored in the database (bcrypt). Each browser keeps an anonymous
+// Supabase session; logging in links that session to your account. No email is involved.
+function dbMsg(error) {
+  const m = (error && error.message) || 'Something went wrong.';
+  if (/could not find the function|schema cache|does not exist/i.test(m)) return NOT_SET_UP;
+  if (/anonymous/i.test(m) && /disabled|not enabled/i.test(m)) return ANON_OFF_HELP;
+  return m;
+}
+
+async function ensureSession() {
+  const {data} = await sb.auth.getSession();
+  if (data && data.session) return data.session;
+  const r = await sb.auth.signInAnonymously();
+  if (r.error) throw new Error(dbMsg(r.error));
+  return r.data.session;
+}
+
+// Which account (if any) is this browser session signed in to?
+async function syncAccount() {
+  const {data} = await sb.rpc('me');
+  await handleUser(data ? {id: data} : null);
+}
 
 async function submitAuth(e) {
   e.preventDefault();
@@ -531,22 +861,17 @@ async function submitAuth(e) {
   btn.disabled = true; authMsg('');
   try {
     if (!/^[A-Za-z0-9_]{3,20}$/.test(uname)) throw new Error('Usernames are 3–20 letters, numbers or underscores.');
+    if (authMode === 'up' && pass.length < 6) throw new Error('Use a password with at least 6 characters.');
+    await ensureSession();
     if (authMode === 'in') {
-      const {error} = await sb.auth.signInWithPassword({email: emailFor(uname), password: pass});
-      if (error) throw new Error(/invalid login/i.test(error.message) ? 'Wrong username or password.' : error.message);
+      const {data, error} = await sb.rpc('login', {uname, pw: pass});
+      if (error) throw new Error(dbMsg(error));
+      if (!data) throw new Error('Wrong username or password.');
     } else {
-      if (pass.length < 6) throw new Error('Use a password with at least 6 characters.');
-      const chk = await sb.rpc('username_available', {name: uname});
-      if (chk.error) throw new Error('The database is not set up yet. Run setup.sql in the Supabase SQL editor.');
-      if (!chk.data) throw new Error('That username is taken.');
-      const {data, error} = await sb.auth.signUp({email: emailFor(uname), password: pass, options: {data: {username: uname}}});
-      if (error) {
-        if (/disabled/i.test(error.message)) throw new Error('Sign-ups are switched off in Supabase. Enable the Email provider and keep "Confirm email" off.');
-        if (/invalid/i.test(error.message)) throw new Error('Supabase rejected the generated address. Change EMAIL_DOMAIN at the top of index.html.');
-        throw error;
-      }
-      if (!data.session) authMsg('Account created, but Supabase still wants email confirmation. Turn off "Confirm email" in Auth, Providers, Email, then sign in.', true);
+      const {error} = await sb.rpc('register', {uname, pw: pass});
+      if (error) throw new Error(dbMsg(error));
     }
+    await syncAccount();
   } catch (err) {
     authMsg(err.message || 'Something went wrong.', true);
   } finally {
@@ -559,24 +884,20 @@ function changePassword() {
     {label: 'Save password', cls: 'primary', onClick: root => {
       const v = root.querySelector('#np').value;
       if (v.length < 6) { toast('Use at least 6 characters.', true); return false; }
-      sb.auth.updateUser({password: v}).then(r => toast(r.error ? r.error.message : 'Password updated.', !!r.error));
+      sb.rpc('change_password', {pw: v}).then(r => toast(r.error ? dbMsg(r.error) : 'Password updated.', !!r.error));
     }},
     {label: 'Cancel'}
   ]);
 }
 
 async function signOut() {
-  await sb.auth.signOut();
+  await sb.rpc('logout');       // unlink this browser from the account (the anonymous session stays)
+  await handleUser(null);
 }
 
 async function loadProfile() {
   if (!S.user) return;
-  let {data} = await sb.from('profiles').select('*').eq('id', S.user.id).maybeSingle();
-  if (!data) {
-    const uname = (S.user.user_metadata && S.user.user_metadata.username) || ('player_' + S.user.id.slice(0, 8));
-    await sb.from('profiles').insert({id: S.user.id, username: uname});
-    ({data} = await sb.from('profiles').select('*').eq('id', S.user.id).maybeSingle());
-  }
+  const {data} = await sb.from('profiles').select('*').eq('id', S.user.id).maybeSingle();
   S.profile = data;
   if (data) PC[data.id] = data;
 }
@@ -596,9 +917,11 @@ async function handleUser(u) {
     S.guest = false;
     await loadProfile();
     renderUserBox();
+    if (changed && !isGuest()) startInbox();
     if (changed) { teardownOnline(); S.mode = null; S.game = null; goLobby(); }
   } else {
     S.profile = null;
+    stopInbox();
     teardownOnline();
     S.mode = null; S.game = null;
     renderUserBox();
@@ -606,10 +929,93 @@ async function handleUser(u) {
   }
 }
 
+function isPalAdmin() {
+  return !!(S.profile && String(S.profile.username || '').toLowerCase() === 'pal');
+}
+
+function closeAdminMenu() {
+  S.adminOpen = false; S.adminSuggestion = null; drawAdminArrow();
+  const p = $('admin-panel');
+  if (p) p.remove();
+  const b = $('btn-admin');
+  if (b) b.setAttribute('aria-expanded', 'false');
+}
+
+function adminBestMove() {
+  if (!S.game || S.mode === 'local' && !S.profile) return null;
+  const palColor = S.mode === 'online'
+    ? (S.online.row.white_id === S.user.id && isPalAdmin() ? 'w' : S.online.row.black_id === S.user.id && isPalAdmin() ? 'b' : null)
+    : (S.mode === 'ai' ? S.color : null);
+  if (!palColor || S.game.turn() !== palColor || S.over) return null;
+  const g = new Chess(S.game.fen());
+  const move = pickBotMove(g, 2400, 3, 700);
+  return move ? {san: move.san, from: move.from, to: move.to, promotion: move.promotion || null, color: palColor, fen: S.game.fen()} : null;
+}
+
+// The board arrow for the admin menu: any game where it's PAL's move on the visible board
+// (adminBestMove already restricts this to the PAL account and to PAL's own turn).
+const adminArrowAllowed = () => (S.mode === 'ai' || S.mode === 'online') && !S.botMatchId && !!S.game && !S.review;
+function drawAdminArrow() {
+  let svg = $('admin-arrow');
+  const m = S.adminSuggestion;
+  if (!m || !S.adminOpen || !adminArrowAllowed() || m.fen !== S.game.fen()) { if (svg) svg.remove(); return; }
+  const b = $('board'), wrap = b.parentElement;
+  if (!svg) {
+    svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.id = 'admin-arrow'; svg.setAttribute('viewBox', '0 0 8 8'); svg.setAttribute('aria-hidden', 'true');
+    wrap.appendChild(svg);
+  }
+  svg.style.cssText = `position:absolute;left:${b.offsetLeft}px;top:${b.offsetTop}px;width:${b.offsetWidth}px;height:${b.offsetHeight}px;pointer-events:none;z-index:6`;
+  const centre = sq => { const f = FILES.indexOf(sq[0]), rk = +sq[1] - 1; return [(S.flip ? 7 - f : f) + 0.5, (S.flip ? rk : 7 - rk) + 0.5]; };
+  const [x1, y1] = centre(m.from), [x2, y2] = centre(m.to);
+  const len = Math.hypot(x2 - x1, y2 - y1) || 1, ux = (x2 - x1) / len, uy = (y2 - y1) / len;
+  const head = 0.5, half = 0.3, bx = x2 - ux * head, by = y2 - uy * head;       // where the shaft meets the arrow head
+  const f = n => n.toFixed(3);
+  svg.innerHTML = `<g opacity="0.88"><circle cx="${f(x1)}" cy="${f(y1)}" r="0.44" fill="none" stroke="#f2b83c" stroke-width="0.07"/>` +
+    `<line x1="${f(x1 + ux * 0.44)}" y1="${f(y1 + uy * 0.44)}" x2="${f(bx)}" y2="${f(by)}" stroke="#f2b83c" stroke-width="0.17" stroke-linecap="round"/>` +
+    `<polygon points="${f(x2)},${f(y2)} ${f(bx - uy * half)},${f(by + ux * half)} ${f(bx + uy * half)},${f(by - ux * half)}" fill="#f2b83c"/></g>`;
+}
+
+function showAdminMenu() {
+  if (!isPalAdmin()) return;
+  closeAdminMenu();
+  const panel = document.createElement('div');
+  panel.id = 'admin-panel'; panel.className = 'admin-panel';
+  panel.setAttribute('role','dialog'); panel.setAttribute('aria-label','PAL Admin');
+  panel.innerHTML = `<h3>PAL Admin</h3><p class="muted small">Match analysis tools for the PAL account.</p><div id="admin-analysis"><div class="admin-meta">Press the button to calculate PAL's next move.</div></div><div class="admin-actions"><button class="btn primary" id="admin-best" type="button">Next move</button><button class="btn ghost" id="admin-close" type="button">Close</button></div>`;
+  document.body.appendChild(panel);
+  S.adminOpen = true;
+  $('btn-admin').setAttribute('aria-expanded','true');
+  $('admin-close').onclick = closeAdminMenu;
+  $('admin-best').onclick = () => {
+    const box = $('admin-analysis');
+    box.innerHTML = '<div class="admin-meta">Analyzing position…</div>';
+    setTimeout(() => {
+      const m = adminBestMove();
+      if (!m) {
+        box.innerHTML = '<div class="admin-meta">It is not PAL\'s turn, there is no active match, or the game is over.</div>';
+        return;
+      }
+      S.adminSuggestion = m;
+      const arrow = adminArrowAllowed();
+      drawAdminArrow();
+      box.innerHTML = `<div class="admin-meta">PAL should play</div><div class="admin-move">${esc(m.san)}</div><div class="admin-meta">${esc(m.from.toUpperCase())} → ${esc(m.to.toUpperCase())}${m.promotion ? ' · promote to '+esc(m.promotion.toUpperCase()) : ''}</div>${arrow ? '<div class="admin-meta">The arrow on the board shows the move.</div>' : '<div class="admin-meta">The arrow is not shown here (not a game, or not the PAL account\'s move).</div>'}`;
+    }, 30);
+  };
+}
+
 function renderUserBox() {
+  const adminBtn = $('btn-admin');
+  if (adminBtn) {
+    adminBtn.classList.toggle('hidden', !(isPalAdmin() && S.mode === 'ai' || isPalAdmin() && S.mode === 'online'));
+    if (!isPalAdmin()) closeAdminMenu();
+  }
   const box = $('userbox');
-  if (S.profile) {
-    box.innerHTML = `<span class="uname">${esc(S.profile.username)}</span><span class="rate" title="Your rating">${S.profile.rating}</span><button class="btn ghost sm" id="btn-pw" type="button">Password</button><button class="btn ghost sm" id="btn-out" type="button">Sign out</button>`;
+  if (isGuest()) {
+    box.innerHTML = `<span class="uname">${esc(S.profile.username)}</span><span class="tag">Guest</span><button class="btn ghost sm" id="btn-out" type="button">Leave</button>`;
+    $('btn-out').onclick = signOut;
+  } else if (S.profile) {
+    box.innerHTML = `<span class="uname">${esc(S.profile.username)}</span>${titleBadge(bestRating(S.profile))}<span class="rate" title="Your Standard rating">${S.profile.rating}</span><button class="btn ghost sm" id="btn-pw" type="button">Password</button><button class="btn ghost sm" id="btn-out" type="button">Sign out</button>`;
     $('btn-out').onclick = signOut;
     $('btn-pw').onclick = changePassword;
   } else if (S.guest) {
@@ -630,9 +1036,20 @@ function initSeg(root) {
   });
 }
 
+async function tryPendingCode() {
+  const code = S.pendingCode;
+  if (!code || !S.user || busyPlaying()) return;
+  S.pendingCode = null;                 // consume it so this can only ever fire once
+  toast(`Opening game ${code}…`);
+  const f = await findByCode(code);
+  if (!f) return toast('That invite link is no longer valid.', true);
+  openFound(f);
+}
+
 function goLobby() {
   showView('lobby');
   renderLobby();
+  tryPendingCode();
   cleanupThenLoad();
   clearInterval(S.lobbyTimer);
   S.lobbyTimer = setInterval(loadLobbyData, 8000);
@@ -646,21 +1063,44 @@ async function cleanupThenLoad() {
 
 function renderLobby() {
   const o = $('online-block'), fb = $('friends-block');
+  renderP4Block();
   if (!S.user) {
-    o.innerHTML = '<h3>Online</h3><p class="muted">Create an account to challenge other players, add friends and earn a rating.</p><button class="btn primary" id="lb-signin" type="button">Sign in or create account</button>';
+    o.innerHTML = `<h3>Join a friend's game</h3>
+      <p class="muted small">Got a game code? Play without an account. Guests can join games but not host them, and their games are unrated.</p>
+      <div class="row"><input id="guest-name" class="codein" placeholder="Your name" maxlength="16" autocomplete="off" aria-label="Your name"><input id="guest-code" class="codein" placeholder="Game code" maxlength="6" autocomplete="off" aria-label="Game code" style="text-transform:uppercase"></div>
+      <div class="row"><button class="btn primary" id="guest-join" type="button">Join as guest</button><button class="btn ghost" id="lb-signin" type="button">Sign in or create account</button></div>`;
+    $('guest-join').onclick = guestJoin;
+    $('guest-code').addEventListener('keydown', e => { if (e.key === 'Enter') guestJoin(); });
     $('lb-signin').onclick = () => { S.guest = false; renderUserBox(); showView('auth'); };
     $('me-card').innerHTML = ''; fb.innerHTML = ''; fb.onclick = null;
+    if (S.pendingCode) { $('guest-code').value = S.pendingCode; openAcc('acc-multi'); }
+    return;
+  }
+  if (isGuest()) {
+    o.innerHTML = `<h3>Join a game</h3>
+      <div class="row code-row"><input id="code-in" placeholder="Game code" maxlength="6" autocomplete="off" aria-label="Game code"><button class="btn primary" id="join-code" type="button">Join with code</button></div>
+      <div class="msg bad" id="online-msg"></div>`;
+    $('join-code').onclick = joinByCode;
+    $('code-in').addEventListener('keydown', e => { if (e.key === 'Enter') joinByCode(); });
+    fb.innerHTML = ''; fb.onclick = null;
+    if (S.pendingCode) { $('code-in').value = S.pendingCode; openAcc('acc-multi'); }
+    renderMeCard();
     return;
   }
   o.innerHTML = `
     <h3>Play online</h3>
+    <div class="row">${tcSeg('seg-otc', 300)}</div>
+    <div class="row">
+      <button class="btn primary" id="quick-match" type="button">Find a match</button>
+      <span class="muted small">Paired with someone near your rating. Colours are picked for you.</span>
+    </div>
+    <h4>Or set up your own game</h4>
     <div class="row">
       <div class="seg" id="seg-ocolor" data-val="r" aria-label="Your color">
         <button type="button" data-v="w">White</button><button type="button" data-v="b">Black</button><button type="button" data-v="r" class="on">Random</button>
       </div>
+      <button class="btn" id="create-game" type="button">Create game</button>
     </div>
-    <div class="row">${tcSeg('seg-otc', 300)}</div>
-    <div class="row"><button class="btn primary" id="create-game" type="button">Create game</button></div>
     <div class="row code-row">
       <input id="code-in" placeholder="Game code" maxlength="6" autocomplete="off" aria-label="Game code">
       <button class="btn" id="join-code" type="button">Join with code</button>
@@ -674,8 +1114,10 @@ function renderLobby() {
     <ul class="glist" id="my-games"></ul>`;
   initSeg($('seg-ocolor')); initSeg($('seg-otc'));
   $('create-game').onclick = () => createGame($('seg-ocolor').dataset.val, +$('seg-otc').dataset.val);
+  $('quick-match').onclick = () => startMatchmaking(+$('seg-otc').dataset.val);
   $('join-code').onclick = joinByCode;
   $('code-in').addEventListener('keydown', e => { if (e.key === 'Enter') joinByCode(); });
+  if (S.pendingCode) { $('code-in').value = S.pendingCode; openAcc('acc-multi'); }
   ['open-games', 'my-games', 'chal-games'].forEach(id => $(id).addEventListener('click', onGameListClick));
 
   fb.innerHTML = `
@@ -694,36 +1136,42 @@ function renderLobby() {
 
 function renderMeCard() {
   const p = S.profile;
-  $('me-card').innerHTML = p ? `<div class="me"><div class="me-rate">${p.rating}</div><div><div class="me-name">${esc(p.username)}</div><div class="muted">${p.wins} wins, ${p.losses} losses, ${p.draws} draws</div></div></div>` : '';
+  if (p && p.is_guest) { $('me-card').innerHTML = '<div class="me"><div><div class="me-name">Playing as a guest</div><div class="muted">Guests can join games but not host them. Their games are unrated. Create an account to host, add friends and get a rating.</div></div></div>'; return; }
+  $('me-card').innerHTML = p ? `<div class="me"><div class="me-rate">${p.rating}</div><div><div class="me-name">${esc(p.username)}${titleBadge(bestRating(p), true)}</div><div class="muted">${p.wins} wins, ${p.losses} losses, ${p.draws} draws</div><div class="muted small">2-player: Standard ${p.rating}, Bullet ${p.rating_bullet}, Blitz ${p.rating_blitz}</div><div class="muted small">4-player: Bullet ${p.rating4_bullet}, Blitz ${p.rating4_blitz}, Standard ${p.rating4_std}</div></div></div>` : '';
 }
 
 async function loadLobbyData() {
-  const top = await sb.from('profiles').select('id,username,rating,wins,losses,draws').order('rating', {ascending: false}).order('wins', {ascending: false}).limit(10);
-  if (!$('view-lobby').classList.contains('hidden')) renderLeaders(top.data || []);
-  if (!S.user || !$('open-games')) return;
+  const col = S.lbCol || 'rating';
+  const top = await sb.from('profiles').select('id,username,rating,rating_bullet,rating_blitz,rating4_bullet,rating4_blitz,rating4_std,wins,losses,draws').eq('is_guest', false).order(col, {ascending: false}).order('wins', {ascending: false}).limit(10);
+  if (!$('view-lobby').classList.contains('hidden')) renderLeaders(top.data || [], col);
+  if (!S.user || isGuest() || !$('open-games')) return;
   const uid = S.user.id, mineFilter = `white_id.eq.${uid},black_id.eq.${uid}`;
-  const [open, mine, chal, fr] = await Promise.all([
+  const [open, mine, chal, fr, open4, mine4] = await Promise.all([
     sb.from('games').select('*').eq('status', 'waiting').is('invited_id', null).neq('creator_id', uid).order('created_at', {ascending: false}).limit(15),
     sb.from('games').select('*').or(mineFilter).in('status', ['waiting', 'active']).order('updated_at', {ascending: false}).limit(15),
     sb.from('games').select('*').eq('status', 'waiting').eq('invited_id', uid).order('created_at', {ascending: false}),
-    sb.from('friendships').select('*').or(`requester_id.eq.${uid},addressee_id.eq.${uid}`)
+    sb.from('friendships').select('*').or(`requester_id.eq.${uid},addressee_id.eq.${uid}`),
+    sb.from('games4').select('*').eq('status', 'waiting').order('created_at', {ascending: false}).limit(15),
+    sb.from('games4').select('*').in('status', ['waiting', 'active']).filter('seats', 'cs', JSON.stringify([uid])).order('updated_at', {ascending: false}).limit(10)
   ]);
   const msg = $('online-msg');
   if (!msg) return;
-  if (open.error || fr.error) { msg.textContent = 'Online play needs the database set up. Run setup.sql in the Supabase SQL editor.'; return; }
+  if (open.error || fr.error || open4.error) { msg.textContent = 'Online play needs the database set up. Run setup.sql in the Supabase SQL editor.'; return; }
   msg.textContent = '';
-  const frs = fr.data || [];
+  const frs = fr.data || [], g4 = [].concat(open4.data || [], (mine4 && mine4.data) || []);
   const games = [].concat(open.data || [], mine.data || [], chal.data || []);
-  await fetchProfiles(games.flatMap(g => [g.white_id, g.black_id, g.creator_id, g.invited_id]).concat(frs.flatMap(r => [r.requester_id, r.addressee_id])));
+  await fetchProfiles(games.flatMap(g => [g.white_id, g.black_id, g.creator_id, g.invited_id]).concat(frs.flatMap(r => [r.requester_id, r.addressee_id])).concat(g4.flatMap(g => [g.creator_id].concat(seatIds4(g)))));
   if (!$('open-games')) return;
   renderGameLists(open.data || [], mine.data || [], chal.data || []);
   renderFriends(frs);
+  renderP4Lists(open4.data || [], (mine4 && mine4.data) || []);
 }
 
-function renderLeaders(rows) {
+function renderLeaders(rows, col) {
+  col = col || 'rating';
   const ol = $('leaders');
   if (!rows.length) { ol.innerHTML = '<li class="muted" style="display:block">No players yet. Create an account and be the first.</li>'; return; }
-  ol.innerHTML = rows.map((p, i) => `<li class="${S.user && p.id === S.user.id ? 'me-row' : ''}"><span class="rk">${i + 1}</span><span class="nm">${esc(p.username)}</span><span class="rt">${p.rating}</span><span class="wl">${p.wins}-${p.losses}-${p.draws}</span></li>`).join('');
+  ol.innerHTML = rows.map((p, i) => `<li class="${S.user && p.id === S.user.id ? 'me-row' : ''}"><span class="rk">${i + 1}</span><span class="nm">${esc(p.username)}${titleBadge(p[col])}</span><span class="rt">${p[col]}</span><span class="wl">${col.indexOf('rating4') < 0 ? p.wins + '-' + p.losses + '-' + p.draws : ''}</span></li>`).join('');
 }
 
 function nameOf(id) { const p = PC[id]; return p ? p.username : 'Player'; }
@@ -733,13 +1181,13 @@ function renderGameLists(open, mine, chal) {
   $('chal-h').classList.toggle('hidden', !chal.length);
   $('chal-games').innerHTML = chal.map(g => {
     const p = PC[g.creator_id], youPlay = g.white_id ? 'Black' : 'White';
-    return `<li><span class="who"><b>${esc(nameOf(g.creator_id))}</b>${p ? ' (' + p.rating + ')' : ''}<span class="sub">You play ${youPlay}, ${esc(tcLabel(g.time_control))}</span></span><button class="btn sm primary" data-act="join" data-id="${g.id}" type="button">Accept</button><button class="btn sm ghost" data-act="cancel" data-id="${g.id}" type="button">Decline</button></li>`;
+    return `<li><span class="who"><b>${esc(nameOf(g.creator_id))}</b>${p ? titleBadge(ratingOf(p, g.time_control)) + ' (' + ratingOf(p, g.time_control) + ')' : ''}<span class="sub">You play ${youPlay}, ${esc(tcLabel(g.time_control))}</span></span><button class="btn sm primary" data-act="join" data-id="${g.id}" type="button">Accept</button><button class="btn sm ghost" data-act="cancel" data-id="${g.id}" type="button">Decline</button></li>`;
   }).join('');
 
   $('open-games').innerHTML = open.length ? open.map(g => {
     const p = PC[g.creator_id];
     const youPlay = g.white_id ? 'Black' : 'White';
-    return `<li><span class="who"><b>${esc(nameOf(g.creator_id))}</b>${p ? ' (' + p.rating + ')' : ''}<span class="sub">You would play ${youPlay}, ${esc(tcLabel(g.time_control))}</span></span><button class="btn sm primary" data-act="join" data-id="${g.id}" type="button">Join</button></li>`;
+    return `<li><span class="who"><b>${esc(nameOf(g.creator_id))}</b>${p ? titleBadge(ratingOf(p, g.time_control)) + ' (' + ratingOf(p, g.time_control) + ')' : ''}<span class="sub">You would play ${youPlay}, ${esc(tcLabel(g.time_control))}</span></span><button class="btn sm primary" data-act="join" data-id="${g.id}" type="button">Join</button></li>`;
   }).join('') : '<li class="muted">No open games right now. Create one and share the code.</li>';
 
   $('my-games').innerHTML = mine.length ? mine.map(g => {
@@ -765,7 +1213,7 @@ function renderFriends(rows) {
     outgoing.map(r => `<li><span class="who"><b>${esc(nameOf(r.addressee_id))}</b><span class="sub">request sent</span></span><button class="btn sm ghost" data-act="f-remove" data-id="${r.id}" type="button">Cancel</button></li>`).join('');
   $('friend-list').innerHTML = friends.length ? friends.map(r => {
     const id = other(r), p = PC[id];
-    return `<li><span class="who"><b>${esc(nameOf(id))}</b>${p ? ' (' + p.rating + ')' : ''}</span><button class="btn sm" data-act="f-challenge" data-uid="${id}" type="button">Challenge</button><button class="btn sm ghost" data-act="f-remove" data-id="${r.id}" type="button" aria-label="Remove ${esc(nameOf(id))} from friends">Remove</button></li>`;
+    return `<li><span class="who"><b>${esc(nameOf(id))}</b>${p && !p.is_guest ? titleBadge(bestRating(p)) + ' (' + p.rating + ')' : ''}</span><button class="btn sm" data-act="f-challenge" data-uid="${id}" type="button">Challenge</button><button class="btn sm ghost" data-act="f-remove" data-id="${r.id}" type="button" aria-label="Remove ${esc(nameOf(id))} from friends">Remove</button></li>`;
   }).join('') : '<li class="muted">No friends yet. Add someone by username.</li>';
 }
 
@@ -804,9 +1252,52 @@ function onGameListClick(e) {
 /* ═════════════ Starting games ═════════════ */
 function clearSel() { S.sel = null; S.targets = []; }
 
-function startAI(level, pref, tc) {
+const BOT_NAMES = [
+  'ChessKnight','KnightMaster','RookRunner','QueenAttack','BishopBoss','PawnStorm','CheckMate','CheckM8','CastleKing','CastleRush',
+  'RookAttack','KnightRush','QueenSide','KingSide','EndgameKing','OpeningBook','TacticalMind','ChessWizard','ChessLegend','ChessPilot',
+  'ChessPro','ChessFan','ChessNerd','ChessPlayer','BoardMaster','BoardBoss','BoardBlitz','BlitzKing','BlitzKnight','RapidRook',
+  'RapidKing','RapidFire','BulletKing','BulletKnight','BulletRook','MateHunter','MateMaster','MateMachine','ForkMaster','ForkHunter',
+  'PinMaster','PinHunter','SkewerKing','TacticMaster','TacticKnight','PawnPush','PawnBreaker','PawnStormer','RookStorm','RookForce',
+  'RookKing','KnightForce','KnightStorm','KnightVision','BishopRush','BishopStorm','QueenRush','QueenStorm','QueenHunter','KingHunter',
+  'KingCrusher','CheckHunter','CheckMaster','CheckStorm','CastleMaster','CastlePro','EndgamePro','OpeningMaster','OpeningKnight','TacticalKing',
+  'TacticalRook','ChessBlitz','ChessRush','ChessStorm','ChessForge','ChessArena','ChessZone','ChessCore','ChessGrid','ChessCraft',
+  'ChessNova','ChessPulse','ChessVortex','ChessTitan','ChessFury','ChessFlame','ChessShadow','ChessGhost','ChessFox','ChessWolf',
+  'ChessDragon','ChessHawk','ChessEagle','ChessAce','ChessHero','ShadowPlayer','VoidWalker','DarkNova','NightFury','PixelKing',
+  'PixelRush','GameMaster','GameRunner','GameKnight','GameStorm','GameForge','GameZone','GamePulse','GameVortex','GameTitan',
+  'GameFury','GameGhost','GameWolf','GameDragon','GameHawk','GameEagle','CyberKnight','CyberWolf','CyberFox','CyberGhost',
+  'CyberNova','CyberStorm','CyberRush','CyberTitan','CyberAce','NeonKnight','NeonWolf','NeonFox','NeonGhost','NeonNova',
+  'NeonStorm','NeonRush','NeonTitan','NeonAce','PixelKnight','PixelWolf','PixelFox','PixelGhost','PixelNova','PixelStorm',
+  'PixelTitan','PixelAce','RetroKing','RetroKnight','RetroWolf','RetroFox','RetroGhost','RetroNova','RetroStorm','RetroRush',
+  'RetroAce','GameRider','GameHunter','GameCrusher','GameLegend','GamePilot','GameNinja','GameRogue','GameReaper','GameWizard',
+  'GameMage','GameDemon','GameAngel','GamePhantom','GameSpecter','GameBandit','GameRanger','GameSniper','GameCaptain','GameCommander',
+  'GameViper','GameCobra','GameFalcon','GameBlaze','GameInferno','GameComet','GameMeteor','GameOrbit','GameGalaxy','Aero',
+  'Axiom','Blaze','Bolt','Comet','Cosmo','Drift','Echo','Flux','Frost','Glitch','Havoc','Inferno','Jolt','Lunar','Maverick',
+  'Meteor','Nova','Orbit','Phantom','Pulse','Raven','Rogue','Shadow','Spark','Storm','Titan','Vapor','Vertex','Vortex','Wraith',
+  'Zenith','Zero','Zyro','Axel','Atlas','Archer','Blitz','Cairo','Cobalt','Crimson','Dash','Dynamo','Ember','Fable','Ghost',
+  'Griffin','Horizon','Hunter','Jasper','Jett','Knox','Legend','Lynx','Mako','Nexus','Onyx','Phoenix','Raptor','Reaper',
+  'Ryder','Saber','Scout','Shark','Sonic','Specter','Striker','Tempest','Thunder','Tracer','Turbo','Viper','Wolf','Xeno','Zane',
+  'Ace','Alpha','Bravo','Delta','Omega','Sigma','Vector','xKnight','xRook','xNova','xShadow','xBlaze','xStorm','xGhost','xVortex',
+  'KnightX','RookX','NovaX','ShadowX','BlazeX','StormX','GhostX','VortexX','DarkKnight','DarkRook','DarkNova','DarkWolf','DarkFox',
+  'DarkStorm','DarkViper','SilentKnight','SilentRook','SilentWolf','SilentFox','SilentStorm','SilentViper','RapidKnight','RapidFox',
+  'RapidWolf','RapidGhost','RapidNova','RapidStorm','LuckyKnight','LuckyRook','LuckyFox','LuckyWolf','LuckyNova','LuckyStorm',
+  'CrazyKnight','CrazyRook','CrazyFox','CrazyWolf','CrazyNova','CrazyStorm','MegaKnight','MegaRook','MegaFox','MegaWolf',
+  'MegaNova','MegaStorm','UltraKnight','UltraRook','UltraFox','UltraWolf','UltraNova','UltraStorm','Alex','Aiden','Aaron','Adam',
+  'Adrian','Avery','Austin','Blake','Brandon','Brayden','Brian','Caleb','Cameron','Carter','Casey','Charlie','Chase','Chris',
+  'Cody','Colin','Connor','Cooper','Corey','Cruz','Dylan','Eli','Elias','Elijah','Elliot','Ethan','Evan','Felix','Finn',
+  'Gavin','George','Grayson','Grant','Graham','Hayden','Hunter','Ian','Isaac','Jack','Jackson','Jacob','Jaden','Jake','James',
+  'Jared','Jason','Jayden','Jesse','Joel','John','Jonah','Jordan','Joseph','Joshua','Julian','Justin','Kai','Kaleb','Kane',
+  'Kayden','Kevin','Kingston','Kyle','Landon','Leo','Leon','Leonardo','Levi','Liam','Logan','Lucas','Luke','Mason','Mateo',
+  'Matthew','Max','Maxwell','Micah','Michael','Miles','Milo','Nate','Nathan','Nathaniel','Nico','Nolan','Noah','NolanX','Oliver',
+  'Owen','Parker','Patrick','Paul','Peter','Preston','Quinn','Rafael','Raymond','Reed','Reese','Riley','River','Robert','Roman',
+  'Rowan','Roy','Ryan','Samuel','Sawyer','Sean','Sebastian','Seth','Shane','Simon','Spencer','Stanley','Stephen','Steven','Theo',
+  'Theodore','Thomas','Toby','Travis','Trevor','Tristan','Tyler','Victor','Vincent','Wade','Walker','Warren','Wesley','Weston',
+  'William','Wyatt','Xavier','Zachary','Zane','AcePlayer','BlueJay','RedFox','GreenWolf','SilverFox','GoldenHawk'
+];
+const UNIQUE_BOT_NAMES = [...new Set(BOT_NAMES)].slice(0, 400);
+function startAI(level, pref, tc, botElo, botShown, botMatchId = null, botLabel = '') {
   teardownOnline();
   S.mode = 'ai'; S.aiLevel = level; S.colorPref = pref; S.tc = tc || 0;
+  S.botElo = botElo || 0; S.botShown = botElo ? (botShown != null ? botShown : botElo) : 0; S.botLabel = botLabel; S.botName = botElo ? (botLabel || pick(UNIQUE_BOT_NAMES)) : ''; S.botMatchId = botMatchId; S.botResultSettled = false;
   S.color = pref === 'r' ? (Math.random() < 0.5 ? 'w' : 'b') : pref;
   S.flip = S.color === 'b';
   S.game = new Chess(); S.over = null; S.last = null; S.aiThinking = false;
@@ -838,20 +1329,11 @@ async function createGame(pref, tc, invitedId) {
 
 async function joinGame(id) {
   const {data, error} = await sb.rpc('join_game', {gid: id});
-  if (error) return toast(error.message, true);
-  openOnline(Array.isArray(data) ? data[0] : data);
+  const row = Array.isArray(data) ? data[0] : data;
+  if (error || !row) return toast(error ? error.message : 'Could not join that game.', true);
+  openOnline(row);
 }
 
-async function joinByCode() {
-  const code = $('code-in').value.trim().toUpperCase();
-  if (code.length < 4) return toast('Enter the 6-character game code.', true);
-  const {data, error} = await sb.from('games').select('id,status,white_id,black_id').eq('code', code).maybeSingle();
-  if (error) return toast(error.message, true);
-  if (!data) return toast('No game found with that code.', true);
-  if (data.status === 'waiting') return joinGame(data.id);
-  if (data.white_id === S.user.id || data.black_id === S.user.id) return resume(data.id);
-  toast('That game has already started.', true);
-}
 
 async function resume(id) {
   const {data, error} = await sb.from('games').select('*').eq('id', id).maybeSingle();
@@ -868,7 +1350,9 @@ async function cancelGame(id) {
 
 /* ═════════════ Online games ═════════════ */
 function teardownOnline() {
+  teardown4();
   endReview();
+  S.sfxPly = -1; S.endPlayed = null; S.lowSec = 0;   // next game starts silent until something happens
   if (S.online) {
     if (S.online.channel) sb.removeChannel(S.online.channel);
     clearInterval(S.online.poll);
@@ -885,6 +1369,7 @@ async function openOnline(row) {
   await Promise.all([fetchProfiles([row.white_id, row.black_id, row.invited_id]), syncServerClock()]);
   S.game = rebuild(row.moves); syncLast();
   S.over = row.status === 'finished' ? {result: row.result, reason: row.reason} : null;
+  S.endPlayed = S.over;
   showView('game'); render();
   const id = row.id;
   S.online.channel = sb.channel('game-' + id)
@@ -960,16 +1445,16 @@ async function settle() {
   if (!S.online || S.online.settled) return;
   S.online.settled = true;
   clearInterval(S.online.poll);
-  const row = S.online.row, before = S.profile ? S.profile.rating : null;
+  const row = S.online.row, rcol = rating2Col(row.time_control), before = S.profile ? S.profile[rcol] : null;
   // Records the rating change, and deletes the game row once both players have acknowledged it
   const ack = await sb.rpc('acknowledge_game', {gid: row.id});
   if (ack.error) await sb.rpc('record_result', {gid: row.id});
   await loadProfile();
   await fetchProfiles([row.white_id, row.black_id], true);
   renderUserBox(); render();
-  if (before != null && S.profile && S.profile.rating !== before) {
-    const d = S.profile.rating - before;
-    toast(`Rating ${before} to ${S.profile.rating} (${d > 0 ? '+' : ''}${d})`);
+  if (before != null && S.profile && S.profile[rcol] !== before) {
+    const d = S.profile[rcol] - before;
+    toast(`${rating2Name(row.time_control)} rating ${before} to ${S.profile[rcol]} (${d > 0 ? '+' : ''}${d})`);
   }
 }
 
@@ -980,12 +1465,39 @@ async function acceptDraw() {
   const d = await pushPatch({status: 'finished', result: '1/2-1/2', reason: 'agreement', draw_offer: null}, {status: 'active'});
   if (d) { S.over = {result: '1/2-1/2', reason: 'agreement'}; render(); settle(); }
 }
+async function settleBot(result) {
+  if (!S.botMatchId || S.botResultSettled) return;
+  S.botResultSettled = true;
+  const matchId = S.botMatchId;
+  const userResult = S.color === 'w'
+    ? result
+    : (result === '1-0' ? '0-1' : result === '0-1' ? '1-0' : '1/2-1/2');
+  const {data, error} = await sb.rpc('record_bot_result', {gid: matchId, p_result: userResult});
+  if (error) {
+    S.botResultSettled = false;
+    toast(error.message, true);
+    return;
+  }
+  await loadProfile();
+  renderUserBox(); render();
+  const row = Array.isArray(data) ? data[0] : data;
+  if (row && row.delta != null) {
+    toast(`${rating2Name(S.tc)} rating ${row.before_rating} to ${row.after_rating} (${row.delta > 0 ? '+' : ''}${row.delta})`);
+  }
+}
+
 function confirmResign() {
   modal('Resign this game?', '<p>Your opponent wins and your rating drops.</p>', [
     {label: 'Resign', cls: 'danger', onClick: async () => {
       const res = S.color === 'w' ? '0-1' : '1-0';
-      const d = await pushPatch({status: 'finished', result: res, reason: 'resignation', draw_offer: null}, {status: 'active'});
-      if (d) { S.over = {result: res, reason: 'resignation'}; render(); settle(); }
+      if (S.mode === 'ai' && S.botMatchId) {
+        S.over = {result: res, reason: 'resignation'};
+        S.aiThinking = false; clearSel(); render();
+        await settleBot(res);
+      } else {
+        const d = await pushPatch({status: 'finished', result: res, reason: 'resignation', draw_offer: null}, {status: 'active'});
+        if (d) { S.over = {result: res, reason: 'resignation'}; render(); settle(); }
+      }
     }},
     {label: 'Keep playing'}
   ]);
@@ -996,6 +1508,1243 @@ function leaveGame() {
   S.mode = null; S.game = null; S.over = null; S.aiThinking = false; clearSel();
   if (S.user || S.guest) goLobby(); else showView('auth');
 }
+
+/* ═════════════ Sounds ═════════════ */
+// Everything is synthesised with the Web Audio API, so there are no sound files to host.
+const SFX = {ctx: null, on: true};
+try { SFX.on = localStorage.getItem('palchess.sound') !== 'off'; } catch (e) { /* storage blocked */ }
+
+function audio() {
+  if (!SFX.ctx) {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return null;
+    SFX.ctx = new AC();
+  }
+  if (SFX.ctx.state === 'suspended') SFX.ctx.resume();
+  return SFX.ctx;
+}
+function tone(c, o) {
+  const t0 = c.currentTime + (o.t || 0), d = o.d || 0.12, osc = c.createOscillator(), g = c.createGain();
+  osc.type = o.type || 'sine';
+  osc.frequency.setValueAtTime(o.f, t0);
+  if (o.f2) osc.frequency.exponentialRampToValueAtTime(o.f2, t0 + d);
+  g.gain.setValueAtTime(0.0001, t0);
+  g.gain.exponentialRampToValueAtTime(o.v || 0.2, t0 + 0.006);
+  g.gain.exponentialRampToValueAtTime(0.0001, t0 + d);
+  osc.connect(g); g.connect(c.destination);
+  osc.start(t0); osc.stop(t0 + d + 0.03);
+}
+function noise(c, o) {
+  const t0 = c.currentTime + (o.t || 0), len = Math.max(1, Math.floor(c.sampleRate * (o.d || 0.05)));
+  const buf = c.createBuffer(1, len, c.sampleRate), data = buf.getChannelData(0);
+  for (let i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / len);
+  const src = c.createBufferSource(), filt = c.createBiquadFilter(), g = c.createGain();
+  src.buffer = buf; filt.type = o.type || 'bandpass'; filt.frequency.value = o.f || 1500; filt.Q.value = o.q || 0.8;
+  g.gain.setValueAtTime(o.v || 0.3, t0);
+  src.connect(filt); filt.connect(g); g.connect(c.destination);
+  src.start(t0);
+}
+const SOUNDS = {
+  move:    c => { tone(c, {f: 210, f2: 120, d: 0.07, v: 0.32}); noise(c, {d: 0.03, v: 0.35, f: 1400}); },
+  capture: c => { tone(c, {f: 160, f2: 70, d: 0.14, v: 0.42}); noise(c, {d: 0.08, v: 0.5, f: 1000, q: 0.5}); noise(c, {d: 0.03, v: 0.4, f: 3000}); },
+  castle:  c => { SOUNDS.move(c); tone(c, {t: 0.11, f: 210, f2: 120, d: 0.07, v: 0.32}); noise(c, {t: 0.11, d: 0.03, v: 0.35, f: 1400}); },
+  promote: c => { tone(c, {f: 520, d: 0.12, type: 'triangle', v: 0.22}); tone(c, {t: 0.09, f: 780, d: 0.2, type: 'triangle', v: 0.22}); },
+  check:   c => { tone(c, {f: 880, d: 0.12, type: 'triangle', v: 0.24}); tone(c, {t: 0.1, f: 1175, d: 0.2, type: 'triangle', v: 0.24}); },
+  win:     c => [523, 659, 784, 1047].forEach((f, i) => tone(c, {t: i * 0.11, f, d: 0.28, type: 'triangle', v: 0.22})),
+  lose:    c => [392, 330, 262].forEach((f, i) => tone(c, {t: i * 0.16, f, d: 0.34, v: 0.24})),
+  draw:    c => { tone(c, {f: 523, d: 0.3, type: 'triangle', v: 0.2}); tone(c, {t: 0.14, f: 392, d: 0.36, type: 'triangle', v: 0.2}); },
+  notify:  c => { tone(c, {f: 988, d: 0.32, v: 0.26}); tone(c, {t: 0.13, f: 1319, d: 0.5, v: 0.26}); },
+  tick:    c => tone(c, {f: 1200, d: 0.04, type: 'square', v: 0.07})
+};
+function sfx(name) {
+  if (!SFX.on) return;
+  const c = audio();
+  if (c && SOUNDS[name]) { try { SOUNDS[name](c); } catch (e) { /* audio is optional */ } }
+}
+function renderSoundBtn() {
+  const b = $('btn-sound'), label = SFX.on ? 'Sound on' : 'Sound off';
+  b.textContent = SFX.on ? '🔊' : '🔇';
+  b.title = label; b.setAttribute('aria-label', label); b.setAttribute('aria-pressed', String(!SFX.on));
+}
+function setSound(on) {
+  SFX.on = on;
+  try { localStorage.setItem('palchess.sound', on ? 'on' : 'off'); } catch (e) { /* ignore */ }
+  renderSoundBtn();
+  if (on) sfx('move');
+}
+
+function sfxMove(g) {
+  const m = g.history({verbose: true}).pop();
+  if (!m) return;
+  if (g.in_check()) sfx('check');
+  else if (m.captured) sfx('capture');
+  else if (m.flags.indexOf('k') >= 0 || m.flags.indexOf('q') >= 0) sfx('castle');
+  else if (m.promotion) sfx('promote');
+  else sfx('move');
+}
+function sfxEnd() {
+  const o = S.over;
+  if (!o) return;
+  if (o.result === '1/2-1/2') return sfx('draw');
+  if (S.mode === 'local') return sfx('win');
+  sfx((o.result === '1-0') === (S.color === 'w') ? 'win' : 'lose');
+}
+// Called after every render: plays a sound when a new move (yours, the computer's or your
+// opponent's) or a game result appears. A freshly opened game stays silent until something happens.
+// Plays a sound for each step taken in Overview (Next/Back/First/Last, clicking a move, arrow keys,
+// or Auto-play) - the same move sounds as live play, plus the game's result sound on reaching the last
+// move. Nothing plays just from opening Overview, only from moving away from where it opened.
+function syncReviewSfx() {
+  if (!S.review) return;
+  const ply = S.review.ply, prev = S.review.sfxPly;
+  S.review.sfxPly = ply;
+  if (prev == null || prev === ply) return;
+  if (ply <= 0) return;
+  const h = S.game.history({verbose: true}), m = h[ply - 1];
+  if (!m) return;
+  if (/[+#]/.test(m.san)) sfx('check');
+  else if (m.captured) sfx('capture');
+  else if (m.flags.indexOf('k') >= 0 || m.flags.indexOf('q') >= 0) sfx('castle');
+  else if (m.promotion) sfx('promote');
+  else sfx('move');
+  if (ply === h.length && S.over) {
+    setTimeout(() => sfx(S.over.result === '1/2-1/2' ? 'draw' : (S.mode === 'local' || (S.over.result === '1-0') === (S.color === 'w')) ? 'win' : 'lose'), 280);
+  }
+}
+
+function syncSfx() {
+  if (!S.game || S.review) return;
+  const n = S.game.history().length;
+  const grew = S.sfxPly >= 0 && n > S.sfxPly;
+  S.sfxPly = n;
+  if (grew) sfxMove(S.game);
+  if (S.over && S.endPlayed !== S.over) {
+    S.endPlayed = S.over;
+    setTimeout(sfxEnd, grew ? 280 : 0);
+  }
+}
+
+/* ═════════════ Live alerts ═════════════ */
+const TITLE = document.title;
+function notify(o) {
+  const box = $('alerts'), el = document.createElement('div');
+  el.className = 'alert';
+  el.innerHTML = `<div class="atxt"><b>${esc(o.title)}</b><span>${esc(o.body || '')}</span></div><div class="aact"></div><button class="aclose" type="button" aria-label="Dismiss">×</button>`;
+  const close = () => el.remove();
+  (o.actions || []).forEach(a => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'btn sm ' + (a.cls || ''); b.textContent = a.label;
+    b.onclick = () => { close(); a.onClick(); };
+    el.querySelector('.aact').appendChild(b);
+  });
+  el.querySelector('.aclose').onclick = close;
+  box.prepend(el);
+  while (box.children.length > 4) box.lastChild.remove();
+  setTimeout(close, o.ms || 20000);
+  sfx('notify');
+  if (document.hidden && DESK.on && 'Notification' in window && Notification.permission === 'granted') {
+    try { const n = new Notification(o.title, {body: o.body || '', tag: 'palchess'}); n.onclick = () => { window.focus(); n.close(); }; } catch (e) { /* ignore */ }
+  }
+  if (document.hidden) { S.unread++; document.title = `(${S.unread}) ${TITLE}`; }
+}
+document.addEventListener('visibilitychange', () => { if (!document.hidden) { S.unread = 0; document.title = TITLE; } });
+
+let inbox = null;
+function startInbox() {
+  stopInbox();
+  const id = S.user.id;
+  inbox = sb.channel('inbox-' + id)
+    .on('postgres_changes', {event: 'INSERT', schema: 'public', table: 'games', filter: 'invited_id=eq.' + id}, p => onChallenge(p.new))
+    .on('postgres_changes', {event: 'UPDATE', schema: 'public', table: 'games', filter: 'creator_id=eq.' + id}, p => onJoined(p.new))
+    .on('postgres_changes', {event: 'INSERT', schema: 'public', table: 'friendships', filter: 'addressee_id=eq.' + id}, p => onFriendRequest(p.new))
+    .on('postgres_changes', {event: 'UPDATE', schema: 'public', table: 'friendships', filter: 'requester_id=eq.' + id}, p => onFriendAccepted(p.new))
+    .subscribe();
+  refreshNotes();
+  S.notesTimer = setInterval(refreshNotes, 30000);
+}
+function stopInbox() {
+  if (inbox) { sb.removeChannel(inbox); inbox = null; }
+  clearInterval(S.notesTimer);
+  S.notes = []; S.pending = {friends: [], challenges: []};
+  closePanel(); renderBell();
+}
+
+const busyPlaying = () => !!((S.mode && S.game && !S.over) || (G4.on && !G4.over));   // don't offer buttons that would pull you out of a live game
+const refreshLobby = () => { if (!$('view-lobby').classList.contains('hidden')) loadLobbyData(); };
+
+async function acceptFriend(id) {
+  const {error} = await sb.from('friendships').update({status: 'accepted'}).eq('id', id);
+  toast(error ? error.message : 'Friend added.', !!error);
+  refreshNotes(); refreshLobby();
+}
+
+async function onChallenge(g) {
+  if (!g || g.status !== 'waiting') return;
+  await fetchProfiles([g.creator_id]);
+  notify({
+    title: `${nameOf(g.creator_id)} challenged you`,
+    body: `${tcLabel(g.time_control)}. You play ${g.white_id ? 'Black' : 'White'}.`,
+    ms: 40000,
+    actions: busyPlaying() ? [] : [
+      {label: 'Accept', cls: 'primary', onClick: () => joinGame(g.id)},
+      {label: 'Decline', cls: 'ghost', onClick: () => { cancelGame(g.id); refreshNotes(); }}
+    ]
+  });
+  refreshLobby(); refreshNotes();
+}
+async function onJoined(g) {
+  // the moment someone takes the other seat in a game you created
+  if (!g || g.status !== 'active' || g.moves.length !== 0) return;
+  if (S.online && S.online.row.id === g.id) return;
+  const oppId = g.white_id === S.user.id ? g.black_id : g.white_id;
+  await fetchProfiles([oppId]);
+  const title = `${nameOf(oppId)} joined your game`;
+  addNote({title, body: tcLabel(g.time_control), gameId: g.id});
+  notify({title, body: tcLabel(g.time_control), actions: busyPlaying() ? [] : [{label: 'Play', cls: 'primary', onClick: () => resume(g.id)}]});
+  refreshLobby();
+}
+async function onFriendRequest(f) {
+  if (!f || f.status !== 'pending') return;
+  await fetchProfiles([f.requester_id]);
+  notify({
+    title: `${nameOf(f.requester_id)} wants to be friends`,
+    actions: [{label: 'Accept', cls: 'primary', onClick: () => acceptFriend(f.id)}, {label: 'Later', cls: 'ghost', onClick: () => {}}]
+  });
+  refreshLobby(); refreshNotes();
+}
+async function onFriendAccepted(f) {
+  if (!f || f.status !== 'accepted') return;
+  await fetchProfiles([f.addressee_id]);
+  const title = `${nameOf(f.addressee_id)} accepted your friend request`;
+  addNote({title});
+  notify({title});
+  refreshLobby();
+}
+
+/* ═════════════ Notification centre (the bell) ═════════════ */
+// Pending friend requests and challenges come from the database, so they survive a reload.
+// Notices such as "X joined your game" are kept for this visit only.
+const DESK = {on: false};
+try { DESK.on = localStorage.getItem('palchess.desktop') === 'on'; } catch (e) { /* storage blocked */ }
+let noteSeq = 0;
+
+function addNote(n) {
+  S.notes.unshift(Object.assign({id: ++noteSeq, time: Date.now(), read: false}, n));
+  if (S.notes.length > 20) S.notes.length = 20;
+  renderBell();
+}
+function ago(ts) {
+  const s = Math.floor((Date.now() - ts) / 1000);
+  if (s < 45) return 'just now';
+  return s < 3600 ? Math.round(s / 60) + ' min ago' : Math.round(s / 3600) + ' h ago';
+}
+
+async function refreshNotes() {
+  if (!S.user) return;
+  const uid = S.user.id;
+  const [fr, ch] = await Promise.all([
+    sb.from('friendships').select('*').eq('addressee_id', uid).eq('status', 'pending'),
+    sb.from('games').select('*').eq('status', 'waiting').eq('invited_id', uid)
+  ]);
+  if (!S.user || S.user.id !== uid) return;
+  S.pending = {friends: fr.data || [], challenges: ch.data || []};
+  await fetchProfiles(S.pending.friends.map(f => f.requester_id).concat(S.pending.challenges.map(g => g.creator_id)));
+  renderBell();
+}
+
+function renderBell() {
+  const b = $('btn-bell'), badge = $('bell-badge'), open = !$('npanel').classList.contains('hidden');
+  b.classList.toggle('hidden', !S.user || isGuest());
+  if (open) S.notes.forEach(n => { n.read = true; });
+  const count = S.pending.friends.length + S.pending.challenges.length + S.notes.filter(n => !n.read).length;
+  badge.textContent = count > 9 ? '9+' : String(count);
+  badge.classList.toggle('hidden', count === 0);
+  b.setAttribute('aria-label', count ? `Notifications, ${count} new` : 'Notifications');
+  if (open) renderPanel();
+}
+
+function renderPanel() {
+  const busy = busyPlaying(), items = [];
+  S.pending.challenges.forEach(g => items.push(`<li><div><div class="ntitle">${esc(nameOf(g.creator_id))} challenged you</div><div class="nsub">${esc(tcLabel(g.time_control))}, you play ${g.white_id ? 'Black' : 'White'}</div></div>${busy ? '<div class="nsub">Finish your game to respond.</div>' : `<div class="nact"><button class="btn sm primary" data-n="accept-game" data-id="${g.id}" type="button">Accept</button><button class="btn sm ghost" data-n="decline-game" data-id="${g.id}" type="button">Decline</button></div>`}</li>`));
+  S.pending.friends.forEach(f => items.push(`<li><div><div class="ntitle">${esc(nameOf(f.requester_id))} wants to be friends</div></div><div class="nact"><button class="btn sm primary" data-n="accept-friend" data-id="${f.id}" type="button">Accept</button><button class="btn sm ghost" data-n="decline-friend" data-id="${f.id}" type="button">Decline</button></div></li>`));
+  S.notes.forEach(n => items.push(`<li><div><div class="ntitle">${esc(n.title)}</div><div class="nsub">${n.body ? esc(n.body) + ', ' : ''}${ago(n.time)}</div></div><div class="nact">${n.gameId && !busy ? `<button class="btn sm primary" data-n="play" data-id="${n.gameId}" type="button">Play</button>` : ''}<button class="btn sm ghost" data-n="dismiss" data-id="${n.id}" type="button">Dismiss</button></div></li>`));
+  $('npanel').innerHTML = `<div class="nhead"><b>Notifications</b><label class="ntoggle"><input type="checkbox" id="desk-toggle"${DESK.on ? ' checked' : ''}> Desktop alerts</label></div>` +
+    (items.length ? `<ul class="nlist">${items.join('')}</ul>` : '<div class="nempty">You are all caught up.</div>');
+  $('desk-toggle').onchange = e => setDesktop(e.target.checked);
+}
+
+function togglePanel() {
+  const opening = $('npanel').classList.contains('hidden');
+  $('npanel').classList.toggle('hidden', !opening);
+  $('btn-bell').setAttribute('aria-expanded', String(opening));
+  if (opening) { renderBell(); refreshNotes(); }
+}
+function closePanel() {
+  $('npanel').classList.add('hidden');
+  $('btn-bell').setAttribute('aria-expanded', 'false');
+}
+
+function setDesktop(on) {
+  const finish = ok => {
+    DESK.on = ok;
+    try { localStorage.setItem('palchess.desktop', ok ? 'on' : 'off'); } catch (e) { /* ignore */ }
+    if (on && !ok) toast('Desktop alerts are blocked in your browser settings.', true);
+    const t = $('desk-toggle'); if (t) t.checked = ok;
+  };
+  if (!on) return finish(false);
+  if (!('Notification' in window)) { toast('This browser does not support desktop alerts.', true); return finish(false); }
+  if (Notification.permission === 'granted') return finish(true);
+  if (Notification.permission === 'denied') return finish(false);
+  Notification.requestPermission().then(p => finish(p === 'granted'));
+}
+
+async function onPanelClick(e) {
+  const b = e.target.closest('button[data-n]');
+  if (!b) return;
+  const id = b.dataset.id, act = b.dataset.n;
+  if (act === 'accept-game') { closePanel(); joinGame(id); }
+  else if (act === 'decline-game') { await cancelGame(id); refreshNotes(); }
+  else if (act === 'accept-friend') await acceptFriend(id);
+  else if (act === 'decline-friend') { await sb.from('friendships').delete().eq('id', id); refreshNotes(); refreshLobby(); }
+  else if (act === 'play') { closePanel(); resume(id); }
+  else if (act === 'dismiss') { S.notes = S.notes.filter(n => String(n.id) !== id); renderBell(); }
+}
+
+/* ═════════════ Quick match ═════════════ */
+// Keep these three numbers in sync with find_match() in setup.sql.
+const MM_BASE = 100, MM_STEP = 10, MM_MAX = 500;
+const mmRange = sec => Math.min(MM_MAX, MM_BASE + MM_STEP * sec);
+
+function startMatchmaking(tc) {
+  if (S.mm || !S.user) return;
+  // nobody found after 5 to 7 seconds (picked at random for each search) -> play a bot near your rating
+  const mm = S.mm = {tc, t0: Date.now(), poll: null, paint: null, botT: null, botAfter: 5 + Math.random() * 2, busy: false, inflight: null, matched: null};
+  modal('Finding a match', '<p id="mm-text" class="muted"></p><p class="muted small" id="mm-sub"></p>', [
+    {label: 'Play now', cls: 'primary', onClick: () => { fallbackToBot(); return false; }},
+    {label: 'Cancel search', cls: 'ghost', onClick: () => { cancelMatchmaking(); return false; }}
+  ]);
+  const paint = () => {
+    const el = $('mm-text'), sub = $('mm-sub');
+    if (!el) return;
+    const sec = Math.floor((Date.now() - mm.t0) / 1000), r = S.profile ? ratingOf(S.profile, tc) : 100, w = mmRange(sec);
+    el.innerHTML = `${esc(tcLabel(tc))}<br>Looking for players rated ${Math.max(0, r - w)} to ${r + w}. Searching for ${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}.`;
+    const left = Math.max(1, Math.ceil(mm.botAfter - (Date.now() - mm.t0) / 1000));
+    sub.textContent = `Nobody yet? In ${left}s you will be matched with an opponent rated near you. Or choose one now.`;
+  };
+  paint();
+  mm.paint = setInterval(paint, 1000);
+  mm.poll = setInterval(mmPoll, 2000);            // check often: the search is short
+  mm.botT = setTimeout(fallbackToBot, mm.botAfter * 1000);
+  mmPoll();
+}
+function stopMatchmaking() {
+  if (!S.mm) return;
+  clearInterval(S.mm.poll); clearInterval(S.mm.paint); clearTimeout(S.mm.botT);
+  S.mm = null;
+}
+async function mmPoll() {
+  const mm = S.mm;
+  if (!mm || mm.busy) return;
+  mm.busy = true;
+  mm.inflight = Promise.resolve(sb.rpc('find_match', {tc: mm.tc}));
+  const {data, error} = await mm.inflight;
+  mm.busy = false;
+  if (data) { mm.matched = data; stopMatchmaking(); closeModal(); return openMatch(data); }   // matched, even if you just clicked away
+  if (S.mm !== mm) return;
+  if (error) { stopMatchmaking(); closeModal(); toast(dbMsg(error), true); }
+}
+async function cancelMatchmaking() {
+  const mm = S.mm;
+  if (!mm) return;
+  stopMatchmaking();
+  if (mm.inflight) await mm.inflight;
+  if (mm.matched) return;                      // the poll that was in flight found a game; it opens it
+  const {data} = await sb.rpc('cancel_match');
+  closeModal();
+  if (data) openMatch(data);                   // someone matched you a moment before you cancelled
+  else toast('Search cancelled.');
+}
+// No players found (or you asked for one): play a bot rated close to you. It is an unrated practice game.
+// A bot shown as rating R plays like the engine's R + 900: new players start at 100, and the engine's weakest sensible level is around 1000.
+const BOT_SCALE = 900;
+async function fallbackToBot() {
+  const mm = S.mm;
+  if (!mm) return;
+  stopMatchmaking();
+  if (mm.inflight) await mm.inflight;
+  if (mm.matched) return;
+  const {data} = await sb.rpc('cancel_match');
+  closeModal();
+  if (data) return openMatch(data);
+  const r = S.profile ? ratingOf(S.profile, mm.tc) : 100;
+  const shown = Math.max(0, Math.round(r + (Math.random() + Math.random() - 1) * 150));
+  const {data: botMatchId, error} = await sb.rpc('start_bot_match', {
+    tc: mm.tc,
+    p_bot_rating: shown
+  });
+  if (error || !botMatchId) {
+    return toast(error ? error.message : 'Could not start the match.', true);
+  }
+  startAI(0, 'r', mm.tc, shown + BOT_SCALE, shown, botMatchId);
+  toast(`Matched with ${S.botName} (${shown}).`);
+}
+async function openMatch(gid) {
+  const {data} = await sb.from('games').select('*').eq('id', gid).maybeSingle();
+  if (!data) return toast('Could not open the match.', true);
+  await fetchProfiles([data.white_id, data.black_id]);
+  const oppId = data.white_id === S.user.id ? data.black_id : data.white_id, p = PC[oppId];
+  sfx('notify');
+  toast(`Matched with ${nameOf(oppId)}${p ? ' (' + ratingOf(p, data.time_control) + ')' : ''}.`);
+  openOnline(data);
+}
+
+/* ═════════════ Guests ═════════════ */
+// A guest is a real (but throwaway) identity created by guest_start(): it can join games hosted by someone
+// with an account, but it can't host, add friends, use matchmaking or change ratings.
+const isGuest = () => !!(S.profile && S.profile.is_guest);
+
+async function findByCode(code) {
+  const a = await sb.from('games').select('*').eq('code', code).maybeSingle();
+  if (a.error) { toast(dbMsg(a.error), true); return null; }
+  if (a.data) return {kind: 'g', row: a.data};
+  const b = await sb.from('games4').select('*').eq('code', code).maybeSingle();
+  return b.data ? {kind: 'g4', row: b.data} : null;
+}
+async function openFound(f) {
+  const me = S.user.id, r = f.row;
+  if (f.kind === 'g') {
+    if (r.status === 'waiting') return joinGame(r.id);
+    if (r.white_id === me || r.black_id === me) return resume(r.id);
+  } else {
+    if (r.seats.includes(me)) return open4Online(r);
+    if (r.status === 'waiting') return join4(r.id);
+  }
+  toast('That game has already started.', true);
+}
+async function joinByCode() {
+  const code = $('code-in').value.trim().toUpperCase();
+  if (code.length < 4) return toast('Enter the 6-character game code.', true);
+  const f = await findByCode(code);
+  if (!f) return toast('No game found with that code.', true);
+  openFound(f);
+}
+async function guestJoin() {
+  const name = $('guest-name').value.trim(), code = $('guest-code').value.trim().toUpperCase();
+  if (code.length < 4) return toast('Enter the 6-character game code from your host.', true);
+  const btn = $('guest-join');
+  btn.disabled = true;
+  try {
+    await ensureSession();
+    const f = await findByCode(code);
+    if (!f) return toast('No game found with that code.', true);
+    const {error} = await sb.rpc('guest_start', {display_name: name});
+    if (error) throw new Error(dbMsg(error));
+    await syncAccount();               // this browser is now signed in as the guest
+    await openFound(f);
+  } catch (e) {
+    toast(e.message || 'Could not join.', true);
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+/* ═════════════ 4-player chess: rules engine ═════════════ */
+// <p4>
+/* 4-player chess rules (free-for-all). 14x14 board with 3x3 corners removed. Seats: 0 Red (bottom), 1 Blue (left),
+   2 Yellow (top), 3 Green (right); turns go 0 > 1 > 2 > 3. Pawns move toward the opposite side and promote to a
+   queen on the 11th rank/file. Castling yes, en passant no. Checkmated or stalemated players are eliminated and
+   their pieces turn "dead" (they stay as blockers and can be captured for 0 points). Last player standing wins. */
+const B4 = 14;
+const i4 = (x, y) => y * B4 + x;
+const ok4 = (x, y) => x >= 0 && x < B4 && y >= 0 && y < B4 && !((x < 3 || x > 10) && (y < 3 || y > 10));
+const C4 = ['Red', 'Blue', 'Yellow', 'Green'];
+const FWD4 = [[0, 1], [1, 0], [0, -1], [-1, 0]];
+const ORTH4 = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+const DIAG4 = [[1, 1], [1, -1], [-1, 1], [-1, -1]];
+const KN4 = [[1, 2], [2, 1], [-1, 2], [-2, 1], [1, -2], [2, -1], [-1, -2], [-2, -1]];
+const PTS4 = {p: 1, n: 3, b: 5, r: 5, q: 9, k: 0};
+const sq4 = (x, y) => 'abcdefghijklmn'[x] + (y + 1);
+function parse4(tok) {
+  const m = /^([a-n])(\d{1,2})([a-n])(\d{1,2})$/.exec(tok);
+  return m ? [m[1].charCodeAt(0) - 97, +m[2] - 1, m[3].charCodeAt(0) - 97, +m[4] - 1] : null;
+}
+const line4 = (c, i) => c === 0 ? [3 + i, 0] : c === 1 ? [0, 3 + i] : c === 2 ? [3 + i, 13] : [13, 3 + i];
+const pawn4 = (c, i) => c === 0 ? [3 + i, 1] : c === 1 ? [1, 3 + i] : c === 2 ? [3 + i, 12] : [12, 3 + i];
+const promo4 = (c, x, y) => c === 0 ? y === 10 : c === 1 ? x === 10 : c === 2 ? y === 3 : x === 3;
+
+function new4() {
+  const b = new Array(B4 * B4).fill(null);
+  const rows = [['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'], ['r', 'n', 'b', 'k', 'q', 'b', 'n', 'r']];
+  const kp = [];
+  for (let c = 0; c < 4; c++) {
+    const back = rows[c === 1 || c === 2 ? 1 : 0];
+    for (let i = 0; i < 8; i++) {
+      const [x, y] = line4(c, i), [px, py] = pawn4(c, i);
+      b[i4(x, y)] = {t: back[i], c, dead: false, moved: false};
+      b[i4(px, py)] = {t: 'p', c, dead: false, moved: false};
+      if (back[i] === 'k') kp[c] = [x, y];
+    }
+  }
+  return {b, kp, turn: 0, alive: [true, true, true, true], score: [0, 0, 0, 0], hist: [], quiet: 0, out: [], events: [], draw: false, lastMove: null};
+}
+
+// is (x,y) attacked by a live piece of colour o?
+function attackedBy(b, x, y, o) {
+  const at = (px, py) => ok4(px, py) ? b[i4(px, py)] : null;
+  for (const [dx, dy] of KN4) { const p = at(x + dx, y + dy); if (p && p.c === o && !p.dead && p.t === 'n') return true; }
+  for (const [dx, dy] of ORTH4.concat(DIAG4)) {
+    const diag = dx !== 0 && dy !== 0;
+    for (let k = 1; ; k++) {
+      const px = x + dx * k, py = y + dy * k;
+      if (!ok4(px, py)) break;
+      const p = b[i4(px, py)];
+      if (!p) continue;
+      if (p.c === o && !p.dead && (p.t === 'q' || (diag ? p.t === 'b' : p.t === 'r') || (k === 1 && p.t === 'k'))) return true;
+      break;
+    }
+  }
+  const [fx, fy] = FWD4[o], sides = fx === 0 ? [[1, 0], [-1, 0]] : [[0, 1], [0, -1]];
+  for (const [sx, sy] of sides) { const p = at(x - fx - sx, y - fy - sy); if (p && p.c === o && !p.dead && p.t === 'p') return true; }
+  return false;
+}
+const attackedByAny = (st, x, y, c) => [0, 1, 2, 3].some(o => o !== c && st.alive[o] && attackedBy(st.b, x, y, o));
+const inCheck4 = (st, c) => attackedByAny(st, st.kp[c][0], st.kp[c][1], c);
+
+function castle4(st, x, y, c, out) {
+  const b = st.b, ik = (c === 0 || c === 2) ? x - 3 : y - 3, home = line4(c, ik);
+  if (home[0] !== x || home[1] !== y || inCheck4(st, c)) return;
+  for (const dir of [-1, 1]) {
+    const ri = dir < 0 ? 0 : 7, [rx, ry] = line4(c, ri), rook = b[i4(rx, ry)];
+    if (!rook || rook.t !== 'r' || rook.c !== c || rook.dead || rook.moved) continue;
+    let clear = true;
+    for (let i = Math.min(ik, ri) + 1; i < Math.max(ik, ri); i++) { const [ex, ey] = line4(c, i); if (b[i4(ex, ey)]) { clear = false; break; } }
+    if (!clear) continue;
+    const safe = [1, 2].every(k => { const [sx, sy] = line4(c, ik + dir * k); return !attackedByAny(st, sx, sy, c); });
+    if (safe) { const [tx, ty] = line4(c, ik + 2 * dir); out.push([tx, ty]); }
+  }
+}
+
+function pseudo4(st, x, y) {
+  const b = st.b, p = b[i4(x, y)], c = p.c, out = [];
+  const step = (tx, ty) => { if (!ok4(tx, ty)) return false; const q = b[i4(tx, ty)]; if (q && q.c === c) return false; out.push([tx, ty]); return !q; };
+  if (p.t === 'p') {
+    const [fx, fy] = FWD4[c], side = fx === 0 ? [[1, 0], [-1, 0]] : [[0, 1], [0, -1]];
+    const ox = x + fx, oy = y + fy;
+    if (ok4(ox, oy) && !b[i4(ox, oy)]) {
+      out.push([ox, oy]);
+      const start = c === 0 ? y === 1 : c === 1 ? x === 1 : c === 2 ? y === 12 : x === 12;
+      const tx = ox + fx, ty = oy + fy;
+      if (start && ok4(tx, ty) && !b[i4(tx, ty)]) out.push([tx, ty]);
+    }
+    for (const [sx, sy] of side) {
+      const tx = x + fx + sx, ty = y + fy + sy;
+      if (ok4(tx, ty)) { const q = b[i4(tx, ty)]; if (q && q.c !== c) out.push([tx, ty]); }
+    }
+  } else if (p.t === 'n') {
+    for (const [dx, dy] of KN4) step(x + dx, y + dy);
+  } else if (p.t === 'k') {
+    for (const [dx, dy] of ORTH4.concat(DIAG4)) step(x + dx, y + dy);
+    if (!p.moved) castle4(st, x, y, c, out);
+  } else {
+    const dirs = p.t === 'r' ? ORTH4 : p.t === 'b' ? DIAG4 : ORTH4.concat(DIAG4);
+    for (const [dx, dy] of dirs) for (let k = 1; step(x + dx * k, y + dy * k); k++);
+  }
+  return out;
+}
+
+function make4(st, fx, fy, tx, ty) {
+  const b = st.b, p = b[i4(fx, fy)], cap = b[i4(tx, ty)];
+  const rec = {fx, fy, tx, ty, p, cap, pm: p.moved, pt: p.t, rook: null, kp: null};
+  b[i4(tx, ty)] = p; b[i4(fx, fy)] = null; p.moved = true;
+  if (p.t === 'k') {
+    rec.kp = st.kp[p.c]; st.kp[p.c] = [tx, ty];
+    const dx = tx - fx, dy = ty - fy;
+    if (Math.abs(dx) + Math.abs(dy) === 2 && (dx === 0 || dy === 0)) {          // castling: the rook hops over the king
+      const sx = Math.sign(dx), sy = Math.sign(dy);
+      let rx = tx + sx, ry = ty + sy;
+      while (ok4(rx, ry) && !b[i4(rx, ry)]) { rx += sx; ry += sy; }
+      const r = b[i4(rx, ry)], mx = fx + sx, my = fy + sy;
+      rec.rook = {r, rx, ry, mx, my, rm: r.moved};
+      b[i4(mx, my)] = r; b[i4(rx, ry)] = null; r.moved = true;
+    }
+  }
+  if (p.t === 'p' && promo4(p.c, tx, ty)) { p.t = 'q'; p.promoted = true; }
+  return rec;
+}
+function unmake4(st, rec) {
+  const b = st.b, p = rec.p;
+  if (rec.pt === 'p') { p.t = 'p'; delete p.promoted; }
+  b[i4(rec.fx, rec.fy)] = p; b[i4(rec.tx, rec.ty)] = rec.cap; p.moved = rec.pm;
+  if (rec.kp) st.kp[p.c] = rec.kp;
+  if (rec.rook) { const q = rec.rook; b[i4(q.rx, q.ry)] = q.r; b[i4(q.mx, q.my)] = null; q.r.moved = q.rm; }
+}
+
+function legal4(st, c) {
+  const res = [];
+  for (let y = 0; y < B4; y++) for (let x = 0; x < B4; x++) {
+    const p = st.b[i4(x, y)];
+    if (!p || p.c !== c || p.dead) continue;
+    for (const [tx, ty] of pseudo4(st, x, y)) {
+      const rec = make4(st, x, y, tx, ty);
+      const ok = !inCheck4(st, c);
+      unmake4(st, rec);
+      if (ok) res.push([x, y, tx, ty]);
+    }
+  }
+  return res;
+}
+
+const alive4 = st => st.alive.filter(Boolean).length;
+function kill4(st, c, why) {
+  st.alive[c] = false; st.out.push(c);
+  for (const p of st.b) if (p && p.c === c) p.dead = true;
+  st.events.push({t: why, c});
+}
+// Work out who moves next, eliminating anyone who is checkmated or stalemated on the way.
+function settle4(st, last) {
+  let c = last;
+  for (;;) {
+    if (alive4(st) <= 1) { st.turn = -1; return; }
+    do { c = (c + 1) % 4; } while (!st.alive[c]);
+    if (legal4(st, c).length) { st.turn = c; return; }
+    const mate = inCheck4(st, c);
+    if (mate) st.score[last] += 20; else st.score[c] += 20;
+    kill4(st, c, mate ? 'mate' : 'stalemate');
+    st.events[st.events.length - 1].by = last;
+  }
+}
+
+// Apply one move token ("h2h4") or resignation ("R2"). Returns false if it is not allowed.
+function play4(st, tok) {
+  if (st.turn < 0) return false;
+  st.events = [];
+  if (tok[0] === 'R' || tok[0] === 'T') {                          // "R2" = seat 2 resigns, "T2" = seat 2 ran out of time
+    const c = +tok.slice(1);
+    if (!(c >= 0 && c < 4) || !st.alive[c]) return false;
+    kill4(st, c, tok[0] === 'R' ? 'resign' : 'timeout'); st.hist.push(tok); st.lastMove = null;
+    if (alive4(st) <= 1) st.turn = -1; else if (st.turn === c) settle4(st, c);
+    return true;
+  }
+  const m = parse4(tok);
+  if (!m) return false;
+  const [fx, fy, tx, ty] = m, c = st.turn, p = st.b[i4(fx, fy)];
+  if (!p || p.c !== c || p.dead) return false;
+  if (!legal4(st, c).some(l => l[0] === fx && l[1] === fy && l[2] === tx && l[3] === ty)) return false;
+  const cap = st.b[i4(tx, ty)], wasPawn = p.t === 'p';
+  const rec = make4(st, fx, fy, tx, ty);
+  if (cap && !cap.dead) st.score[c] += cap.promoted ? 1 : PTS4[cap.t];
+  st.quiet = (cap || wasPawn) ? 0 : st.quiet + 1;
+  st.hist.push(tok);
+  st.lastMove = {from: [fx, fy], to: [tx, ty], cap: !!cap, promo: rec.pt === 'p' && p.t === 'q', castle: !!rec.rook, by: c};
+  if (st.quiet >= (alive4(st) <= 2 ? 50 : 100)) { st.draw = true; st.turn = -1; } else settle4(st, c);
+  return true;
+}
+function replay4(tokens) {
+  const st = new4();
+  for (const t of tokens) if (!play4(st, t)) break;
+  return st;
+}
+const tok4 = m => sq4(m[0], m[1]) + sq4(m[2], m[3]);
+// final standings, best first (a draw shares first place). "out" is the knock-out order, first out first: ratings use it.
+function standings4(st) {
+  if (st.draw) return {draw: true, order: [0, 1, 2, 3].filter(c => st.alive[c]), out: st.out.slice()};
+  return {draw: false, order: [0, 1, 2, 3].filter(c => st.alive[c]).concat(st.out.slice().reverse()), out: st.out.slice(), botsOnly: !!st.botsEnd};
+}
+const seatOf4 = (tok, st) => (tok[0] === 'R' || tok[0] === 'T') ? +tok.slice(1) : st.turn;
+
+// A simple bot: grabs material, avoids leaving pieces where they can be taken, hunts checks and mates, develops
+// and pushes pawns. Not strong, but it plays purposefully.
+function bot4Move(st, c) {
+  const moves = legal4(st, c);
+  if (!moves.length) return null;
+  let best = null, bs = -1e9;
+  for (const m of moves) {
+    const [fx, fy, tx, ty] = m, p = st.b[i4(fx, fy)], cap = st.b[i4(tx, ty)];
+    const val = PTS4[p.t] || 0.5;
+    let s = Math.random() * 0.6;
+    if (cap && !cap.dead) s += (cap.promoted ? 1 : PTS4[cap.t]) * 1.15;
+    const wasHit = p.t !== 'k' && attackedByAny(st, fx, fy, c);
+    const rec = make4(st, fx, fy, tx, ty);
+    if (p.t !== 'k' && attackedByAny(st, tx, ty, c)) s -= val * 0.9;
+    if (wasHit) s += val * 0.5;
+    if (rec.pt === 'p' && p.t === 'q') s += 8;
+    if (rec.rook) s += 0.7;
+    for (let o = 0; o < 4; o++) {
+      if (o === c || !st.alive[o] || !inCheck4(st, o)) continue;
+      s += 1;
+      if (legal4(st, o).length === 0) s += 25;                    // that is checkmate
+    }
+    if (p.t !== 'k') for (const [ax, ay] of pseudo4(st, tx, ty)) {   // what the moved piece now attacks
+      const q = st.b[i4(ax, ay)];
+      if (q && !q.dead && q.c !== c) s += (PTS4[q.t] || 0) * 0.2;
+    }
+    unmake4(st, rec);
+    if (!p.moved && (p.t === 'n' || p.t === 'b')) s += 0.35;
+    if (p.t === 'p') s += 0.25;
+    if (p.t === 'k' && !rec.rook) s -= 0.4;
+    s += (6.5 - Math.max(Math.abs(tx - 6.5), Math.abs(ty - 6.5))) * 0.04;
+    if (s > bs) { bs = s; best = m; }
+  }
+  return best;
+}
+// </p4>
+
+/* ═════════════ 4-player chess: screen ═════════════ */
+const G4 = {on: false, mode: null, st: null, log: [], me: -1, orient: 0, sel: null, targets: [], names: ['', '', '', ''],
+  bots: [false, false, false, false], over: null, overShown: false, review: null, online: null, botTimer: null, sfxPly: -1, lastTurnAt: 0, tickT: null,
+  tc: 0, clk: [0, 0, 0, 0], since: 0, lastBars: 0, tlock: 0};
+// the board is turned so that your own colour is at the bottom
+const G4COL = ['#ee7a6f', '#62b5ff', '#f2c94c', '#59c38e'];
+const toBoard4 = (o, sx, sy) => o === 0 ? [sx, sy] : o === 1 ? [sy, 13 - sx] : o === 2 ? [13 - sx, 13 - sy] : [13 - sy, sx];
+
+function logEntry4(st, tok, c) {
+  let txt;
+  if (tok[0] === 'R') txt = 'resigned';
+  else if (tok[0] === 'T') txt = 'ran out of time';
+  else {
+    const m = st.lastMove;
+    txt = sq4(m.from[0], m.from[1]) + (m.cap ? ' x ' : ' to ') + sq4(m.to[0], m.to[1]) + (m.promo ? ' (queen)' : '') + (m.castle ? ' (castles)' : '');
+  }
+  st.events.forEach(e => {
+    if (e.t === 'mate') txt += `. ${C4[e.c]} is checkmated`;
+    else if (e.t === 'stalemate') txt += `. ${C4[e.c]} is stalemated`;
+  });
+  return {c, tok, txt};
+}
+function rebuild4(tokens) {
+  const st = new4(), log = [];
+  for (const t of tokens) {
+    const c = seatOf4(t, st);
+    if (!play4(st, t)) break;
+    log.push(logEntry4(st, t, c));
+  }
+  return {st, log};
+}
+
+function start4(mode, tc) {
+  teardownOnline();
+  S.mode = 'p4'; S.game = null;
+  Object.assign(G4, {on: true, mode, st: new4(), log: [], sel: null, targets: [], over: null, overShown: false, endPlayed: false, review: null, online: null, sfxPly: -1, lastTurnAt: Date.now(),
+    tc: tc || 0, clk: [0, 1, 2, 3].map(() => (tc || 0) * 1000), since: Date.now(), tlock: 0});
+  clearInterval(G4.tickT); G4.tickT = setInterval(tick4, 100);
+  if (mode === 'bots') {
+    const pool = UNIQUE_BOT_NAMES.slice().sort(() => Math.random() - 0.5);
+    G4.me = 0; G4.orient = 0;
+    G4.names = [S.profile ? S.profile.username : 'You', pool[0], pool[1], pool[2]];
+    G4.bots = [false, true, true, true];
+  } else {
+    G4.me = -1; G4.orient = 0; G4.names = C4.slice(); G4.bots = [false, false, false, false];
+  }
+  showView('game4'); render4(); maybeBot4();
+}
+
+function teardown4() {
+  clearTimeout(G4.botTimer);
+  const o = G4.online;
+  if (o) { if (o.channel) sb.removeChannel(o.channel); clearInterval(o.poll); }
+  clearInterval(G4.tickT);
+  G4.on = false; G4.online = null; G4.review = null; G4.mode = null;
+}
+
+// When everyone still in the game is a bot, nobody is left to play: the game ends on the spot.
+// (Survivors share first place; the humans finish below them, in reverse order of being knocked out.)
+function endIfOnlyBots4() {
+  const st = G4.st;
+  if (!G4.on || !st || st.turn < 0 || G4.mode === 'local') return false;
+  if (G4.mode === 'online' && G4.online.row.status !== 'active') return false;
+  if (![0, 1, 2, 3].some(c => !G4.bots[c] && G4.names[c])) return false;      // a game with no human seats has nothing to end
+  if ([0, 1, 2, 3].some(c => st.alive[c] && !G4.bots[c])) return false;       // somebody human is still in
+  st.turn = -1; st.botsEnd = true;
+  return true;
+}
+
+function canMove4() {
+  const st = G4.st;
+  if (!G4.on || !st || G4.over || G4.review || st.turn < 0) return false;
+  if (G4.mode === 'local') return true;
+  if (G4.mode === 'bots') return st.turn === G4.me;
+  const o = G4.online;
+  return !!o && o.row.status === 'active' && !o.busy && st.turn === G4.me;
+}
+
+function viewState4() { return G4.review ? replay4(G4.st.hist.slice(0, G4.review.ply)) : G4.st; }
+
+function render4() {
+  // work out whether the game is over first, so the status line never looks at a finished position
+  if (!G4.over && G4.st.turn < 0 && (G4.mode !== 'online' || G4.online.row.status !== 'waiting')) {
+    G4.over = G4.online && G4.online.row.result ? G4.online.row.result : standings4(G4.st);
+  }
+  const st = viewState4();
+  renderBoard4(st); renderBars4(st); renderSide4(st);
+  syncSfx4(); syncReviewSfx4();
+  if (G4.over && !G4.overShown && !G4.review) showOver4();
+}
+
+function renderBoard4(st) {
+  const chk = new Set(), last = st.lastMove;
+  for (let c = 0; c < 4; c++) if (st.alive[c] && inCheck4(st, c)) chk.add(i4(st.kp[c][0], st.kp[c][1]));
+  let html = '';
+  for (let sy = 13; sy >= 0; sy--) for (let sx = 0; sx < 14; sx++) {
+    const [x, y] = toBoard4(G4.orient, sx, sy);
+    if (!ok4(x, y)) { html += '<div class="sq void"></div>'; continue; }
+    const p = st.b[i4(x, y)];
+    let cls = 'sq ' + ((x + y) % 2 === 0 ? 'dark' : 'light');
+    if (last && ((last.from[0] === x && last.from[1] === y) || (last.to[0] === x && last.to[1] === y))) cls += ' last';
+    if (G4.sel && G4.sel[0] === x && G4.sel[1] === y) cls += ' sel';
+    if (G4.targets.some(t => t[0] === x && t[1] === y)) cls += ' target' + (p ? ' cap' : '');
+    if (chk.has(i4(x, y))) cls += ' check';
+    html += `<div class="${cls}" data-x="${x}" data-y="${y}">${p ? `<span class="pc p${p.c}${p.dead ? ' dead' : ''}">${GLYPH[p.t]}</span>` : ''}</div>`;
+  }
+  $('board4').innerHTML = html;
+}
+
+/* 4-player clocks. Each player's first turn is free; after that time is charged to whoever is on the move.
+   Online games keep the clocks in the database (the server checks every move and every timeout);
+   games against bots and pass-and-play keep them here. */
+const tc4 = () => G4.mode === 'online' && G4.online ? G4.online.row.time_control : G4.tc;
+function runSeat4() {
+  const st = G4.st;
+  if (!G4.on || !st || G4.over || st.turn < 0 || !tc4()) return -1;
+  if (G4.mode === 'online') { const r = G4.online.row; if (r.status !== 'active' || r.moves.length < 4) return -1; }
+  else if (st.hist.length < 4) return -1;
+  return st.turn;
+}
+function clk4(c) {
+  if (G4.mode === 'online') {
+    const r = G4.online.row;
+    let ms = (r.clocks && r.clocks[c] != null) ? r.clocks[c] : tc4() * 1000;
+    if (runSeat4() === c) ms -= serverNow() - tsMs(r.turn_started_at);
+    return Math.max(0, ms);
+  }
+  let ms = G4.clk[c];
+  if (runSeat4() === c) ms -= Date.now() - G4.since;
+  return Math.max(0, ms);
+}
+function tick4() {
+  if (!G4.on || !G4.st || G4.review) return;
+  if (tc4()) {
+    const run = runSeat4();
+    document.querySelectorAll('.clk4').forEach(el => {
+      const c = +el.dataset.c, ms = clk4(c);
+      el.textContent = fmtClock(ms);
+      el.classList.toggle('low', ms < 10000);
+      el.classList.toggle('run', run === c);
+    });
+    if (run >= 0 && clk4(run) <= 0 && Date.now() > G4.tlock) {
+      G4.tlock = Date.now() + 1500;             // the server decides for online games, so retry until it agrees
+      commit4('T' + run);
+    }
+  }
+  if (Date.now() - G4.lastBars > 5000) { G4.lastBars = Date.now(); renderBars4(viewState4()); }   // shows "Replace with bot" once someone is slow
+}
+// 2-player ratings: Bullet and Blitz have their own; Original, Long and untimed share the Standard one ("rating")
+const RATING2 = {60: ['rating_bullet', 'Bullet'], 180: ['rating_blitz', 'Blitz']};
+const rating2Col = tc => (RATING2[tc] || ['rating'])[0];
+const rating2Name = tc => (RATING2[tc] || [0, 'Standard'])[1];
+const ratingOf = (p, tc) => p ? (p[rating2Col(tc)] != null ? p[rating2Col(tc)] : p.rating) : '';
+// Titles and classes by rating, shown next to names
+const TITLES = [
+  [2700, 'sgm', 'Super GM', 'Super Grandmaster (informal)'],
+  [2500, 'gm', 'GM', 'Grandmaster (GM)'],
+  [2400, 'im', 'IM', 'International Master (IM)'],
+  [2300, 'fm', 'FM', 'FIDE Master (FM)'],
+  [2200, 'cm', 'CM', 'Candidate Master / National Master'],
+  [2000, 'ex', 'Expert', 'Expert'],
+  [1800, 'ca', 'Class A', 'Class A'],
+  [1600, 'cb', 'Class B', 'Class B'],
+  [1400, 'cc', 'Class C', 'Class C'],
+  [1200, 'cd', 'Class D', 'Class D'],
+  [1000, 'ce', 'Class E', 'Class E'],
+  [-Infinity, 'nv', 'Novice', 'Novice / Beginner']
+];
+const chessTitle = r => { const t = TITLES.find(x => r >= x[0]); return {cls: t[1], short: t[2], full: t[3]}; };
+const titleBadge = (r, long) => {
+  if (r == null || r === '' || isNaN(+r)) return '';
+  const t = chessTitle(+r);
+  return `<span class="ttl t-${t.cls}" title="${esc(t.full)}">${esc(long ? t.full : t.short)}</span>`;
+};
+const bestRating = p => p ? Math.max(p.rating || 0, p.rating_bullet || 0, p.rating_blitz || 0) : 0;   // a player's title follows their best 2-player rating
+const RATING4 = {60: ['rating4_bullet', 'Bullet'], 180: ['rating4_blitz', 'Blitz'], 300: ['rating4_std', 'Standard'], 600: ['rating4_std', 'Standard']};
+
+function seatName4(c) {
+  const o = G4.online;
+  if (o && o.row.status === 'waiting' && !G4.names[c]) return 'Empty seat';
+  return G4.names[c] || C4[c];
+}
+
+function renderBars4(st) {
+  const o = G4.online, host = !!(o && S.user && o.row.creator_id === S.user.id);
+  $('p4bar').innerHTML = [0, 1, 2, 3].map(c => {
+    const out = !st.alive[c], turn = !G4.over && !G4.review && st.turn === c && (!o || o.row.status === 'active');
+    const chk = st.alive[c] && inCheck4(st, c) && !G4.over;
+    const human = !G4.bots[c] && !!G4.names[c];
+    const stale = host && o.row.status === 'active' && turn && human && c !== G4.me && Date.now() - G4.lastTurnAt > 40000;
+    const tags = (G4.bots[c] ? '<span class="tag">bot</span>' : '') + (c === G4.me ? '<span class="tag">you</span>' : '') +
+      (out ? '<span class="tag">out</span>' : '') + (chk ? '<span class="tag chk">check</span>' : '');
+    const ms = tc4() && !G4.review ? clk4(c) : -1;
+    const clk = ms >= 0 ? `<span class="clk clk4${runSeat4() === c ? ' run' : ''}${ms < 10000 ? ' low' : ''}" data-c="${c}">${fmtClock(ms)}</span>` : '';
+    return `<div class="p4chip${turn ? ' turn' : ''}${out ? ' out' : ''}" style="--pc:${G4COL[c]}"><span class="dotc"></span><span class="p4n">${esc(seatName4(c))}</span><span class="p4c">${C4[c]}</span>${clk}<span class="pts" title="Points">${st.score[c]}</span>${tags}${stale ? `<button class="btn sm ghost" data-a4="bot" data-seat="${c}" type="button">Replace with bot</button>` : ''}</div>`;
+  }).join('');
+}
+
+function statusText4(st) {
+  const o = G4.online;
+  if (G4.review) return G4.review.ply === 0 ? 'Overview: starting position.' : `Overview: after move ${G4.review.ply} of ${G4.st.hist.length}.`;
+  if (G4.over) {
+    const ov = G4.over;
+    if (ov.draw) return 'Draw. Nobody could make progress.';
+    if (ov.botsOnly) {
+      const pl = ov.order.indexOf(G4.me);
+      return 'Only bots are left, so the game ended.' + (pl >= 0 ? ` You finished ${['1st', '2nd', '3rd', '4th'][pl]}.` : '');
+    }
+    const w = ov.order[0];
+    if (G4.mode === 'local') return `${C4[w]} wins.`;
+    if (G4.me === w) return 'You win.';
+    const place = ov.order.indexOf(G4.me);
+    return place > 0 ? `${seatName4(w)} wins. You finished ${['1st', '2nd', '3rd', '4th'][place]}.` : `${seatName4(w)} wins.`;
+  }
+  if (o && o.row.status === 'waiting') return o.row.creator_id === S.user.id ? 'Waiting for players. Start when you are ready; empty seats get bots.' : 'Waiting for the host to start the game.';
+  const c = st.turn, ev = st.events.map(e => e.t === 'mate' ? `${C4[e.c]} was checkmated (+20 to ${C4[e.by]}).` : e.t === 'stalemate' ? `${C4[e.c]} was stalemated.` : e.t === 'resign' ? `${C4[e.c]} resigned.` : e.t === 'timeout' ? `${C4[e.c]} ran out of time.` : '').filter(Boolean).join(' ');
+  const mine = G4.mode === 'local' ? `${C4[c]} to move.` : (c === G4.me ? 'Your move.' : `${seatName4(c)} to move.`);
+  return (ev ? ev + ' ' : '') + mine + (inCheck4(st, c) ? ' Check.' : '');
+}
+
+function renderSide4(st) {
+  const s = $('status4');
+  s.textContent = statusText4(st);
+  s.className = 'status' + (G4.over ? ' done' : '');
+
+  const o = G4.online, inv = $('invite4');
+  if (o && o.row.status === 'waiting') {
+    inv.classList.remove('hidden');
+    inv.innerHTML = `<div class="muted">${esc(tcLabel(o.row.time_control))}${o.row.time_control ? ', rated when 2 or more account players take part' : ', unrated'}</div><div class="muted">Share this code or the link${o.row.allow_guests ? '. Guests can join without an account' : ''}</div><div class="big">${esc(o.row.code)}</div><div class="row"><button class="btn sm primary" id="copy-link4" type="button">Copy invite link</button><button class="btn sm ghost" id="copy4" type="button">Copy code</button></div>`;
+    $('copy-link4').onclick = () => copyInviteLink(o.row.code);
+    $('copy4').onclick = () => { if (navigator.clipboard) navigator.clipboard.writeText(o.row.code).then(() => toast('Code copied.')); };
+  } else inv.classList.add('hidden');
+
+  const rp = G4.review ? G4.review.ply : -1;
+  $('moves4').innerHTML = G4.log.map((e, i) => `<li${rp === i + 1 ? ' class="cur"' : ''}><span class="dotc" style="background:${G4COL[e.c]}"></span><span>${esc(e.txt)}</span></li>`).join('');
+  const ml = $('moves4');
+  if (G4.review) { const cur = ml.querySelector('.cur'); if (cur) ml.scrollTop = Math.max(0, cur.offsetTop - ml.clientHeight / 2); } else ml.scrollTop = ml.scrollHeight;
+
+  const c = $('controls4'); c.innerHTML = '';
+  const add = (label, fn, cls) => { const b = document.createElement('button'); b.type = 'button'; b.className = 'btn ' + (cls || ''); b.textContent = label; b.onclick = fn; c.appendChild(b); return b; };
+  const total = G4.st.hist.length;
+  if (G4.review) {
+    const r = G4.review;
+    add('First', () => setPly4(0)).disabled = r.ply === 0;
+    add('Back', () => setPly4(r.ply - 1)).disabled = r.ply === 0;
+    add('Next', () => setPly4(r.ply + 1)).disabled = r.ply === total;
+    add('Last', () => setPly4(total)).disabled = r.ply === total;
+    add('Exit overview', () => { G4.review = null; render4(); }, 'primary');
+    return;
+  }
+  if (o && o.row.status === 'waiting' && o.row.creator_id === S.user.id) add('Start game', start4Online, 'primary');
+  if (G4.over && total) add('Overview', () => { G4.review = {ply: total, sfxPly: null}; render4(); }, 'primary');
+  add('Rotate board', () => { G4.orient = (G4.orient + 1) % 4; render4(); });
+  if (!o && !G4.over) add('New game', () => start4(G4.mode, G4.tc));
+  if (o && o.row.status === 'active' && !G4.over && G4.me >= 0 && st.alive[G4.me]) add('Resign', confirmResign4, 'danger');
+  add('Rules', showRules4, 'ghost');
+  add('Back to lobby', leaveGame, 'ghost');
+}
+function setPly4(p) { if (!G4.review) return; G4.review.ply = Math.max(0, Math.min(G4.st.hist.length, p)); render4(); }
+
+function showRules4() {
+  modal('4-player chess', `<ul class="rules">
+    <li>Four players share a 14 by 14 board. Red starts at the bottom, then Blue (left), Yellow (top) and Green (right). Turns go clockwise.</li>
+    <li>Pieces move as in normal chess. Pawns march toward the opposite side and become queens on the 11th rank or file. Castling is allowed. There is no en passant.</li>
+    <li>You must get out of check. If you have no legal move you are out: checkmate gives the player who did it 20 points, stalemate gives you 20.</li>
+    <li>An eliminated player's pieces turn grey. They stay in the way and can be captured for no points.</li>
+    <li>Captures score points: pawn 1, knight 3, bishop 5, rook 5, queen 9. The last player standing wins, and points are just for bragging rights.</li>
+    <li>If 100 moves pass with no capture or pawn move (50 once two players are left), the game is a draw.</li>
+    <li>Timed games: each player's first turn is free, then your clock runs on your turn. If it hits zero you are out, like a resignation.</li>
+    <li>Ratings: timed online games count if at least 2 players have accounts (bots and guests are ignored). Everyone starts at 100. Bullet and Blitz are separate ratings, and Original and Long share one. Finishing above another player counts as a win against them.</li></ul>`, [{label: 'Got it', cls: 'primary'}], true);
+}
+function showOver4() {
+  const o = G4.over;
+  if (!o || G4.overShown) return;
+  G4.overShown = true;
+  const nm = c => G4.names[c] || C4[c];
+  const list = o.draw ? `<p>A draw between ${o.order.map(c => C4[c]).join(', ')}.</p>` : `<ol>${o.order.map((c, i) => `<li>${['1st', '2nd', '3rd', '4th'][i]}: ${esc(nm(c))} (${C4[c]})</li>`).join('')}</ol>`;
+  const rated = G4.mode === 'online' && tc4() > 0;
+  modal(o.draw ? 'Draw' : o.botsOnly ? 'Game over' : `${nm(o.order[0])} wins`, `${list}${o.botsOnly ? '<p class="muted small">Everyone still in the game was a bot, so it ended automatically.</p>' : ''}<p class="muted small">Points: ${[0, 1, 2, 3].map(c => `${C4[c]} ${G4.st.score[c]}`).join(', ')}.${rated ? '' : ' This game is unrated.'}</p>`, [
+    {label: 'Overview', cls: 'primary', onClick: () => { G4.review = {ply: G4.st.hist.length, sfxPly: null}; render4(); }},
+    {label: 'Close', cls: 'ghost'}
+  ], true);
+}
+function confirmResign4() {
+  modal('Resign this game?', '<p>Your pieces turn grey and stay on the board. The game goes on without you.</p>', [
+    {label: 'Resign', cls: 'danger', onClick: () => { commit4('R' + G4.me); }},
+    {label: 'Keep playing'}
+  ]);
+}
+
+// sounds: one per move, plus the result
+// Same idea for the 4-player Overview: rebuilds the position at each step to read what happened there.
+function syncReviewSfx4() {
+  if (!G4.review) return;
+  const ply = G4.review.ply, prev = G4.review.sfxPly;
+  G4.review.sfxPly = ply;
+  if (prev == null || prev === ply || ply <= 0) return;
+  const st = replay4(G4.st.hist.slice(0, ply)), m = st.lastMove, ev = st.events;
+  if (ev.some(e => e.t === 'mate' || e.t === 'stalemate')) sfx('check');
+  else if ([0, 1, 2, 3].some(c => st.alive[c] && inCheck4(st, c))) sfx('check');
+  else if (m && m.cap) sfx('capture');
+  else if (m && m.castle) sfx('castle');
+  else if (m && m.promo) sfx('promote');
+  else sfx('move');
+  if (ply === G4.st.hist.length && G4.over) {
+    setTimeout(() => sfx(G4.over.draw ? 'draw' : (G4.mode === 'local' || G4.over.order[0] === G4.me) ? 'win' : 'lose'), 280);
+  }
+}
+
+function syncSfx4() {
+  if (G4.review) return;
+  const st = G4.st, n = st.hist.length, grew = G4.sfxPly >= 0 && n > G4.sfxPly;
+  G4.sfxPly = n;
+  if (grew) {
+    const m = st.lastMove, ev = st.events;
+    if (ev.some(e => e.t === 'mate' || e.t === 'stalemate')) sfx('check');
+    else if ([0, 1, 2, 3].some(c => st.alive[c] && inCheck4(st, c))) sfx('check');
+    else if (m && m.cap) sfx('capture');
+    else if (m && m.castle) sfx('castle');
+    else if (m && m.promo) sfx('promote');
+    else sfx('move');
+  }
+  if (G4.over && !G4.endPlayed) {
+    G4.endPlayed = true;
+    setTimeout(() => sfx(G4.over.draw ? 'draw' : (G4.mode === 'local' || G4.over.order[0] === G4.me) ? 'win' : 'lose'), grew ? 280 : 0);
+  }
+}
+
+function onBoard4(e) {
+  const el = e.target.closest('.sq');
+  if (!el || el.classList.contains('void') || !canMove4()) return;
+  const x = +el.dataset.x, y = +el.dataset.y, st = G4.st;
+  if (G4.sel && G4.targets.some(t => t[0] === x && t[1] === y)) return commit4(tok4([G4.sel[0], G4.sel[1], x, y]));
+  const p = st.b[i4(x, y)];
+  if (p && p.c === st.turn && !p.dead && !(G4.sel && G4.sel[0] === x && G4.sel[1] === y)) {
+    G4.sel = [x, y];
+    G4.targets = legal4(st, st.turn).filter(l => l[0] === x && l[1] === y).map(l => [l[2], l[3]]);
+  } else { G4.sel = null; G4.targets = []; }
+  render4();
+}
+
+function commit4(tok) {
+  const st = G4.st, c = seatOf4(tok, st);
+  if (G4.mode !== 'online' && G4.tc) { const r = runSeat4(); if (r >= 0) G4.clk[r] = clk4(r); }   // bank the time used so far
+  if (!play4(st, tok)) return false;
+  G4.since = Date.now();
+  G4.log.push(logEntry4(st, tok, c));
+  G4.sel = null; G4.targets = []; G4.lastTurnAt = Date.now();
+  endIfOnlyBots4();
+  render4();
+  if (G4.mode === 'online') send4();
+  maybeBot4();
+  return true;
+}
+
+// bots think for a moment; in online games only the host's browser plays for them
+function maybeBot4() {
+  clearTimeout(G4.botTimer);
+  const st = G4.st;
+  if (!G4.on || !st || G4.over || G4.review || st.turn < 0) return;
+  const c = st.turn;
+  if (!G4.bots[c]) return;
+  if (G4.mode === 'online' && !(G4.online.row.status === 'active' && G4.online.row.creator_id === S.user.id)) return;
+  G4.botTimer = setTimeout(() => {
+    if (!G4.on || G4.st !== st || st.turn !== c || G4.review || G4.over) return;
+    const m = bot4Move(st, c);
+    if (m) commit4(tok4(m));
+  }, thinkMs(tc4()));
+}
+
+/* ═════════════ 4-player chess: online ═════════════ */
+const seatIds4 = row => row.seats.filter(s => s && s.indexOf('bot:') !== 0);
+function seatInfo4(row) {
+  G4.names = row.seats.map(s => !s ? '' : s.indexOf('bot:') === 0 ? s.slice(4) : nameOf(s));
+  G4.bots = row.seats.map(s => !!s && s.indexOf('bot:') === 0);
+  G4.me = row.seats.indexOf(S.user.id);
+}
+
+async function create4() {
+  const allow = $('p4-guests') ? $('p4-guests').checked : true;
+  const tc = $('seg-p4tc') ? +$('seg-p4tc').dataset.val : 0;
+  const {data, error} = await sb.from('games4').insert({creator_id: S.user.id, seats: [S.user.id, null, null, null], allow_guests: allow, time_control: tc}).select().single();
+  if (error) return toast(dbMsg(error), true);
+  open4Online(data);
+}
+async function join4(id) {
+  const {data, error} = await sb.rpc('join_game4', {gid: id});
+  const row = Array.isArray(data) ? data[0] : data;
+  if (error || !row) return toast(error ? dbMsg(error) : 'Could not join that game.', true);
+  open4Online(row);
+}
+async function open4Online(row) {
+  teardownOnline();
+  await fetchProfiles(seatIds4(row));
+  S.mode = 'p4'; S.game = null;
+  const r = rebuild4(row.moves);
+  Object.assign(G4, {on: true, mode: 'online', st: r.st, log: r.log, sel: null, targets: [], over: null, overShown: false, endPlayed: false, review: null,
+    online: {row, busy: false, settled: false, channel: null, poll: null}, sfxPly: -1, lastTurnAt: Date.parse(row.updated_at) || Date.now()});
+  seatInfo4(row);
+  G4.orient = Math.max(0, G4.me);
+  if (row.status === 'finished') { G4.over = row.result || standings4(r.st); G4.overShown = true; G4.endPlayed = true; }
+  const endedNow = endIfOnlyBots4();               // e.g. the last human left while the host was away
+  showView('game4'); render4();
+  if (endedNow && row.creator_id === S.user.id) send4();
+  const id = row.id;
+  G4.online.channel = sb.channel('g4-' + id)
+    .on('postgres_changes', {event: 'UPDATE', schema: 'public', table: 'games4', filter: 'id=eq.' + id}, p => applyRow4(p.new))
+    .subscribe();
+  G4.online.poll = setInterval(pollOnline4, 3000);
+  clearInterval(G4.tickT); G4.tickT = setInterval(tick4, 100);
+  maybeBot4();
+  if (G4.over) settle4Online();
+}
+async function pollOnline4() {
+  const o = G4.online;
+  if (!o || o.busy) return;
+  const {data} = await sb.from('games4').select('*').eq('id', o.row.id).maybeSingle();
+  if (data) applyRow4(data);
+}
+async function applyRow4(row) {
+  const o = G4.online;
+  if (!o || o.row.id !== row.id) return;
+  const cur = o.row, st = G4.st;
+  if (row.moves.length < cur.moves.length) return;
+  const same = row.moves.length === cur.moves.length && row.status === cur.status && JSON.stringify(row.seats) === JSON.stringify(cur.seats);
+  if (same) return;
+  await fetchProfiles(seatIds4(row));
+  if (G4.online !== o) return;
+  o.row = row;
+  seatInfo4(row);
+  if (row.moves.length > st.hist.length) {
+    if (st.hist.every((t, i) => t === row.moves[i])) {           // just play the new moves on top of what we have
+      for (let i = st.hist.length; i < row.moves.length; i++) {
+        const tok = row.moves[i], c = seatOf4(tok, st);
+        if (!play4(st, tok)) break;
+        G4.log.push(logEntry4(st, tok, c));
+      }
+    } else { const r = rebuild4(row.moves); G4.st = r.st; G4.log = r.log; }
+    G4.lastTurnAt = Date.now(); G4.sel = null; G4.targets = [];
+  }
+  endIfOnlyBots4();
+  if (row.status === 'finished' && !G4.over) G4.over = row.result || standings4(G4.st);
+  render4(); maybeBot4();
+  if (G4.over) settle4Online();
+}
+async function send4() {
+  const o = G4.online, st = G4.st;
+  o.busy = true;
+  const patch = {moves: st.hist.slice(), turn: Math.max(0, st.turn)};
+  if (st.turn < 0) { patch.status = 'finished'; patch.result = standings4(st); }
+  const {data, error} = await sb.from('games4').update(patch).eq('id', o.row.id).eq('status', 'active').select().single();
+  o.busy = false;
+  if (G4.online !== o) return;
+  if (error) { toast(dbMsg(error), true); return resync4(); }
+  o.row = data;
+  if (st.turn < 0) { G4.over = patch.result; render4(); settle4Online(); }
+}
+async function resync4() {
+  const o = G4.online;
+  if (!o) return;
+  const {data} = await sb.from('games4').select('*').eq('id', o.row.id).maybeSingle();
+  if (!data || G4.online !== o) return;
+  o.row = data; seatInfo4(data);
+  const r = rebuild4(data.moves);
+  G4.st = r.st; G4.log = r.log; G4.sel = null; G4.targets = [];
+  if (data.status === 'finished') G4.over = data.result || standings4(r.st);
+  const endedNow = endIfOnlyBots4();
+  render4(); maybeBot4();
+  if (endedNow && data.creator_id === S.user.id) send4();
+}
+async function settle4Online() {
+  const o = G4.online;
+  if (!o || o.settled) return;
+  o.settled = true;
+  clearInterval(o.poll);
+  const rc = RATING4[o.row.time_control], before = rc && S.profile ? S.profile[rc[0]] : null;
+  await sb.rpc('acknowledge_game4', {gid: o.row.id});    // records the ratings, and deletes the game once everyone has seen it
+  if (!rc || before == null) return;
+  await loadProfile();
+  const after = S.profile ? S.profile[rc[0]] : before;
+  if (after !== before) toast(`4-player ${rc[1]} rating ${before} to ${after} (${after > before ? '+' : ''}${after - before})`);
+}
+async function start4Online() {
+  const o = G4.online;
+  const names = UNIQUE_BOT_NAMES.slice().sort(() => Math.random() - 0.5).slice(0, 3);
+  const {data, error} = await sb.rpc('start_game4', {gid: o.row.id, bot_names: names});
+  const row = Array.isArray(data) ? data[0] : data;
+  if (error || !row) return toast(error ? dbMsg(error) : 'Could not start the game.', true);
+  G4.lastTurnAt = Date.now();
+  applyRow4(row);
+}
+async function replaceWithBot4(seat) {
+  const o = G4.online;
+  const {data, error} = await sb.rpc('replace_with_bot4', {gid: o.row.id, seat, bot_name: pick(UNIQUE_BOT_NAMES)});
+  if (error) return toast(dbMsg(error), true);
+  const row = Array.isArray(data) ? data[0] : data;
+  if (row) { await applyRow4(row); toast('That seat is now played by a bot.'); }
+}
+
+/* ═════════════ 4-player chess: lobby ═════════════ */
+// only one of Single / Multi / 4 Player is open at a time
+function toggleAcc(id) {
+  document.querySelectorAll('.acc').forEach(a => {
+    const h = a.querySelector('.acc-h'), open = a.id === id && h.getAttribute('aria-expanded') !== 'true';
+    h.setAttribute('aria-expanded', String(open));
+    a.querySelector('.acc-b').hidden = !open;
+    a.classList.toggle('open', open);
+  });
+}
+function openAcc(id) {
+  document.querySelectorAll('.acc').forEach(a => {
+    const h = a.querySelector('.acc-h'), open = a.id === id;
+    h.setAttribute('aria-expanded', String(open));
+    a.querySelector('.acc-b').hidden = !open;
+    a.classList.toggle('open', open);
+  });
+}
+
+function renderP4Block() {
+  const b = $('p4-block'), acct = !!(S.user && !isGuest());
+  b.innerHTML = `<h3>4-player chess</h3>
+    <p class="muted small">Four colours on one board. Last player standing wins. <button class="link" id="p4-rules" type="button">How it works</button></p>
+    <div class="row">${tcSeg('seg-p4tc', 0)}</div>
+    <p class="muted small">Timed online games are rated, starting at 100. Bullet and Blitz have their own ratings; Original and Long share one.</p>
+    <div class="row"><button class="btn primary" id="p4-bots" type="button">Play with 3 bots</button><button class="btn" id="p4-local" type="button">Pass and play</button></div>` +
+    (acct ? `<h4>Host an online game</h4>
+      <div class="row"><button class="btn" id="p4-host" type="button">Host a game</button><label class="ntoggle"><input type="checkbox" id="p4-guests" checked> Guests can join</label></div>
+      <ul class="glist" id="my4"></ul>
+      <h4>Open 4-player games</h4>
+      <ul class="glist" id="open4"><li class="muted">Loading…</li></ul>`
+    : `<p class="muted small">${S.user ? 'As a guest you can join 4-player games with a code.' : 'Sign in to host an online 4-player game, or join one with a code.'}</p>`);
+  $('p4-rules').onclick = showRules4;
+  initSeg($('seg-p4tc'));
+  $('p4-bots').onclick = () => start4('bots', +$('seg-p4tc').dataset.val);
+  $('p4-local').onclick = () => start4('local', +$('seg-p4tc').dataset.val);
+  if (acct) {
+    $('p4-host').onclick = create4;
+    ['open4', 'my4'].forEach(id => $(id).addEventListener('click', onP4ListClick));
+  }
+}
+function renderP4Lists(open, mine) {
+  if (!$('open4')) return;
+  const uid = S.user.id, seated = g => g.seats.filter(Boolean).length;
+  $('open4').innerHTML = open.filter(g => g.seats.indexOf(uid) < 0).map(g => `<li><span class="who"><b>${esc(nameOf(g.creator_id))}</b><span class="sub">${esc(tcLabel(g.time_control))}, ${seated(g)}/4 seated${g.allow_guests ? '' : ', no guests'}</span></span><button class="btn sm primary" data-a4="join" data-id="${g.id}" type="button">Join</button></li>`).join('') || '<li class="muted">No open 4-player games right now.</li>';
+  $('my4').innerHTML = mine.map(g => `<li><span class="who"><b>4-player, code ${esc(g.code)}</b><span class="sub">${esc(tcLabel(g.time_control))}, ${g.status === 'waiting' ? seated(g) + '/4 seated' : 'in progress'}</span></span>${g.status === 'waiting' && g.creator_id === uid ? `<button class="btn sm ghost" data-a4="cancel" data-id="${g.id}" type="button">Cancel</button>` : ''}<button class="btn sm" data-a4="open" data-id="${g.id}" type="button">Open</button></li>`).join('');
+}
+async function onP4ListClick(e) {
+  const b = e.target.closest('button[data-a4]');
+  if (!b) return;
+  const id = b.dataset.id;
+  if (b.dataset.a4 === 'join') return join4(id);
+  if (b.dataset.a4 === 'cancel') { await sb.from('games4').delete().eq('id', id); return loadLobbyData(); }
+  const {data} = await sb.from('games4').select('*').eq('id', id).maybeSingle();
+  if (data) open4Online(data); else toast('That game is gone.', true);
+}
+
 
 /* ═════════════ Clocks ═════════════ */
 let SERVER_OFFSET = 0;   // server time minus this device's time, so online clocks agree
@@ -1060,6 +2809,11 @@ function tick() {
     el.classList.toggle('low', ms < 10000);
     el.classList.toggle('run', isRunning(c));
   });
+  // your own clock ticking down in the last 10 seconds
+  if ((S.mode === 'ai' || S.mode === 'online') && !S.over && isRunning(S.color) && clockMs(S.color) < 10000) {
+    const sec = Math.ceil(clockMs(S.color) / 1000);
+    if (sec !== S.lowSec) { S.lowSec = sec; sfx('tick'); }
+  } else S.lowSec = 0;
   if (S.over) return;
   const runner = ['w', 'b'].find(isRunning);
   if (!runner || clockMs(runner) > 0) return;
@@ -1067,6 +2821,7 @@ function tick() {
   S.clock[runner] = 0; S.clock.running = null;
   S.over = {result: runner === 'w' ? '0-1' : '1-0', reason: 'timeout'};
   S.aiThinking = false; clearSel(); render();
+  if (S.mode === 'ai' && S.botMatchId) settleBot(S.over.result);
 }
 
 let claimBusy = false;
@@ -1125,27 +2880,106 @@ function commit(from, to, promo) {
   if (end) S.over = end;
   if (S.mode !== 'online') clockAfterMove(m.color);
   render();
+  if (end && S.mode === 'ai' && S.botMatchId) settleBot(end.result);
   if (S.mode === 'online') sendMove(end);
   else if (S.mode === 'ai' && !end) aiMove();
 }
 
+/* ═════════════ Strong bots: Stockfish for ratings above 1000 ═════════════
+   Up to 1000 the bots use the built-in engine (which plays like a strong club player at best). Above that a real
+   Stockfish (asm.js build, GPL) is loaded once from a CDN into a web worker and its Skill Level is set from the
+   rating: 1000 is Skill 0 and 3200 is Skill 20. The strength is approximate, and depends on the device and on how
+   long the bot is allowed to think. If the engine cannot be loaded, the built-in engine plays instead. */
+const STRONG_FROM = 1000;
+const SF_URLS = ['https://cdn.jsdelivr.net/npm/stockfish@10.0.2/src/stockfish.asm.js', 'https://unpkg.com/stockfish@10.0.2/src/stockfish.asm.js'];
+const SF = {loading: null, worker: null, busy: false, failedAt: 0, warned: false};
+const skillFor = elo => Math.max(0, Math.min(20, Math.round((elo - STRONG_FROM) / 110)));
+
+function loadStockfish() {
+  if (SF.loading) return SF.loading;
+  if (SF.failedAt && Date.now() - SF.failedAt < 60000) return Promise.reject(new Error('engine unavailable'));
+  SF.loading = (async () => {
+    let code = null;
+    for (const url of SF_URLS) {
+      try { const r = await fetch(url); if (r.ok) { code = await r.text(); break; } } catch (e) { /* try the next mirror */ }
+    }
+    if (!code) throw new Error('engine download failed');
+    const w = new Worker(URL.createObjectURL(new Blob([code], {type: 'text/javascript'})));
+    await new Promise((res, rej) => {
+      const to = setTimeout(() => { w.terminate(); rej(new Error('engine did not start')); }, 20000);
+      const on = e => { if (String(e.data).indexOf('uciok') >= 0) { clearTimeout(to); w.removeEventListener('message', on); res(); } };
+      w.addEventListener('message', on);
+      w.postMessage('uci');
+    });
+    w.postMessage('setoption name Hash value 16');
+    SF.worker = w;
+    return w;
+  })().catch(e => { SF.loading = null; SF.failedAt = Date.now(); throw e; });
+  return SF.loading;
+}
+function uciToMove(g, uci) {
+  const from = uci.slice(0, 2), to = uci.slice(2, 4), pr = uci[4];
+  return g.moves({verbose: true}).find(m => m.from === from && m.to === to && (!m.promotion || m.promotion === (pr || 'q'))) || null;
+}
+function stockfishMove(g, skill, ms) {
+  return loadStockfish().then(w => new Promise((res, rej) => {
+    if (SF.busy) return rej(new Error('engine busy'));
+    SF.busy = true;
+    let to;
+    const done = (m, err) => { clearTimeout(to); w.removeEventListener('message', on); SF.busy = false; if (err) rej(err); else res(m); };
+    const on = e => {
+      const m = /^bestmove (\S+)/.exec(String(e.data));
+      if (!m) return;
+      const mv = uciToMove(g, m[1]);
+      done(mv, mv ? null : new Error('engine gave an unusable move'));
+    };
+    to = setTimeout(() => { w.postMessage('stop'); done(null, new Error('engine timed out')); }, ms + 6000);
+    w.addEventListener('message', on);
+    w.postMessage('setoption name Skill Level value ' + skill);
+    w.postMessage('position fen ' + g.fen());
+    w.postMessage('go movetime ' + Math.max(50, Math.round(ms)));
+  }));
+}
+
+// How long any bot "thinks" before it moves, by time control: [min, max] seconds.
+// Bullet 0.2-1s, Blitz 1-2s, everything else (Original, Long, untimed, 4-player) 2-4s.
+function thinkMs(tc) {
+  const [lo, hi] = tc === 60 ? [0.2, 1] : tc === 180 ? [1, 2] : [2, 4];
+  return (lo + Math.random() * (hi - lo)) * 1000;
+}
+const botThinkMs = () => thinkMs(S.tc);
+
 function aiMove() {
-  const g = S.game;
+  const g = S.game, bot = S.botElo > 0, t0 = Date.now();
+  const wait = botThinkMs();
   S.aiThinking = true; render();
-  setTimeout(() => {
+  const play = m => {
     if (S.game !== g || S.mode !== 'ai') return;
-    if (S.over) { S.aiThinking = false; render(); return; }
-    const m = pickAIMove(g, S.aiLevel);
     S.aiThinking = false;
-    if (m) {
+    if (m && !S.over) {
       const mv = g.move({from: m.from, to: m.to, promotion: m.promotion || 'q'});
       S.last = {from: m.from, to: m.to};
       const end = gameEnd(g);
       if (end) S.over = end;
       clockAfterMove(mv.color);
+      if (end && S.botMatchId) settleBot(end.result);
     }
     render();
-  }, 250);
+  };
+  setTimeout(async () => {                             // a beat first, so the "thinking" state paints
+    if (S.game !== g || S.mode !== 'ai' || S.over) return play(null);
+    let m = null;
+    if (bot && S.botShown > STRONG_FROM) {
+      try { m = await stockfishMove(g, skillFor(S.botShown), Math.max(120, wait - 100)); }
+      catch (e) {
+        if (!SF.warned) { SF.warned = true; toast('Could not load the strong engine, so the built-in one is playing (it tops out around a strong club player).', true); }
+      }
+      if (S.game !== g || S.mode !== 'ai') return;     // the game changed while the engine was thinking
+    }
+    if (!m) m = bot ? pickBotMove(g, S.botElo, S.tc === 60 ? 2 : 3, Math.max(120, wait - 100)) : pickAIMove(g, S.aiLevel, S.tc === 60 ? 2 : 3);
+    // the search itself counts towards the think time; only wait for whatever is left
+    setTimeout(() => play(m), Math.max(0, wait - (Date.now() - t0)));
+  }, 50);
 }
 
 function undo() {
@@ -1157,7 +2991,7 @@ function undo() {
 }
 
 function newGame() {
-  if (S.mode === 'ai') startAI(S.aiLevel, S.colorPref, S.tc);
+  if (S.mode === 'ai') startAI(S.aiLevel, S.colorPref, S.tc, S.botElo, S.botShown, null, S.botLabel);
   else startLocal(S.tc);
 }
 
@@ -1170,7 +3004,7 @@ function lastOf(g) {
   const h = g.history({verbose: true});
   return h.length ? {from: h[h.length - 1].from, to: h[h.length - 1].to} : null;
 }
-function render() { const vg = viewGame(); renderBoard(vg); renderSide(vg); }
+function render() { const vg = viewGame(); renderBoard(vg); renderSide(vg); syncSfx(); syncReviewSfx(); drawAdminArrow(); }
 
 function findKing(brd, color) {
   for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) {
@@ -1184,6 +3018,7 @@ function renderBoard(g) {
   const b = $('board');
   if (!g) { b.innerHTML = ''; return; }
   const last = S.review ? lastOf(g) : S.last;
+  const an = S.review && S.review.ply > 0 && S.review.analysis ? S.review.analysis[S.review.ply] : null;
   const brd = g.board();
   const chk = g.in_check() ? findKing(brd, g.turn()) : null;
   const can = canInteract();
@@ -1201,6 +3036,7 @@ function renderBoard(g) {
       let inner = '';
       if (c === 0) inner += `<i class="co rk">${rk + 1}</i>`;
       if (r === 7) inner += `<i class="co fl">${FILES[f]}</i>`;
+      if (an && last && sq === last.to) inner += `<span class="sq-badge ${an.cls}" title="${esc(an.label)}. Best move: ${esc(an.best || '-')}" aria-label="${esc(an.label)}">${an.emoji}</span>`;
       if (p) inner += `<span class="pc ${p.color}"${can && ownsPiece(p) ? ' draggable="true"' : ''}>${GLYPH[p.type]}</span>`;
       html += `<div class="${cls}" data-sq="${sq}">${inner}</div>`;
     }
@@ -1244,13 +3080,14 @@ function bindBoard() {
 function playerInfo(color) {
   if (S.mode === 'local') return {name: color === 'w' ? 'White' : 'Black'};
   if (S.mode === 'ai') {
-    if (color === S.color) return {name: S.profile ? S.profile.username : 'You'};
+    if (color === S.color) return {name: S.profile ? S.profile.username : 'You', rating: S.profile && !S.profile.is_guest ? ratingOf(S.profile, S.tc) : null};
+    if (S.botElo) return {name: S.botName, sub: String(S.botShown || S.botElo), rating: S.botShown || S.botElo};
     return {name: 'Computer', sub: ['', 'Easy', 'Medium', 'Hard'][S.aiLevel]};
   }
   const row = S.online.row, id = color === 'w' ? row.white_id : row.black_id;
   if (!id) return {name: 'Waiting for opponent…'};
   const p = PC[id];
-  return {name: p ? p.username : 'Player', sub: p ? String(p.rating) : ''};
+  return {name: p ? p.username : 'Player', sub: p ? String(ratingOf(p, row.time_control)) : '', rating: p && !p.is_guest ? ratingOf(p, row.time_control) : null};
 }
 
 function captured(g) {
@@ -1270,7 +3107,7 @@ function fillBar(el, color, g) {
     const ms = clockMs(color);
     clk = `<span class="clk${isRunning(color) ? ' run' : ''}${ms < 10000 ? ' low' : ''}" data-c="${color}">${fmtClock(ms)}</span>`;
   }
-  el.innerHTML = `<span class="dot"></span><span class="pname">${esc(info.name)}${info.sub ? `<em>${esc(info.sub)}</em>` : ''}</span><span class="caps">${cap.out[color].map(t => `<span class="cp ${opp}">${GLYPH[t]}</span>`).join('')}</span><span class="adv">${cap.diff[color] > 0 ? '+' + cap.diff[color] : ''}</span>${clk}`;
+  el.innerHTML = `<span class="dot"></span><span class="pname">${esc(info.name)}${info.sub ? `<em>${esc(info.sub)}</em>` : ''}${info.rating != null ? titleBadge(info.rating) : ''}</span><span class="caps">${cap.out[color].map(t => `<span class="cp ${opp}">${GLYPH[t]}</span>`).join('')}</span><span class="adv">${cap.diff[color] > 0 ? '+' + cap.diff[color] : ''}</span>${clk}`;
 }
 
 function statusText() {
@@ -1290,7 +3127,7 @@ function statusText() {
   if (S.mode === 'online' && S.online.row.status === 'waiting') return S.online.row.invited_id ? `Waiting for ${nameOf(S.online.row.invited_id)} to accept.` : 'Waiting for an opponent to join.';
   const chk = g.in_check() ? ' Check.' : '';
   if (S.mode === 'local') return `${g.turn() === 'w' ? 'White' : 'Black'} to move.${chk}`;
-  if (S.mode === 'ai' && S.aiThinking) return 'Computer is thinking…';
+  if (S.mode === 'ai' && S.aiThinking) return 'Opponent is thinking…';
   return (g.turn() === S.color ? 'Your move.' : 'Opponent’s move.') + chk;
 }
 
@@ -1302,7 +3139,10 @@ function renderSide(vg) {
 
   const h = g.history(), total = h.length;
   const st = $('status');
-  if (S.review) st.textContent = S.review.ply === 0 ? 'Overview: starting position.' : `Overview: after move ${S.review.ply} of ${total}.`;
+  if (S.review) {
+    const an = S.review.analysis && S.review.analysis[S.review.ply];
+    st.textContent = S.review.ply === 0 ? 'Overview: starting position.' : `Overview: after move ${S.review.ply} of ${total}.${an ? ' ' + an.label + '.' : ''}`;
+  }
   else st.textContent = statusText();
   st.className = 'status' + (S.over ? ' done' : '');
 
@@ -1310,13 +3150,15 @@ function renderSide(vg) {
   if (S.mode === 'online' && S.online.row.status === 'waiting') {
     const row = S.online.row;
     inv.classList.remove('hidden');
-    inv.innerHTML = `<div class="muted">${row.invited_id ? 'Challenge sent to ' + esc(nameOf(row.invited_id)) + '. You can also share this code.' : 'Share this code with a friend'}</div><div class="muted">${esc(tcLabel(row.time_control))}</div><div class="big">${esc(row.code)}</div><button class="btn sm" id="copy-code" type="button">Copy code</button>`;
+    inv.innerHTML = `<div class="muted">${row.invited_id ? 'Challenge sent to ' + esc(nameOf(row.invited_id)) + '. You can also share this code.' : 'Share this code with a friend, or send the link'}</div><div class="muted">${esc(tcLabel(row.time_control))}</div><div class="big">${esc(row.code)}</div><div class="row"><button class="btn sm primary" id="copy-link" type="button">Copy invite link</button><button class="btn sm ghost" id="copy-code" type="button">Copy code</button></div>`;
+    $('copy-link').onclick = () => copyInviteLink(row.code);
     $('copy-code').onclick = () => { if (navigator.clipboard) navigator.clipboard.writeText(row.code).then(() => toast('Code copied.')); };
   } else inv.classList.add('hidden');
 
   const note = $('note');
-  note.classList.toggle('hidden', !(S.mode === 'online' && S.over));
-  note.textContent = 'Online games are deleted from the server once they finish. Use Overview to review this one before you leave.';
+  const botGame = S.mode === 'ai' && S.botElo > 0, onlineDone = S.mode === 'online' && S.over;
+  note.classList.toggle('hidden', !onlineDone);
+  note.textContent = onlineDone ? 'Online games are deleted from the server once they finish. Use Overview to review this one before you leave.' : '';
 
   const dp = ply => S.review ? ` data-ply="${ply}"${S.review.ply === ply ? ' class="cur"' : ''}` : '';
   let mv = '';
@@ -1327,7 +3169,10 @@ function renderSide(vg) {
   const ml = $('moves');
   ml.innerHTML = mv;
   const cur = S.review && ml.querySelector('.cur');
-  if (cur) ml.scrollTop = Math.max(0, cur.offsetTop - ml.clientHeight / 2); else if (!S.review) ml.scrollTop = ml.scrollHeight;
+  if (cur) {
+    const cr = cur.getBoundingClientRect(), lr = ml.getBoundingClientRect();
+    ml.scrollTop += (cr.top - lr.top) - (ml.clientHeight - cr.height) / 2;
+  } else if (!S.review) ml.scrollTop = ml.scrollHeight;
 
   const c = $('controls');
   c.innerHTML = '';
@@ -1599,6 +3444,7 @@ function startReview() {
     timer: null,
     analysis: {},
     analyzing: false,
+    sfxPly: null,
   };
   render();
   /*
@@ -1665,16 +3511,33 @@ function miniBoard(el, fen) {
 
 /* ═════════════ Wiring ═════════════ */
 function bindStatic() {
+  $('board4').addEventListener('click', onBoard4);
+  $('p4bar').addEventListener('click', e => { const b = e.target.closest('button[data-a4="bot"]'); if (b) replaceWithBot4(+b.dataset.seat); });
+  renderBell();
+  $('btn-bell').onclick = togglePanel;
+  $('npanel').addEventListener('click', onPanelClick);
+  document.addEventListener('mousedown', e => { if (!$('npanel').classList.contains('hidden') && !e.target.closest('#npanel, #btn-bell')) closePanel(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closePanel(); });
+  renderSoundBtn();
+  $('btn-sound').onclick = () => setSound(!SFX.on);
+  $('btn-admin').onclick = showAdminMenu;
+  window.addEventListener('resize', drawAdminArrow);
+  ['pointerdown', 'keydown'].forEach(ev => document.addEventListener(ev, () => { if (SFX.on) audio(); }, {once: true}));   // browsers only allow audio after a tap or key press
   $('tab-in').onclick = () => setAuthMode('in');
   $('tab-up').onclick = () => setAuthMode('up');
   $('auth-form').addEventListener('submit', submitAuth);
   $('guest').onclick = () => { S.guest = true; renderUserBox(); goLobby(); };
   $('brand').onclick = () => { if (S.mode) leaveGame(); else if (S.user || S.guest) goLobby(); };
-  ['seg-level', 'seg-color'].forEach(id => initSeg($(id)));
+  ['seg-color', 'seg-lb'].forEach(id => initSeg($(id)));
+  $('seg-lb').addEventListener('click', () => { S.lbCol = $('seg-lb').dataset.val; loadLobbyData(); });
   $('tc-ai').innerHTML = tcSeg('seg-ai-tc', 0);
   $('tc-local').innerHTML = tcSeg('seg-local-tc', 0);
   initSeg($('seg-ai-tc')); initSeg($('seg-local-tc'));
-  $('start-ai').onclick = () => startAI(+$('seg-level').dataset.val, $('seg-color').dataset.val, +$('seg-ai-tc').dataset.val);
+  // Single: the computer's rating is a slider; it plays at that rating (on the engine's own scale)
+  const paintElo = () => { const e = +$('elo-slider').value; $('elo-val').textContent = e; $('elo-name').textContent = chessTitle(e).full; if (e > STRONG_FROM) loadStockfish().catch(() => {}); };   // start fetching the strong engine as soon as it might be needed
+  $('elo-slider').addEventListener('input', paintElo); paintElo();
+  $('start-ai').onclick = () => { const e = +$('elo-slider').value; startAI(0, $('seg-color').dataset.val, +$('seg-ai-tc').dataset.val, e + BOT_SCALE, e, null, 'Computer'); };
+  document.querySelectorAll('.acc-h').forEach(b => { b.onclick = () => toggleAcc(b.closest('.acc').id); });
   $('start-local').onclick = () => startLocal(+$('seg-local-tc').dataset.val);
   setInterval(tick, 100);
   $('moves').addEventListener('click', e => {
@@ -1692,13 +3555,11 @@ function bindStatic() {
 }
 
 (async function init() {
+  S.pendingCode = takeUrlInviteCode();
   bindStatic();
   const {data} = await sb.auth.getSession();
-  const session = data && data.session;
-  if (session) await handleUser(session.user); else showView('auth');
-  sb.auth.onAuthStateChange((event, sess) => {
-    if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'USER_UPDATED') setTimeout(() => handleUser(sess ? sess.user : null), 0);
-  });
+  if (data && data.session) await syncAccount(); else showView('auth');
+  if (!S.user && !S.guest) showView('auth');   // session exists but isn't linked to an account
 })();
 
 })();
