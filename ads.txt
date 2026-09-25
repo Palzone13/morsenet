@@ -1,0 +1,5 @@
+# Required by Google AdSense so nobody else can claim to sell ads on this site.
+# Replace pub-0000000000000000 with your real publisher id (same one used in index.html
+# and in the <meta name="google-adsense-account"> tag), then deploy this file at the
+# site root so it's reachable at https://your-domain/ads.txt
+google.com, pub-3327960121823990, DIRECT, f08c47fec0942fa0
